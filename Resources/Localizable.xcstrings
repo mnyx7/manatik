@@ -1,13 +1,19 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "%1$@ of %2$@, %3$@ complete": {
+    "%1$@ paid of %2$@, %3$@ left": {
+      "extractionState": "manual"
+    },
+    "%1$@ saved of %2$@, %3$@ to go": {
       "extractionState": "manual"
     },
     "%1$@ spent over %2$d days, averaging %3$@ a day": {
       "extractionState": "manual"
     },
     "%1$@, %2$d percent of spending": {
+      "extractionState": "manual"
+    },
+    "%1$d days left, due %2$@": {
       "extractionState": "manual"
     },
     "%1$d entries, %2$d repeating": {
@@ -17,6 +23,12 @@
       "extractionState": "manual"
     },
     "%@ income": {
+      "extractionState": "manual"
+    },
+    "%d attachments": {
+      "extractionState": "manual"
+    },
+    "%d days overdue": {
       "extractionState": "manual"
     },
     "%d entries": {
@@ -62,6 +74,9 @@
         }
       }
     },
+    "About %d payments left at the current instalment.": {
+      "extractionState": "manual"
+    },
     "Activities": {
       "extractionState": "manual",
       "localizations": {
@@ -79,8 +94,76 @@
         }
       }
     },
+    "Add": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить"
+          }
+        }
+      }
+    },
     "Add %@ entry": {
       "extractionState": "manual"
+    },
+    "Add a loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kredit əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить кредит"
+          }
+        }
+      }
+    },
+    "Add a loan to follow what you have paid and what is left.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödədiyinizi və qalanı izləmək üçün kredit əlavə edin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавьте кредит, чтобы видеть выплаченное и остаток."
+          }
+        }
+      }
+    },
+    "Add a new category": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kateqoriya əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить категорию"
+          }
+        }
+      }
     },
     "Add a payment reminder": {
       "extractionState": "manual",
@@ -95,6 +178,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Добавить напоминание"
+          }
+        }
+      }
+    },
+    "Add a savings goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığım hədəfi əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить цель накоплений"
           }
         }
       }
@@ -133,6 +233,40 @@
         }
       }
     },
+    "Add money": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pul əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить деньги"
+          }
+        }
+      }
+    },
+    "Add to savings": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığıma əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить в накопления"
+          }
+        }
+      }
+    },
     "Add your first income or expense to start tracking.": {
       "extractionState": "manual",
       "localizations": {
@@ -146,6 +280,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Добавьте первый доход или расход, чтобы начать учёт."
+          }
+        }
+      }
+    },
+    "All": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hamısı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все"
           }
         }
       }
@@ -200,6 +351,43 @@
           }
         }
       }
+    },
+    "Already paid": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Artıq ödənilmiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уже выплачено"
+          }
+        }
+      }
+    },
+    "Already saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Artıq yığılmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уже накоплено"
+          }
+        }
+      }
+    },
+    "Already saved before tracking": {
+      "extractionState": "manual"
     },
     "Amount": {
       "extractionState": "manual",
@@ -258,6 +446,9 @@
         }
       }
     },
+    "Attachments must be under %d MB.": {
+      "extractionState": "manual"
+    },
     "Average": {
       "extractionState": "manual",
       "localizations": {
@@ -274,6 +465,9 @@
           }
         }
       }
+    },
+    "Avg/day so far": {
+      "extractionState": "manual"
     },
     "Azerbaijani manat": {
       "extractionState": "manual",
@@ -349,6 +543,63 @@
     "Backup saved to %@": {
       "extractionState": "manual"
     },
+    "Being paid": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödənilir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выплачивается"
+          }
+        }
+      }
+    },
+    "Biggest expense": {
+      "extractionState": "manual"
+    },
+    "Bill": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesab"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Счёт"
+          }
+        }
+      }
+    },
+    "Bill photo": {
+      "extractionState": "manual"
+    },
+    "Bills": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesablar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Счета"
+          }
+        }
+      }
+    },
     "Bonus": {
       "extractionState": "manual",
       "localizations": {
@@ -362,6 +613,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Бонус"
+          }
+        }
+      }
+    },
+    "Borrowed": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Götürülmüş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Взято"
+          }
+        }
+      }
+    },
+    "Borrowed amount": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Götürülən məbləğ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сумма кредита"
+          }
+        }
+      }
+    },
+    "Both": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər ikisi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оба"
           }
         }
       }
@@ -399,6 +701,9 @@
           }
         }
       }
+    },
+    "Carried over from your earlier savings goal.": {
+      "extractionState": "manual"
     },
     "Category": {
       "extractionState": "manual",
@@ -536,6 +841,9 @@
         }
       }
     },
+    "Choosing Both makes the category available for income and expenses.": {
+      "extractionState": "manual"
+    },
     "Clear": {
       "extractionState": "manual",
       "localizations": {
@@ -600,6 +908,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Completed": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamlanmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершённые"
           }
         }
       }
@@ -902,19 +1227,70 @@
         }
       }
     },
+    "Delete this goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hədəfi sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить эту цель"
+          }
+        }
+      }
+    },
+    "Delete this loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu krediti sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить этот кредит"
+          }
+        }
+      }
+    },
     "Details": {
       "extractionState": "manual",
       "localizations": {
         "az": {
           "stringUnit": {
             "state": "translated",
-            "value": "Təfərrüatlar"
+            "value": "Təfərrüat"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Детали"
+            "value": "Подробнее"
+          }
+        }
+      }
+    },
+    "Document": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sənəd"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Документ"
           }
         }
       }
@@ -932,6 +1308,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Готово"
+          }
+        }
+      }
+    },
+    "Due": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son tarix"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срок"
+          }
+        }
+      }
+    },
+    "Due today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gün ödənilməli"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срок сегодня"
           }
         }
       }
@@ -983,6 +1393,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Изменить запись"
+          }
+        }
+      }
+    },
+    "Edit Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədəfi redaktə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить цель"
+          }
+        }
+      }
+    },
+    "Edit Loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Krediti redaktə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить кредит"
           }
         }
       }
@@ -1123,6 +1567,9 @@
         }
       }
     },
+    "Entries": {
+      "extractionState": "manual"
+    },
     "Entries you add will appear here.": {
       "extractionState": "manual",
       "localizations": {
@@ -1228,6 +1675,12 @@
         }
       }
     },
+    "For example: Car loan": {
+      "extractionState": "manual"
+    },
+    "For example: Gym": {
+      "extractionState": "manual"
+    },
     "For example: Home loan instalment": {
       "extractionState": "manual",
       "localizations": {
@@ -1245,6 +1698,9 @@
         }
       }
     },
+    "For example: New laptop": {
+      "extractionState": "manual"
+    },
     "Forecast": {
       "extractionState": "manual",
       "localizations": {
@@ -1261,6 +1717,9 @@
           }
         }
       }
+    },
+    "Forecast rows": {
+      "extractionState": "manual"
     },
     "Forecast, not yet recorded": {
       "extractionState": "manual",
@@ -1381,6 +1840,9 @@
         }
       }
     },
+    "Giving a monthly payment lets manatik estimate how many instalments are left and offer a monthly reminder.": {
+      "extractionState": "manual"
+    },
     "Go to today": {
       "extractionState": "manual",
       "localizations": {
@@ -1398,6 +1860,23 @@
         }
       }
     },
+    "Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədəf"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цель"
+          }
+        }
+      }
+    },
     "Groceries": {
       "extractionState": "manual",
       "localizations": {
@@ -1411,6 +1890,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Продукты"
+          }
+        }
+      }
+    },
+    "Has a due date": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son tarixi var"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Есть срок"
+          }
+        }
+      }
+    },
+    "Has a final due date": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son ödəniş tarixi var"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Есть конечный срок"
           }
         }
       }
@@ -1466,6 +1979,26 @@
         }
       }
     },
+    "Icon": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkon"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Иконка"
+          }
+        }
+      }
+    },
+    "Icon \\(candidate)": {
+      "extractionState": "manual"
+    },
     "Import a backup": {
       "extractionState": "manual",
       "localizations": {
@@ -1486,6 +2019,26 @@
     "Import failed: %@": {
       "extractionState": "manual"
     },
+    "Importing replaces everything on this device, so the current data is saved as a file first.": {
+      "extractionState": "manual"
+    },
+    "In progress": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davam edir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В процессе"
+          }
+        }
+      }
+    },
     "Includes forecast rows from repeating entries.": {
       "extractionState": "manual",
       "localizations": {
@@ -1503,6 +2056,9 @@
         }
       }
     },
+    "Includes forecasts from repeating entries.": {
+      "extractionState": "manual"
+    },
     "Income": {
       "extractionState": "manual",
       "localizations": {
@@ -1516,6 +2072,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Доход"
+          }
+        }
+      }
+    },
+    "Insights": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təhlil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аналитика"
+          }
+        }
+      }
+    },
+    "It may have been deleted.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Silinmiş ola bilər."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Возможно, он был удалён."
           }
         }
       }
@@ -1571,6 +2161,134 @@
         }
       }
     },
+    "Left": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qalan"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Остаток"
+          }
+        }
+      }
+    },
+    "Left to spend": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xərcləmək üçün qalan"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Остаток на расходы"
+          }
+        }
+      }
+    },
+    "Loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kredit"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кредит"
+          }
+        }
+      }
+    },
+    "Loan payment": {
+      "extractionState": "manual"
+    },
+    "Loans": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kreditlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кредиты"
+          }
+        }
+      }
+    },
+    "Mark an entry as a bill and it will show up here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeydi hesab kimi işarələyin və burada görünəcək."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметьте запись как счёт, и она появится здесь."
+          }
+        }
+      }
+    },
+    "Mark complete": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamlandı kimi işarələ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить выполненной"
+          }
+        }
+      }
+    },
+    "Mark settled": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlandı kimi işarələ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить закрытым"
+          }
+        }
+      }
+    },
+    "Money put into %@.": {
+      "extractionState": "manual"
+    },
+    "Money you had put aside before tracking it here. It counts towards the goal without appearing as an expense.": {
+      "extractionState": "manual"
+    },
     "Monthly": {
       "extractionState": "manual",
       "localizations": {
@@ -1588,6 +2306,80 @@
         }
       }
     },
+    "Monthly payment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aylıq ödəniş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Месячный платёж"
+          }
+        }
+      }
+    },
+    "Monthly reminder added. Manage it in Settings.": {
+      "extractionState": "manual"
+    },
+    "My Categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mənim kateqoriyalarım"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мои категории"
+          }
+        }
+      }
+    },
+    "My categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mənim kateqoriyalarım"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мои категории"
+          }
+        }
+      }
+    },
+    "Name": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Название"
+          }
+        }
+      }
+    },
+    "Net": {
+      "extractionState": "manual"
+    },
     "Never": {
       "extractionState": "manual",
       "localizations": {
@@ -1601,6 +2393,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Никогда"
+          }
+        }
+      }
+    },
+    "New Category": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kateqoriya"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новая категория"
           }
         }
       }
@@ -1622,6 +2431,40 @@
         }
       }
     },
+    "New Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni hədəf"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новая цель"
+          }
+        }
+      }
+    },
+    "New Loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kredit"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новый кредит"
+          }
+        }
+      }
+    },
     "New Reminder": {
       "extractionState": "manual",
       "localizations": {
@@ -1638,6 +2481,9 @@
           }
         }
       }
+    },
+    "New categories are added while entering an amount, from the plus beside the category picker.": {
+      "extractionState": "manual"
     },
     "Next period": {
       "extractionState": "manual",
@@ -1669,6 +2515,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Следующий год"
+          }
+        }
+      }
+    },
+    "No bills saved yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ hesab saxlanmayıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Счета пока не сохранены"
           }
         }
       }
@@ -1741,6 +2604,23 @@
         }
       }
     },
+    "No loans tracked": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzlənən kredit yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кредиты не отслеживаются"
+          }
+        }
+      }
+    },
     "No matching entries": {
       "extractionState": "manual",
       "localizations": {
@@ -1758,6 +2638,23 @@
         }
       }
     },
+    "No payments recorded yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ ödəniş qeyd olunmayıb."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Платежи пока не записаны."
+          }
+        }
+      }
+    },
     "No repeating entries yet.": {
       "extractionState": "manual",
       "localizations": {
@@ -1771,6 +2668,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Повторяющихся записей пока нет."
+          }
+        }
+      }
+    },
+    "No savings goals yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ yığım hədəfi yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Целей накопления пока нет"
           }
         }
       }
@@ -1809,6 +2723,23 @@
         }
       }
     },
+    "Note and bill": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd və hesab"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заметка и счёт"
+          }
+        }
+      }
+    },
     "Nothing in this period": {
       "extractionState": "manual",
       "localizations": {
@@ -1839,6 +2770,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "В этом диапазоне ничего не соответствует фильтрам."
+          }
+        }
+      }
+    },
+    "Nothing paid in yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ heç nə daxil edilməyib."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пока ничего не внесено."
           }
         }
       }
@@ -1894,6 +2842,15 @@
         }
       }
     },
+    "Only images and PDF files can be attached.": {
+      "extractionState": "manual"
+    },
+    "Open or share": {
+      "extractionState": "manual"
+    },
+    "Opens the attachment": {
+      "extractionState": "manual"
+    },
     "Optional": {
       "extractionState": "manual",
       "localizations": {
@@ -1907,6 +2864,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Необязательно"
+          }
+        }
+      }
+    },
+    "Or paste any emoji": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaxud istənilən emoji əlavə edin"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Или вставьте любой эмодзи"
+          }
+        }
+      }
+    },
+    "Organise": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təşkil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Организация"
           }
         }
       }
@@ -1928,6 +2919,23 @@
         }
       }
     },
+    "Over budget": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Büdcədən artıq"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перерасход"
+          }
+        }
+      }
+    },
     "Overspent this period": {
       "extractionState": "manual",
       "localizations": {
@@ -1941,6 +2949,43 @@
           "stringUnit": {
             "state": "translated",
             "value": "Перерасход за период"
+          }
+        }
+      }
+    },
+    "Paid": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödənilmiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выплачено"
+          }
+        }
+      }
+    },
+    "Paid before tracking": {
+      "extractionState": "manual"
+    },
+    "Paid in": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daxil edilmiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Внесено"
           }
         }
       }
@@ -1992,6 +3037,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Срок платежа"
+          }
+        }
+      }
+    },
+    "Payment towards %@.": {
+      "extractionState": "manual"
+    },
+    "Payments": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödənişlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Платежи"
           }
         }
       }
@@ -2098,6 +3163,23 @@
         }
       }
     },
+    "Photo": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foto"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фото"
+          }
+        }
+      }
+    },
     "Pick a day": {
       "extractionState": "manual",
       "localizations": {
@@ -2169,6 +3251,26 @@
         }
       }
     },
+    "Reached %@": {
+      "extractionState": "manual"
+    },
+    "Recent": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonuncular"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Последние"
+          }
+        }
+      }
+    },
     "Recent Activity": {
       "extractionState": "manual",
       "localizations": {
@@ -2182,6 +3284,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Последние операции"
+          }
+        }
+      }
+    },
+    "Record": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записать"
+          }
+        }
+      }
+    },
+    "Record a payment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödənişi qeyd et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записать платёж"
+          }
+        }
+      }
+    },
+    "Record payment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödənişi qeyd et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записать платёж"
           }
         }
       }
@@ -2220,6 +3373,9 @@
         }
       }
     },
+    "Remind me monthly about this payment": {
+      "extractionState": "manual"
+    },
     "Reminder enabled": {
       "extractionState": "manual",
       "localizations": {
@@ -2237,6 +3393,40 @@
         }
       }
     },
+    "Remove attachment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əlavəni sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить вложение"
+          }
+        }
+      }
+    },
+    "Remove from Bills": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesablardan çıxar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из счетов"
+          }
+        }
+      }
+    },
     "Rent": {
       "extractionState": "manual",
       "localizations": {
@@ -2250,6 +3440,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Аренда"
+          }
+        }
+      }
+    },
+    "Reopen": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yenidən aç"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть снова"
           }
         }
       }
@@ -2407,6 +3614,66 @@
         }
       }
     },
+    "Save and add another": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saxla və yenisini əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить и добавить ещё"
+          }
+        }
+      }
+    },
+    "Save and add another keeps the type, category and date so a stack of receipts goes in quickly.": {
+      "extractionState": "manual"
+    },
+    "Save as a bill": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesab kimi saxla"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить как счёт"
+          }
+        }
+      }
+    },
+    "Saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığılmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Накоплено"
+          }
+        }
+      }
+    },
+    "Saved %@": {
+      "extractionState": "manual"
+    },
+    "Saved as a bill": {
+      "extractionState": "manual"
+    },
     "Saved so far": {
       "extractionState": "manual",
       "localizations": {
@@ -2457,6 +3724,9 @@
           }
         }
       }
+    },
+    "Savings contribution": {
+      "extractionState": "manual"
     },
     "Savings goal": {
       "extractionState": "manual",
@@ -2509,6 +3779,23 @@
         }
       }
     },
+    "See what you borrowed, paid and still owe.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Götürdüyünüzü, ödədiyinizi və borcunuzu görün."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Смотрите, сколько взяли, выплатили и должны."
+          }
+        }
+      }
+    },
     "Select Period": {
       "extractionState": "manual",
       "localizations": {
@@ -2522,6 +3809,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Выбор периода"
+          }
+        }
+      }
+    },
+    "Set a goal and put money aside towards it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədəf təyin edin və ona doğru pul yığın."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поставьте цель и откладывайте на неё."
+          }
+        }
+      }
+    },
+    "Set a savings goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığım hədəfi təyin et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поставить цель накоплений"
           }
         }
       }
@@ -2543,6 +3864,26 @@
         }
       }
     },
+    "Settled": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlanmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрыт"
+          }
+        }
+      }
+    },
+    "Settled %@": {
+      "extractionState": "manual"
+    },
     "Shopping": {
       "extractionState": "manual",
       "localizations": {
@@ -2556,6 +3897,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Покупки"
+          }
+        }
+      }
+    },
+    "Show": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Göstər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать"
           }
         }
       }
@@ -2648,6 +4006,26 @@
         }
       }
     },
+    "Start date of the month": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayın başlama tarixi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата начала месяца"
+          }
+        }
+      }
+    },
+    "Start day of the month": {
+      "extractionState": "manual"
+    },
     "Start fresh": {
       "extractionState": "manual",
       "localizations": {
@@ -2661,6 +4039,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Начать заново"
+          }
+        }
+      }
+    },
+    "Started": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlayıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Начало"
+          }
+        }
+      }
+    },
+    "Starting balance": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlanğıc qalıq"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Начальный баланс"
+          }
+        }
+      }
+    },
+    "Still to go": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qalan"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Осталось"
           }
         }
       }
@@ -2699,6 +4128,26 @@
         }
       }
     },
+    "Target reached": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədəfə çatıldı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цель достигнута"
+          }
+        }
+      }
+    },
+    "That file could not be read.": {
+      "extractionState": "manual"
+    },
     "That is not a valid number.": {
       "extractionState": "manual",
       "localizations": {
@@ -2716,6 +4165,12 @@
         }
       }
     },
+    "This also removes the money from its savings goal.": {
+      "extractionState": "manual"
+    },
+    "This also removes the payment from its loan.": {
+      "extractionState": "manual"
+    },
     "This backup was made by a newer version of manatik (format %d). Update the app and try again.": {
       "extractionState": "manual"
     },
@@ -2732,6 +4187,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Это действие нельзя отменить."
+          }
+        }
+      }
+    },
+    "This goal no longer exists": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hədəf artıq mövcud deyil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этой цели больше нет"
           }
         }
       }
@@ -2755,6 +4227,26 @@
     },
     "This is not a valid manatik backup file.": {
       "extractionState": "manual"
+    },
+    "This is recorded as an expense so your Left to spend stays accurate.": {
+      "extractionState": "manual"
+    },
+    "This loan no longer exists": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu kredit artıq mövcud deyil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этого кредита больше нет"
+          }
+        }
+      }
     },
     "This replaces everything on this device: %1$d entries and %2$d repeating entries will be removed and replaced with %3$d entries and %4$d repeating entries.": {
       "extractionState": "manual"
@@ -2810,6 +4302,23 @@
         }
       }
     },
+    "Track a loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Krediti izlə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отслеживать кредит"
+          }
+        }
+      }
+    },
     "Track what is left this period": {
       "extractionState": "manual",
       "localizations": {
@@ -2823,6 +4332,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Отслеживать остаток за период"
+          }
+        }
+      }
+    },
+    "Track what you are putting aside.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kənara qoyduğunuzu izləyin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Следите за тем, что откладываете."
           }
         }
       }
@@ -2946,6 +4472,23 @@
         }
       }
     },
+    "Unmark": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşarəni götür"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Снять отметку"
+          }
+        }
+      }
+    },
     "Update": {
       "extractionState": "manual",
       "localizations": {
@@ -2959,6 +4502,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Обновить"
+          }
+        }
+      }
+    },
+    "Use %@": {
+      "extractionState": "manual"
+    },
+    "Used for": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Üçün istifadə olunur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Используется для"
           }
         }
       }
@@ -3013,6 +4576,9 @@
           }
         }
       }
+    },
+    "What you had already repaid before tracking it here. It counts as paid without appearing as an expense.": {
+      "extractionState": "manual"
     },
     "When": {
       "extractionState": "manual",
@@ -3099,6 +4665,9 @@
         }
       }
     },
+    "You have not added any categories yet. Use the plus beside the category picker when entering an amount.": {
+      "extractionState": "manual"
+    },
     "You spent more than you earned this period.": {
       "extractionState": "manual",
       "localizations": {
@@ -3150,13 +4719,34 @@
         }
       }
     },
+    "Your %d bill photos and documents stay on this device: the backup file records that they existed but does not contain them.": {
+      "extractionState": "manual"
+    },
     "Your data file could not be opened: %@": {
       "extractionState": "manual"
     },
     "Your data file could not be read: %@": {
       "extractionState": "manual"
     },
-    "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history.": {
+    "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history, and your savings goal moved into the new goals list.": {
+      "extractionState": "manual"
+    },
+    "\\(Int((progress.fraction * 100).rounded()))%": {
+      "extractionState": "manual"
+    },
+    "\\(category.icon) \\(category.localizedName)": {
+      "extractionState": "manual"
+    },
+    "\\(currency.rawValue) \\u{2014} \\(currency.localizedName)": {
+      "extractionState": "manual"
+    },
+    "\\(percent)%": {
+      "extractionState": "manual"
+    },
+    "\\(viewModel.customCategories.count)": {
+      "extractionState": "manual"
+    },
+    "\\(viewModel.store.state.recurringSeries.count)": {
       "extractionState": "manual"
     },
     "avg %@": {

@@ -43,7 +43,11 @@ protocol AppStatePersisting {
 
 final class AppStatePersistence: AppStatePersisting {
     /// Bump when the on-disk shape changes, and add a migration below.
-    static let currentSchemaVersion = 2
+    ///
+    /// 1: one flat transaction list, Double amounts, recurrence on the row.
+    /// 2: recurring series split out, Decimal amounts, reminders.
+    /// 3: custom categories, many savings goals, loans, attachments, bills.
+    static let currentSchemaVersion = 3
 
     private let fileURL: URL
     private let directory: URL
@@ -117,14 +121,7 @@ final class AppStatePersistence: AppStatePersisting {
     // MARK: - Save
 
     func save(_ state: AppState) throws {
-        let file = StateFile(
-            schemaVersion: Self.currentSchemaVersion,
-            transactions: state.transactions,
-            recurringSeries: state.recurringSeries,
-            paymentReminders: state.paymentReminders,
-            settings: state.settings
-        )
-        let data = try encoder.encode(file)
+        let data = try encoder.encode(StateFile(state: state))
         try data.write(to: fileURL, options: .atomic)
 
         // Financial data should not be readable while the device is locked.
@@ -137,14 +134,7 @@ final class AppStatePersistence: AppStatePersisting {
     }
 
     func writeSnapshot(_ state: AppState, tag: String) throws -> URL {
-        let file = StateFile(
-            schemaVersion: Self.currentSchemaVersion,
-            transactions: state.transactions,
-            recurringSeries: state.recurringSeries,
-            paymentReminders: state.paymentReminders,
-            settings: state.settings
-        )
-        let data = try encoder.encode(file)
+        let data = try encoder.encode(StateFile(state: state))
         let url = directory.appendingPathComponent("manatik-\(tag)-\(Self.timestamp()).json")
         try data.write(to: url, options: .atomic)
         return url
@@ -156,15 +146,7 @@ final class AppStatePersistence: AppStatePersisting {
         let pretty = JSONEncoder()
         pretty.dateEncodingStrategy = .iso8601
         pretty.outputFormatting = [.prettyPrinted, .sortedKeys]
-        return try pretty.encode(
-            StateFile(
-                schemaVersion: Self.currentSchemaVersion,
-                transactions: state.transactions,
-                recurringSeries: state.recurringSeries,
-                paymentReminders: state.paymentReminders,
-                settings: state.settings
-            )
-        )
+        return try pretty.encode(StateFile(state: state))
     }
 
     func decodeState(from data: Data) throws -> AppState {
@@ -185,20 +167,20 @@ final class AppStatePersistence: AppStatePersisting {
         var transactions: [Transaction]
         var recurringSeries: [RecurringSeries]
         var paymentReminders: [PaymentReminder]
+        var customCategories: [TransactionCategory]
+        var savingsGoals: [SavingsGoal]
+        var loans: [Loan]
         var settings: AppSettings
 
-        init(
-            schemaVersion: Int,
-            transactions: [Transaction],
-            recurringSeries: [RecurringSeries],
-            paymentReminders: [PaymentReminder],
-            settings: AppSettings
-        ) {
-            self.schemaVersion = schemaVersion
-            self.transactions = transactions
-            self.recurringSeries = recurringSeries
-            self.paymentReminders = paymentReminders
-            self.settings = settings
+        init(state: AppState) {
+            schemaVersion = AppStatePersistence.currentSchemaVersion
+            transactions = state.transactions
+            recurringSeries = state.recurringSeries
+            paymentReminders = state.paymentReminders
+            customCategories = state.customCategories
+            savingsGoals = state.savingsGoals
+            loans = state.loans
+            settings = state.settings
         }
 
         /// Collection fields decode permissively. A future release that adds a
@@ -210,7 +192,22 @@ final class AppStatePersistence: AppStatePersisting {
             transactions = try container.decodeIfPresent([Transaction].self, forKey: .transactions) ?? []
             recurringSeries = try container.decodeIfPresent([RecurringSeries].self, forKey: .recurringSeries) ?? []
             paymentReminders = try container.decodeIfPresent([PaymentReminder].self, forKey: .paymentReminders) ?? []
+            customCategories = try container.decodeIfPresent([TransactionCategory].self, forKey: .customCategories) ?? []
+            savingsGoals = try container.decodeIfPresent([SavingsGoal].self, forKey: .savingsGoals) ?? []
+            loans = try container.decodeIfPresent([Loan].self, forKey: .loans) ?? []
             settings = try container.decode(AppSettings.self, forKey: .settings)
+        }
+
+        var appState: AppState {
+            AppState(
+                transactions: transactions,
+                recurringSeries: recurringSeries,
+                paymentReminders: paymentReminders,
+                customCategories: customCategories,
+                savingsGoals: savingsGoals,
+                loans: loans,
+                settings: settings
+            )
         }
     }
 
@@ -229,16 +226,12 @@ final class AppStatePersistence: AppStatePersisting {
     private func decodeState(from data: Data, version: Int) throws -> AppState {
         switch version {
         case 1:
-            let legacy = try decoder.decode(LegacyStateFileV1.self, from: data)
-            return LegacyStateFileV1.migrate(legacy)
+            return LegacySchema.migrateV1(try decoder.decode(LegacySchema.FileV1.self, from: data))
         case 2:
-            let file = try decoder.decode(StateFile.self, from: data)
-            return AppState(
-                transactions: file.transactions,
-                recurringSeries: file.recurringSeries,
-                paymentReminders: file.paymentReminders,
-                settings: file.settings
-            )
+            let file = try decoder.decode(LegacySchema.FileV2.self, from: data)
+            return LegacySchema.migrateV2(file)
+        case 3:
+            return try decoder.decode(StateFile.self, from: data).appState
         default:
             throw AppStatePersistenceError.unsupportedSchema(version: version)
         }
@@ -260,45 +253,53 @@ final class AppStatePersistence: AppStatePersisting {
     }
 }
 
-// MARK: - Schema 1
+// MARK: - Older on-disk shapes
 
-/// The shape written before recurring series were split out and before amounts
-/// became `Decimal`. Recurring transactions here were simultaneously a template
-/// and a ledger entry, so each one becomes a series whose history is then
-/// materialized by the store.
-private struct LegacyStateFileV1: Decodable {
-    struct LegacyTransaction: Decodable {
-        let id: UUID
-        let amount: Double
-        let note: String
-        let categoryID: String
-        let type: TransactionType
-        let date: Date
-        let createdAt: Date?
-        let updatedAt: Date?
-        let recurrenceRule: String?
+enum LegacySchema {
+    /// Schema 1: amounts were Double and a recurring row was simultaneously a
+    /// template and a ledger entry.
+    struct FileV1: Decodable {
+        struct Row: Decodable {
+            let id: UUID
+            let amount: Double
+            let note: String
+            let categoryID: String
+            let type: TransactionType
+            let date: Date
+            let createdAt: Date?
+            let updatedAt: Date?
+            let recurrenceRule: String?
+        }
+
+        let transactions: [Row]
+        let settings: SettingsV1V2
     }
 
-    struct LegacySavingsGoal: Decodable {
-        let targetAmount: Double
-        let currentSavedAmount: Double
-        let useAmountLeftForProgress: Bool
+    /// Schema 2: series were split out, but there was still exactly one savings
+    /// goal and it lived inside settings.
+    struct FileV2: Decodable {
+        let transactions: [Transaction]
+        let recurringSeries: [RecurringSeries]
+        let paymentReminders: [PaymentReminder]?
+        let settings: SettingsV1V2
     }
 
-    struct LegacySettings: Decodable {
-        let currency: Currency
-        let monthStartDay: Int
-        let savingsGoal: LegacySavingsGoal
+    struct SettingsV1V2: Decodable {
+        struct Goal: Decodable {
+            let targetAmount: Double?
+            let currentSavedAmount: Double?
+        }
+
+        let currency: Currency?
+        let monthStartDay: Int?
+        let savingsGoal: Goal?
     }
 
-    let transactions: [LegacyTransaction]
-    let settings: LegacySettings
-
-    static func migrate(_ legacy: LegacyStateFileV1) -> AppState {
+    static func migrateV1(_ file: FileV1) -> AppState {
         var transactions: [Transaction] = []
         var series: [RecurringSeries] = []
 
-        for row in legacy.transactions {
+        for row in file.transactions {
             let amount = decimal(from: row.amount)
             let rule = RecurrenceRule(rawValue: row.recurrenceRule ?? "none") ?? .none
 
@@ -312,9 +313,6 @@ private struct LegacyStateFileV1: Decodable {
                         type: row.type,
                         startDate: row.date,
                         rule: rule,
-                        endDate: nil,
-                        isPaused: false,
-                        skippedDays: [],
                         // nil so the store backfills every past occurrence as a
                         // real row, preserving the history the old app showed.
                         materializedThrough: nil,
@@ -332,31 +330,80 @@ private struct LegacyStateFileV1: Decodable {
                         type: row.type,
                         date: row.date,
                         createdAt: row.createdAt ?? row.date,
-                        updatedAt: row.updatedAt ?? row.date,
-                        seriesID: nil
+                        updatedAt: row.updatedAt ?? row.date
                     )
                 )
             }
         }
 
+        return assemble(
+            transactions: transactions,
+            series: series,
+            reminders: [],
+            legacySettings: file.settings
+        )
+    }
+
+    static func migrateV2(_ file: FileV2) -> AppState {
+        assemble(
+            transactions: file.transactions,
+            series: file.recurringSeries,
+            reminders: file.paymentReminders ?? [],
+            legacySettings: file.settings
+        )
+    }
+
+    /// Turns the single settings-level savings goal into the first entry of the
+    /// new goal list. Anything already put aside becomes the goal's opening
+    /// amount rather than a fabricated past expense.
+    private static func assemble(
+        transactions: [Transaction],
+        series: [RecurringSeries],
+        reminders: [PaymentReminder],
+        legacySettings: SettingsV1V2
+    ) -> AppState {
         var settings = AppSettings(
-            currency: legacy.settings.currency,
-            monthStartDay: legacy.settings.monthStartDay,
-            savingsGoal: SavingsGoal(
-                targetAmount: decimal(from: legacy.settings.savingsGoal.targetAmount),
-                currentSavedAmount: decimal(from: legacy.settings.savingsGoal.currentSavedAmount),
-                useAmountLeftForProgress: legacy.settings.savingsGoal.useAmountLeftForProgress
-            )
+            currency: legacySettings.currency ?? .azn,
+            monthStartDay: legacySettings.monthStartDay ?? 1
         )
         settings.normalize()
 
-        return AppState(transactions: transactions, recurringSeries: series, settings: settings)
+        var goals: [SavingsGoal] = []
+        let target = decimal(from: legacySettings.savingsGoal?.targetAmount ?? 0)
+        let saved = decimal(from: legacySettings.savingsGoal?.currentSavedAmount ?? 0)
+
+        if target > 0 || saved > 0 {
+            goals.append(
+                SavingsGoal(
+                    name: NSLocalizedString("Savings", comment: "Migrated goal name"),
+                    targetAmount: target > 0 ? target : saved,
+                    openingAmount: saved,
+                    note: NSLocalizedString(
+                        "Carried over from your earlier savings goal.",
+                        comment: "Migrated goal note"
+                    )
+                )
+            )
+        }
+
+        return AppState(
+            transactions: transactions,
+            recurringSeries: series,
+            paymentReminders: reminders,
+            customCategories: [],
+            savingsGoals: goals,
+            loans: [],
+            settings: settings
+        )
     }
 
     /// Goes through the 2-decimal text form so binary float noise in the old
     /// file does not become a permanent `Decimal` value.
     private static func decimal(from value: Double) -> Decimal {
         guard value.isFinite else { return .zero }
-        return Decimal(string: String(format: "%.2f", value), locale: Locale(identifier: "en_US_POSIX")) ?? .zero
+        return Decimal(
+            string: String(format: "%.2f", value),
+            locale: Locale(identifier: "en_US_POSIX")
+        ) ?? .zero
     }
 }

@@ -9,6 +9,8 @@ struct TransactionDraft {
     var date: Date
     var recurrenceRule: RecurrenceRule
     var recurrenceEndDate: Date?
+    var isFeatured: Bool = false
+    var attachments: [Attachment] = []
 }
 
 struct MonthOverviewItem: Identifiable, Hashable {
@@ -56,29 +58,27 @@ final class AppStore: ObservableObject {
     /// decode failure cannot overwrite real data with an empty state.
     @Published private(set) var isPersistenceSuspended = false
 
-    let categories: [TransactionCategory]
-
     private let persistence: AppStatePersisting
     private let recurringService: RecurringTransactionServicing
     private let calendar: Calendar
 
     /// Bumped on every mutation; invalidates the derived caches below.
     private var revision = 0
+    private var categoryCacheRevision = -1
+    private var mergedCategories: [TransactionCategory] = []
     private var occurrenceCache: [DateInterval: [TransactionOccurrence]] = [:]
     private var summaryCache: [DateInterval: TransactionSummary] = [:]
-    private var categoryCache: [DateInterval: [CategorySpending]] = [:]
+    private var categorySpendCache: [DateInterval: [CategorySpending]] = [:]
     private var yearCache: [Int: [MonthOverviewItem]] = [:]
 
     init(
         persistence: AppStatePersisting = AppStatePersistence(),
         recurringService: RecurringTransactionServicing = RecurringTransactionService(),
-        categories: [TransactionCategory] = DefaultCategories.all,
         calendar: Calendar = .current,
         initialState: AppState? = nil
     ) {
         self.persistence = persistence
         self.recurringService = recurringService
-        self.categories = categories
         self.calendar = calendar
         self.periodAnchorDate = Date()
 
@@ -100,7 +100,7 @@ final class AppStore: ObservableObject {
                 title: NSLocalizedString("Data upgraded", comment: "Alert title"),
                 message: String(
                     format: NSLocalizedString(
-                        "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history.",
+                        "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history, and your savings goal moved into the new goals list.",
                         comment: "Alert message"
                     ),
                     fromVersion
@@ -119,6 +119,57 @@ final class AppStore: ObservableObject {
                 isBlocking: true
             )
         }
+    }
+
+    // MARK: - Categories
+
+    /// Built-in categories plus the user's own.
+    var categories: [TransactionCategory] {
+        if categoryCacheRevision != revision {
+            mergedCategories = DefaultCategories.merged(with: state.customCategories)
+            categoryCacheRevision = revision
+        }
+        return mergedCategories
+    }
+
+    func categories(for type: TransactionType) -> [TransactionCategory] {
+        DefaultCategories.filtered(categories, for: type)
+    }
+
+    func category(for id: String) -> TransactionCategory {
+        DefaultCategories.category(for: id, custom: state.customCategories)
+    }
+
+    @discardableResult
+    func addCustomCategory(name: String, icon: String, kind: CategoryKind) -> TransactionCategory? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let id = DefaultCategories.makeCustomID(
+            from: trimmed,
+            existing: categories.map(\.id)
+        )
+        let category = TransactionCategory(
+            id: id,
+            name: trimmed,
+            icon: icon.isEmpty ? "\u{1F516}" : icon,
+            kind: kind,
+            isCustom: true
+        )
+        state.customCategories.append(category)
+        mutated()
+        return category
+    }
+
+    /// Entries keep their category id, so removing a custom category leaves
+    /// them showing the fallback rather than silently changing their amounts.
+    func deleteCustomCategory(id: String) {
+        state.customCategories.removeAll { $0.id == id }
+        mutated()
+    }
+
+    func transactionCount(usingCategory id: String) -> Int {
+        state.transactions.filter { $0.categoryID == id }.count
     }
 
     // MARK: - Period
@@ -159,7 +210,7 @@ final class AppStore: ObservableObject {
         calendar.startOfDay(for: Date())
     }
 
-    // MARK: - Derived data (cached per revision)
+    // MARK: - Derived ledger data (cached per revision)
 
     func occurrences(in interval: DateInterval) -> [TransactionOccurrence] {
         if let cached = occurrenceCache[interval] { return cached }
@@ -176,7 +227,11 @@ final class AppStore: ObservableObject {
                     categoryID: transaction.categoryID,
                     type: transaction.type,
                     date: transaction.date,
-                    isProjected: false
+                    isProjected: false,
+                    isFeatured: transaction.isFeatured,
+                    attachmentCount: transaction.attachments.count,
+                    savingsGoalID: transaction.savingsGoalID,
+                    loanID: transaction.loanID
                 )
             }
 
@@ -207,13 +262,13 @@ final class AppStore: ObservableObject {
     }
 
     func categorySpending(in interval: DateInterval) -> [CategorySpending] {
-        if let cached = categoryCache[interval] { return cached }
+        if let cached = categorySpendCache[interval] { return cached }
 
         let value = TransactionAnalytics.categorySpending(
             from: occurrences(in: interval),
             categories: categories
         )
-        categoryCache[interval] = value
+        categorySpendCache[interval] = value
         return value
     }
 
@@ -264,13 +319,17 @@ final class AppStore: ObservableObject {
         return state.series(id: id)
     }
 
-    /// Whether any data exists at all, used to tell "nothing recorded" apart
-    /// from "nothing matched your filter".
     var hasAnyData: Bool { !state.isEmpty }
+    var hasAnythingAtAll: Bool { state.hasAnythingAtAll }
+
+    var featuredTransactionCount: Int {
+        state.transactions.filter(\.isFeatured).count
+    }
 
     // MARK: - Transactions
 
-    func addTransaction(_ draft: TransactionDraft) {
+    @discardableResult
+    func addTransaction(_ draft: TransactionDraft) -> UUID? {
         if draft.recurrenceRule.repeats {
             let series = RecurringSeries(
                 amount: draft.amount,
@@ -285,19 +344,21 @@ final class AppStore: ObservableObject {
             state.recurringSeries.append(series)
             mutated()
             materializeDueOccurrences()
-            return
+            return series.id
         }
 
-        state.transactions.append(
-            Transaction(
-                amount: draft.amount,
-                note: draft.note,
-                categoryID: draft.categoryID,
-                type: draft.type,
-                date: draft.date
-            )
+        let transaction = Transaction(
+            amount: draft.amount,
+            note: draft.note,
+            categoryID: draft.categoryID,
+            type: draft.type,
+            date: draft.date,
+            isFeatured: draft.isFeatured,
+            attachments: draft.attachments
         )
+        state.transactions.append(transaction)
         mutated()
+        return transaction.id
     }
 
     /// Applies an edit to one row, honouring how much of a series it should affect.
@@ -316,10 +377,8 @@ final class AppStore: ObservableObject {
         switch scope {
         case .thisOccurrenceOnly:
             if let id = occurrence.transactionID {
-                // Already a real row: edit it and leave the series alone.
                 updatePlainTransaction(id: id, draft: draft, keepSeriesLink: true)
             } else if let seriesID = occurrence.seriesID {
-                // A forecast: pin it down as a one-off exception.
                 skipDay(occurrence.date, inSeries: seriesID)
                 state.transactions.append(
                     Transaction(
@@ -328,7 +387,9 @@ final class AppStore: ObservableObject {
                         categoryID: draft.categoryID,
                         type: draft.type,
                         date: draft.date,
-                        seriesID: seriesID
+                        seriesID: seriesID,
+                        isFeatured: draft.isFeatured,
+                        attachments: draft.attachments
                     )
                 )
                 mutated()
@@ -343,7 +404,7 @@ final class AppStore: ObservableObject {
     func deleteOccurrence(_ occurrence: TransactionOccurrence, scope: RecurrenceDeleteScope) {
         guard occurrence.isRecurring, let seriesID = occurrence.seriesID else {
             if let id = occurrence.transactionID {
-                state.transactions.removeAll { $0.id == id }
+                removeTransactions { $0.id == id }
                 mutated()
             }
             return
@@ -352,9 +413,8 @@ final class AppStore: ObservableObject {
         switch scope {
         case .thisOccurrenceOnly:
             if let id = occurrence.transactionID {
-                state.transactions.removeAll { $0.id == id }
+                removeTransactions { $0.id == id }
             }
-            // Record the skip either way, so materialization will not recreate it.
             skipDay(occurrence.date, inSeries: seriesID)
             mutated()
 
@@ -364,33 +424,61 @@ final class AppStore: ObservableObject {
                 state.recurringSeries[index].endDate = calendar.date(byAdding: .day, value: -1, to: day) ?? day
                 state.recurringSeries[index].updatedAt = Date()
             }
-            state.transactions.removeAll { transaction in
-                transaction.seriesID == seriesID && calendar.startOfDay(for: transaction.date) >= day
+            removeTransactions {
+                $0.seriesID == seriesID && self.calendar.startOfDay(for: $0.date) >= day
             }
             mutated()
 
         case .entireSeriesIncludingHistory:
             state.recurringSeries.removeAll { $0.id == seriesID }
-            state.transactions.removeAll { $0.seriesID == seriesID }
+            removeTransactions { $0.seriesID == seriesID }
             mutated()
         }
     }
 
-    private func updatePlainTransaction(id: UUID, draft: TransactionDraft, keepSeriesLink: Bool = false) {
+    /// Bookmarks an entry as a bill worth finding again.
+    func toggleFeatured(_ occurrence: TransactionOccurrence) {
+        guard let id = occurrence.transactionID,
+              let index = state.transactions.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+        state.transactions[index].isFeatured.toggle()
+        state.transactions[index].updatedAt = Date()
+        mutated()
+    }
+
+    func transaction(id: UUID?) -> Transaction? {
+        guard let id else { return nil }
+        return state.transactions.first { $0.id == id }
+    }
+
+    private func updatePlainTransaction(
+        id: UUID,
+        draft: TransactionDraft,
+        keepSeriesLink: Bool = false
+    ) {
         guard let index = state.transactions.firstIndex(where: { $0.id == id }) else { return }
 
         var updated = state.transactions[index]
+        let removedAttachments = updated.attachments.filter { existing in
+            !draft.attachments.contains { $0.id == existing.id }
+        }
+
         updated.amount = draft.amount
         updated.note = draft.note
         updated.categoryID = draft.categoryID
         updated.type = draft.type
         updated.date = draft.date
+        updated.isFeatured = draft.isFeatured
+        updated.attachments = draft.attachments
         updated.updatedAt = Date()
         if !keepSeriesLink {
             updated.seriesID = nil
         }
         // One assignment, so one change notification instead of seven.
         state.transactions[index] = updated
+
+        AttachmentStore.delete(removedAttachments)
         mutated()
     }
 
@@ -421,15 +509,12 @@ final class AppStore: ObservableObject {
             endDate: draft.recurrenceEndDate ?? original.endDate,
             isPaused: original.isPaused,
             skippedDays: original.skippedDays.filter { $0 >= day },
-            // Nothing from the new series is recorded yet.
             materializedThrough: calendar.date(byAdding: .day, value: -1, to: day)
         )
         state.recurringSeries.append(replacement)
 
-        // Drop rows of the old series at or after the split, then let
-        // materialization rebuild them from the new definition.
-        state.transactions.removeAll { transaction in
-            transaction.seriesID == seriesID && calendar.startOfDay(for: transaction.date) >= day
+        removeTransactions {
+            $0.seriesID == seriesID && self.calendar.startOfDay(for: $0.date) >= day
         }
 
         if occurrence.transactionID != nil || day <= materializationBoundary {
@@ -440,13 +525,252 @@ final class AppStore: ObservableObject {
                     categoryID: draft.categoryID,
                     type: draft.type,
                     date: draft.date,
-                    seriesID: replacement.id
+                    seriesID: replacement.id,
+                    isFeatured: draft.isFeatured,
+                    attachments: draft.attachments
                 )
             )
         }
 
         mutated()
         materializeDueOccurrences()
+    }
+
+    // MARK: - Savings goals
+
+    var activeSavingsGoals: [SavingsGoalProgress] {
+        state.savingsGoals
+            .filter { !$0.isCompleted }
+            .map(progress(for:))
+            .sorted { lhs, rhs in
+                switch (lhs.goal.dueDate, rhs.goal.dueDate) {
+                case let (left?, right?): return left < right
+                case (nil, _?): return false
+                case (_?, nil): return true
+                default: return lhs.goal.createdAt < rhs.goal.createdAt
+                }
+            }
+    }
+
+    var completedSavingsGoals: [SavingsGoalProgress] {
+        state.savingsGoals
+            .filter(\.isCompleted)
+            .map(progress(for:))
+            .sorted { ($0.goal.completedAt ?? .distantPast) > ($1.goal.completedAt ?? .distantPast) }
+    }
+
+    func progress(for goal: SavingsGoal) -> SavingsGoalProgress {
+        let linked = state.transactions.filter { $0.savingsGoalID == goal.id }
+        let contributed = linked.reduce(Decimal.zero) { $0 + $1.amount }
+        return SavingsGoalProgress(
+            goal: goal,
+            savedAmount: goal.openingAmount + contributed,
+            contributionCount: linked.count
+        )
+    }
+
+    /// The contribution log: the linked ledger entries, newest first.
+    func contributions(for goal: SavingsGoal) -> [Transaction] {
+        state.transactions
+            .filter { $0.savingsGoalID == goal.id }
+            .sorted { $0.date > $1.date }
+    }
+
+    @discardableResult
+    func addSavingsGoal(
+        name: String,
+        targetAmount: Decimal,
+        openingAmount: Decimal,
+        dueDate: Date?,
+        note: String
+    ) -> SavingsGoal? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, targetAmount > 0 else { return nil }
+
+        let goal = SavingsGoal(
+            name: trimmed,
+            targetAmount: targetAmount,
+            openingAmount: max(openingAmount, 0),
+            dueDate: dueDate,
+            note: note.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+        state.savingsGoals.append(goal)
+        mutated()
+        return goal
+    }
+
+    func updateSavingsGoal(_ goal: SavingsGoal) {
+        guard let index = state.savingsGoals.firstIndex(where: { $0.id == goal.id }) else { return }
+        var updated = goal
+        updated.updatedAt = Date()
+        state.savingsGoals[index] = updated
+        refreshGoalCompletion()
+        mutated()
+    }
+
+    /// Removes the goal but keeps its entries: the money really did leave the
+    /// account, so the expenses stay and simply stop being linked.
+    func deleteSavingsGoal(id: UUID) {
+        state.savingsGoals.removeAll { $0.id == id }
+        for index in state.transactions.indices where state.transactions[index].savingsGoalID == id {
+            state.transactions[index].savingsGoalID = nil
+        }
+        mutated()
+    }
+
+    /// Records money put aside. Per the chosen behaviour this is a real expense
+    /// in the Savings category, so Left Amount reflects it.
+    func contribute(to goal: SavingsGoal, amount: Decimal, date: Date, note: String) {
+        guard amount > 0 else { return }
+
+        state.transactions.append(
+            Transaction(
+                amount: amount,
+                note: note.isEmpty ? goal.name : note,
+                categoryID: DefaultCategories.savingsCategoryID,
+                type: .expense,
+                date: date,
+                savingsGoalID: goal.id
+            )
+        )
+        refreshGoalCompletion()
+        mutated()
+    }
+
+    func setSavingsGoalCompleted(id: UUID, completed: Bool) {
+        guard let index = state.savingsGoals.firstIndex(where: { $0.id == id }) else { return }
+        state.savingsGoals[index].completedAt = completed ? Date() : nil
+        state.savingsGoals[index].updatedAt = Date()
+        mutated()
+    }
+
+    /// Marks a goal finished as soon as it is funded, which is what feeds the
+    /// completed list.
+    private func refreshGoalCompletion() {
+        for index in state.savingsGoals.indices {
+            let goal = state.savingsGoals[index]
+            guard !goal.isCompleted else { continue }
+            if progress(for: goal).isReached {
+                state.savingsGoals[index].completedAt = Date()
+            }
+        }
+    }
+
+    // MARK: - Loans
+
+    var activeLoans: [LoanProgress] {
+        state.loans
+            .filter { !$0.isClosed }
+            .map(progress(for:))
+            .sorted { lhs, rhs in
+                switch (lhs.loan.dueDate, rhs.loan.dueDate) {
+                case let (left?, right?): return left < right
+                case (nil, _?): return false
+                case (_?, nil): return true
+                default: return lhs.loan.createdAt < rhs.loan.createdAt
+                }
+            }
+    }
+
+    var closedLoans: [LoanProgress] {
+        state.loans
+            .filter(\.isClosed)
+            .map(progress(for:))
+            .sorted { ($0.loan.closedAt ?? .distantPast) > ($1.loan.closedAt ?? .distantPast) }
+    }
+
+    func progress(for loan: Loan) -> LoanProgress {
+        let linked = state.transactions.filter { $0.loanID == loan.id }
+        let paid = linked.reduce(Decimal.zero) { $0 + $1.amount }
+        return LoanProgress(
+            loan: loan,
+            paidAmount: loan.openingPaidAmount + paid,
+            paymentCount: linked.count
+        )
+    }
+
+    func payments(for loan: Loan) -> [Transaction] {
+        state.transactions
+            .filter { $0.loanID == loan.id }
+            .sorted { $0.date > $1.date }
+    }
+
+    @discardableResult
+    func addLoan(
+        name: String,
+        initialAmount: Decimal,
+        openingPaidAmount: Decimal,
+        monthlyPayment: Decimal?,
+        startDate: Date,
+        dueDate: Date?,
+        note: String
+    ) -> Loan? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, initialAmount > 0 else { return nil }
+
+        let loan = Loan(
+            name: trimmed,
+            initialAmount: initialAmount,
+            openingPaidAmount: max(openingPaidAmount, 0),
+            monthlyPayment: monthlyPayment,
+            startDate: startDate,
+            dueDate: dueDate,
+            note: note.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+        state.loans.append(loan)
+        mutated()
+        return loan
+    }
+
+    func updateLoan(_ loan: Loan) {
+        guard let index = state.loans.firstIndex(where: { $0.id == loan.id }) else { return }
+        var updated = loan
+        updated.updatedAt = Date()
+        state.loans[index] = updated
+        refreshLoanClosure()
+        mutated()
+    }
+
+    func deleteLoan(id: UUID) {
+        state.loans.removeAll { $0.id == id }
+        for index in state.transactions.indices where state.transactions[index].loanID == id {
+            state.transactions[index].loanID = nil
+        }
+        mutated()
+    }
+
+    func recordPayment(on loan: Loan, amount: Decimal, date: Date, note: String) {
+        guard amount > 0 else { return }
+
+        state.transactions.append(
+            Transaction(
+                amount: amount,
+                note: note.isEmpty ? loan.name : note,
+                categoryID: DefaultCategories.loanCategoryID,
+                type: .expense,
+                date: date,
+                loanID: loan.id
+            )
+        )
+        refreshLoanClosure()
+        mutated()
+    }
+
+    func setLoanClosed(id: UUID, closed: Bool) {
+        guard let index = state.loans.firstIndex(where: { $0.id == id }) else { return }
+        state.loans[index].closedAt = closed ? Date() : nil
+        state.loans[index].updatedAt = Date()
+        mutated()
+    }
+
+    private func refreshLoanClosure() {
+        for index in state.loans.indices {
+            let loan = state.loans[index]
+            guard !loan.isClosed else { continue }
+            if progress(for: loan).isSettled {
+                state.loans[index].closedAt = Date()
+            }
+        }
     }
 
     // MARK: - Series controls
@@ -480,10 +804,6 @@ final class AppStore: ObservableObject {
     // MARK: - Materialization
 
     /// Turns every series date at or before today into a stored row.
-    ///
-    /// Run at launch and whenever the app becomes active, so history stops
-    /// being recomputed from the template and can no longer change under the
-    /// user when they edit a future occurrence.
     func materializeDueOccurrences() {
         guard !isPersistenceSuspended else { return }
 
@@ -529,6 +849,13 @@ final class AppStore: ObservableObject {
         mutated()
     }
 
+    /// Deletes attachment files nothing references, e.g. after the user picked a
+    /// bill photo and then cancelled the form.
+    func pruneAttachmentOrphans() {
+        let referenced = Set(state.transactions.flatMap { $0.attachments.map(\.fileName) })
+        AttachmentStore.pruneOrphans(keeping: referenced)
+    }
+
     // MARK: - Payment reminders
 
     func addReminder(_ reminder: PaymentReminder) {
@@ -566,15 +893,10 @@ final class AppStore: ObservableObject {
 
     // MARK: - Settings
 
-    func updateSettings(
-        currency: Currency? = nil,
-        monthStartDay: Int? = nil,
-        savingsGoal: SavingsGoal? = nil
-    ) {
+    func updateSettings(currency: Currency? = nil, monthStartDay: Int? = nil) {
         var settings = state.settings
         if let currency { settings.currency = currency }
         if let monthStartDay { settings.monthStartDay = monthStartDay }
-        if let savingsGoal { settings.savingsGoal = savingsGoal }
         settings.normalize()
 
         guard settings != state.settings else { return }
@@ -588,7 +910,6 @@ final class AppStore: ObservableObject {
         try persistence.exportData(from: state)
     }
 
-    /// Decodes and describes an import without applying any of it.
     func prepareImport(from data: Data) throws -> PendingImport {
         let incoming = try persistence.decodeState(from: data)
         return PendingImport(
@@ -612,7 +933,6 @@ final class AppStore: ObservableObject {
         return snapshot
     }
 
-    /// After an unreadable file: accept a clean slate and allow saving again.
     func resumePersistenceWithCurrentState() {
         isPersistenceSuspended = false
         persistenceIssue = nil
@@ -629,6 +949,9 @@ final class AppStore: ObservableObject {
         let term = filter.trimmedSearchText
 
         return occurrences.filter { item in
+            if filter.onlyFeatured, !item.isFeatured {
+                return false
+            }
             if let categoryID = filter.categoryID, categoryID != item.categoryID {
                 return false
             }
@@ -637,7 +960,9 @@ final class AppStore: ObservableObject {
             }
             if !term.isEmpty {
                 let matchesNote = item.note.localizedCaseInsensitiveContains(term)
-                let matchesCategory = DefaultCategories.name(forID: item.categoryID, matches: term)
+                let matchesCategory = category(for: item.categoryID)
+                    .localizedName
+                    .localizedCaseInsensitiveContains(term)
                 if !matchesNote && !matchesCategory {
                     return false
                 }
@@ -648,11 +973,19 @@ final class AppStore: ObservableObject {
 
     // MARK: - Persistence plumbing
 
+    /// Removes rows and cleans up any bill files they owned.
+    private func removeTransactions(where predicate: (Transaction) -> Bool) {
+        let doomed = state.transactions.filter(predicate)
+        guard !doomed.isEmpty else { return }
+        state.transactions.removeAll(where: predicate)
+        AttachmentStore.delete(doomed.flatMap(\.attachments))
+    }
+
     private func mutated() {
         revision += 1
         occurrenceCache.removeAll(keepingCapacity: true)
         summaryCache.removeAll(keepingCapacity: true)
-        categoryCache.removeAll(keepingCapacity: true)
+        categorySpendCache.removeAll(keepingCapacity: true)
         yearCache.removeAll(keepingCapacity: true)
         state.transactions.sort { $0.date > $1.date }
         persist()

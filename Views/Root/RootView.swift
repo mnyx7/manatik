@@ -3,15 +3,17 @@ import SwiftUI
 enum RootDestination: Hashable {
     case activities
     case settings
+    case savings
+    case loans
+    case insights
     case yearOverview
 }
 
 /// The app shell: the main page, plus one bottom bar with Settings on the left,
 /// add in the middle and Activities on the right.
 ///
-/// Every sheet and destructive confirmation is presented from here. Previously
-/// two `.sheet` modifiers hung off different levels of the same hierarchy,
-/// which is how SwiftUI ends up dropping one of two competing presentations.
+/// Every sheet and destructive confirmation is presented from here, so two
+/// competing presentations can never fight over the same hierarchy.
 struct RootView: View {
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var reminderScheduler: ReminderScheduler
@@ -25,11 +27,14 @@ struct RootView: View {
             HomeView(
                 viewModel: viewModel,
                 onOpenActivities: { path.append(.activities) },
-                onOpenYearOverview: { path.append(.yearOverview) }
+                onOpenSavings: { path.append(.savings) },
+                onOpenLoans: { path.append(.loans) },
+                onOpenInsights: { path.append(.insights) }
             )
             .navigationDestination(for: RootDestination.self, destination: destination)
             .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         }
+        .tint(.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
                 store: store,
@@ -47,6 +52,82 @@ struct RootView: View {
         }
         .sheet(isPresented: $viewModel.isShowingDateFilter) {
             DateFilterSheetView(filter: $viewModel.filter)
+        }
+        .sheet(isPresented: $viewModel.isShowingGoalEditor) {
+            SavingsGoalEditorView(
+                goal: viewModel.editingGoal,
+                currency: store.state.settings.currency
+            ) { name, target, opening, dueDate, note in
+                if var existing = viewModel.editingGoal {
+                    existing.name = name
+                    existing.targetAmount = target
+                    existing.openingAmount = opening
+                    existing.dueDate = dueDate
+                    existing.note = note
+                    store.updateSavingsGoal(existing)
+                } else {
+                    store.addSavingsGoal(
+                        name: name,
+                        targetAmount: target,
+                        openingAmount: opening,
+                        dueDate: dueDate,
+                        note: note
+                    )
+                }
+            }
+        }
+        .sheet(isPresented: $viewModel.isShowingLoanEditor) {
+            LoanEditorView(
+                loan: viewModel.editingLoan,
+                currency: store.state.settings.currency
+            ) { name, initial, paid, monthly, startDate, dueDate, note in
+                if var existing = viewModel.editingLoan {
+                    existing.name = name
+                    existing.initialAmount = initial
+                    existing.openingPaidAmount = paid
+                    existing.monthlyPayment = monthly
+                    existing.startDate = startDate
+                    existing.dueDate = dueDate
+                    existing.note = note
+                    store.updateLoan(existing)
+                } else {
+                    store.addLoan(
+                        name: name,
+                        initialAmount: initial,
+                        openingPaidAmount: paid,
+                        monthlyPayment: monthly,
+                        startDate: startDate,
+                        dueDate: dueDate,
+                        note: note
+                    )
+                }
+            }
+        }
+        .sheet(item: $viewModel.contributingGoal) { goal in
+            let progress = store.progress(for: goal)
+            AmountEntrySheet(
+                title: "Add to savings",
+                subtitle: goal.name,
+                actionTitle: "Add",
+                accent: AppTheme.savingsAccent,
+                currency: store.state.settings.currency,
+                suggestedAmount: progress.remainingAmount
+            ) { amount, date, note in
+                store.contribute(to: goal, amount: amount, date: date, note: note)
+            }
+        }
+        .sheet(item: $viewModel.payingLoan) { loan in
+            let progress = store.progress(for: loan)
+            AmountEntrySheet(
+                title: "Record a payment",
+                subtitle: loan.name,
+                actionTitle: "Record",
+                accent: AppTheme.loanAccent,
+                currency: store.state.settings.currency,
+                suggestedAmount: loan.monthlyPayment ?? progress.remainingAmount
+            ) { amount, date, note in
+                store.recordPayment(on: loan, amount: amount, date: date, note: note)
+            }
         }
         .confirmationDialog(
             deleteDialogTitle,
@@ -105,11 +186,7 @@ struct RootView: View {
 
     private var bottomBar: some View {
         HStack(alignment: .center) {
-            barButton(
-                systemImage: "gearshape",
-                title: "Settings",
-                accessibilityLabel: Text("Settings")
-            ) {
+            barButton(systemImage: "gearshape", title: "Settings") {
                 path.append(.settings)
             }
 
@@ -123,17 +200,13 @@ struct RootView: View {
                     .foregroundStyle(.white)
                     .frame(width: 58, height: 58)
                     .background(Circle().fill(Color.accentColor))
-                    .shadow(radius: 6, y: 2)
+                    .shadow(color: .black.opacity(0.18), radius: 8, y: 3)
             }
             .accessibilityLabel(Text("Add income or expense"))
 
             Spacer(minLength: 12)
 
-            barButton(
-                systemImage: "list.bullet.rectangle",
-                title: "Activities",
-                accessibilityLabel: Text("Activities")
-            ) {
+            barButton(systemImage: "list.bullet.rectangle", title: "Activities") {
                 path.append(.activities)
             }
         }
@@ -147,7 +220,6 @@ struct RootView: View {
     private func barButton(
         systemImage: String,
         title: LocalizedStringKey,
-        accessibilityLabel: Text,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -161,7 +233,7 @@ struct RootView: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(.tint)
-        .accessibilityLabel(accessibilityLabel)
+        .accessibilityLabel(Text(title))
     }
 
     // MARK: - Destinations
@@ -173,6 +245,12 @@ struct RootView: View {
             ActivitiesView(viewModel: viewModel)
         case .settings:
             SettingsView(viewModel: SettingsViewModel(store: store))
+        case .savings:
+            SavingsView(viewModel: viewModel)
+        case .loans:
+            LoansView(viewModel: viewModel)
+        case .insights:
+            InsightsView()
         case .yearOverview:
             YearlyOverviewView(
                 viewModel: YearlyOverviewViewModel(store: store, year: store.selectedYear)
@@ -195,6 +273,18 @@ struct RootView: View {
     }
 
     private func deleteDialogMessage(for occurrence: TransactionOccurrence) -> String {
+        if occurrence.isSavingsContribution {
+            return NSLocalizedString(
+                "This also removes the money from its savings goal.",
+                comment: "Delete message"
+            )
+        }
+        if occurrence.isLoanPayment {
+            return NSLocalizedString(
+                "This also removes the payment from its loan.",
+                comment: "Delete message"
+            )
+        }
         guard occurrence.isRecurring else {
             return NSLocalizedString("This cannot be undone.", comment: "Delete message")
         }

@@ -1,10 +1,9 @@
 import SwiftUI
 
-/// The full ledger.
+/// The full ledger, split into All, Income, Expense and Bills.
 ///
 /// This is a `List`, not a `ScrollView` of stacked rows. `swipeActions` only
-/// works on `List` rows, which is why swipe-to-delete did nothing before and
-/// why the delete confirmation was unreachable code.
+/// works on `List` rows, which is why swipe-to-delete did nothing before.
 struct ActivitiesView: View {
     @EnvironmentObject private var store: AppStore
     @ObservedObject var viewModel: HomeViewModel
@@ -25,7 +24,17 @@ struct ActivitiesView: View {
 
     var body: some View {
         List {
-            if viewModel.filter.isActive {
+            Section {
+                Picker("Show", selection: $viewModel.scope) {
+                    ForEach(ActivityScope.allCases) { scope in
+                        Text(scope.localizedTitle).tag(scope)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+            }
+
+            if viewModel.filter.hasUserChosenFilters {
                 Section {
                     ActiveFilterSummaryView(
                         filter: viewModel.filter,
@@ -90,7 +99,7 @@ struct ActivitiesView: View {
                     )
                 } label: {
                     Image(
-                        systemName: viewModel.filter.isActive
+                        systemName: viewModel.filter.hasUserChosenFilters
                             ? "line.3.horizontal.decrease.circle.fill"
                             : "line.3.horizontal.decrease.circle"
                     )
@@ -116,7 +125,7 @@ struct ActivitiesView: View {
         } label: {
             TransactionRowView(
                 item: item,
-                category: DefaultCategories.category(for: item.categoryID),
+                category: store.category(for: item.categoryID),
                 currency: currency
             )
         }
@@ -129,6 +138,20 @@ struct ActivitiesView: View {
             }
         }
         .swipeActions(edge: .leading) {
+            // Bookmarking from the list as well as the form, so a bill can be
+            // flagged after the fact.
+            if item.transactionID != nil {
+                Button {
+                    store.toggleFeatured(item)
+                } label: {
+                    Label(
+                        item.isFeatured ? "Unmark" : "Bill",
+                        systemImage: item.isFeatured ? "bookmark.slash" : "bookmark.fill"
+                    )
+                }
+                .tint(AppTheme.expenseAccent)
+            }
+
             Button {
                 viewModel.editingOccurrence = item
             } label: {
@@ -136,13 +159,41 @@ struct ActivitiesView: View {
             }
             .tint(.accentColor)
         }
+        .contextMenu {
+            if item.transactionID != nil {
+                Button {
+                    store.toggleFeatured(item)
+                } label: {
+                    Label(
+                        item.isFeatured ? "Remove from Bills" : "Save as a bill",
+                        systemImage: item.isFeatured ? "bookmark.slash" : "bookmark"
+                    )
+                }
+            }
+            Button {
+                viewModel.editingOccurrence = item
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                viewModel.pendingDelete = item
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 
     @ViewBuilder
     private var emptyState: some View {
         if !store.hasAnyData {
             EmptyStateView.noData(onAdd: { viewModel.beginAdd() })
-        } else if viewModel.filter.isActive {
+        } else if viewModel.scope == .bills && !viewModel.filter.hasUserChosenFilters {
+            EmptyStateView(
+                systemImage: "bookmark",
+                title: "No bills saved yet",
+                subtitle: "Mark an entry as a bill and it will show up here."
+            )
+        } else if viewModel.filter.hasUserChosenFilters {
             // Telling someone with 200 entries to "add your first" was the bug.
             EmptyStateView.noMatches(onClear: { viewModel.clearFilters() })
         } else {
@@ -151,12 +202,5 @@ struct ActivitiesView: View {
                 onGoToToday: { store.resetPeriodToToday() }
             )
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ActivitiesView(viewModel: HomeViewModel())
-            .environmentObject(MockData.previewStore())
     }
 }

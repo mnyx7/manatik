@@ -15,7 +15,7 @@ struct YearlyOverviewView: View {
             }
             .padding()
         }
-        .background(AppTheme.groupedBackground)
+        .background(AppTheme.pageBackground)
         .navigationTitle(Text(verbatim: "\(viewModel.year)"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

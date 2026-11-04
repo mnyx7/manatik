@@ -3,13 +3,9 @@ import UniformTypeIdentifiers
 
 @MainActor
 final class SettingsViewModel: ObservableObject {
-    // Editing buffers. Nothing here is written until the user commits the
-    // field, so typing "1000" no longer performs four full-state disk writes
-    // and no longer momentarily sets the target to 1.
+    /// Typed by hand and committed when the field loses focus, so a full state
+    /// write no longer happens on every keystroke.
     @Published var monthStartDayInput: String
-    @Published var goalTargetInput: String
-    @Published var goalCurrentInput: String
-    @Published var useAmountLeftForProgress: Bool
 
     /// Set when the user picks a different currency; the view confirms first,
     /// because switching relabels every existing amount without converting it.
@@ -34,11 +30,7 @@ final class SettingsViewModel: ObservableObject {
 
     init(store: AppStore) {
         self.store = store
-        let settings = store.state.settings
-        monthStartDayInput = String(settings.monthStartDay)
-        goalTargetInput = DecimalAmountValidator.editingText(for: settings.savingsGoal.targetAmount)
-        goalCurrentInput = DecimalAmountValidator.editingText(for: settings.savingsGoal.currentSavedAmount)
-        useAmountLeftForProgress = settings.savingsGoal.useAmountLeftForProgress
+        monthStartDayInput = String(store.state.settings.monthStartDay)
     }
 
     var appVersionText: String { AppVersionProvider.versionText }
@@ -47,12 +39,18 @@ final class SettingsViewModel: ObservableObject {
 
     var reminders: [PaymentReminder] { store.state.paymentReminders }
 
+    var customCategories: [TransactionCategory] { store.state.customCategories }
+
     var entryCountDescription: String {
         String(
             format: NSLocalizedString("%1$d entries, %2$d repeating", comment: "Settings summary"),
             store.state.transactions.count,
             store.state.recurringSeries.count
         )
+    }
+
+    var attachmentCount: Int {
+        store.state.transactions.reduce(0) { $0 + $1.attachments.count }
     }
 
     // MARK: - Currency
@@ -83,7 +81,7 @@ final class SettingsViewModel: ObservableObject {
         )
     }
 
-    // MARK: - Period start day (typed in by hand)
+    // MARK: - Period start day
 
     func commitMonthStartDay() {
         let digits = monthStartDayInput.filter(\.isWholeNumber)
@@ -113,33 +111,14 @@ final class SettingsViewModel: ObservableObject {
         store.updateSettings(monthStartDay: clamped)
     }
 
-    // MARK: - Savings goal
+    // MARK: - Categories
 
-    func handleGoalTargetChange(_ newValue: String) {
-        goalTargetInput = DecimalAmountValidator.sanitize(newValue)
+    func usageCount(for category: TransactionCategory) -> Int {
+        store.transactionCount(usingCategory: category.id)
     }
 
-    func handleGoalCurrentChange(_ newValue: String) {
-        goalCurrentInput = DecimalAmountValidator.sanitize(newValue)
-    }
-
-    func commitSavingsGoal() {
-        let target = DecimalAmountValidator.parsed(from: goalTargetInput)
-            ?? store.state.settings.savingsGoal.targetAmount
-        let current = DecimalAmountValidator.parsed(from: goalCurrentInput) ?? .zero
-
-        store.updateSettings(
-            savingsGoal: SavingsGoal(
-                targetAmount: target,
-                currentSavedAmount: current,
-                useAmountLeftForProgress: useAmountLeftForProgress
-            )
-        )
-
-        // Reflect whatever normalization the store applied.
-        let saved = store.state.settings.savingsGoal
-        goalTargetInput = DecimalAmountValidator.editingText(for: saved.targetAmount)
-        goalCurrentInput = DecimalAmountValidator.editingText(for: saved.currentSavedAmount)
+    func deleteCustomCategory(_ category: TransactionCategory) {
+        store.deleteCustomCategory(id: category.id)
     }
 
     // MARK: - Reminders
@@ -245,7 +224,7 @@ final class SettingsViewModel: ObservableObject {
         guard let pending = pendingImport else { return }
         let snapshot = store.applyImport(pending)
         pendingImport = nil
-        syncFromStore()
+        monthStartDayInput = String(store.state.settings.monthStartDay)
 
         if let snapshot {
             infoMessage = String(
@@ -262,13 +241,5 @@ final class SettingsViewModel: ObservableObject {
 
     func cancelImport() {
         pendingImport = nil
-    }
-
-    private func syncFromStore() {
-        let settings = store.state.settings
-        monthStartDayInput = String(settings.monthStartDay)
-        goalTargetInput = DecimalAmountValidator.editingText(for: settings.savingsGoal.targetAmount)
-        goalCurrentInput = DecimalAmountValidator.editingText(for: settings.savingsGoal.currentSavedAmount)
-        useAmountLeftForProgress = settings.savingsGoal.useAmountLeftForProgress
     }
 }

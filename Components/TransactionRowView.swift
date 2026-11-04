@@ -23,10 +23,38 @@ struct TransactionRowView: View {
                     Text(category.localizedName)
                         .font(.subheadline.weight(.medium))
 
+                    if item.isFeatured {
+                        Image(systemName: "bookmark.fill")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.expenseAccent)
+                            .accessibilityHidden(true)
+                    }
+
                     if item.isRecurring {
                         Image(systemName: "repeat")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                    }
+
+                    if item.hasAttachments {
+                        Image(systemName: "paperclip")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                    }
+
+                    if item.isSavingsContribution {
+                        Image(systemName: "banknote")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.savingsAccent)
+                            .accessibilityHidden(true)
+                    }
+
+                    if item.isLoanPayment {
+                        Image(systemName: "building.columns")
+                            .font(.caption2)
+                            .foregroundStyle(AppTheme.loanAccent)
                             .accessibilityHidden(true)
                     }
                 }
@@ -89,6 +117,24 @@ struct TransactionRowView: View {
             parts.append(NSLocalizedString("Forecast, not yet recorded", comment: "Accessibility"))
         } else if item.isRecurring {
             parts.append(NSLocalizedString("Part of a repeating entry", comment: "Accessibility"))
+        }
+
+        if item.isFeatured {
+            parts.append(NSLocalizedString("Saved as a bill", comment: "Accessibility"))
+        }
+        if item.hasAttachments {
+            parts.append(
+                String(
+                    format: NSLocalizedString("%d attachments", comment: "Accessibility"),
+                    item.attachmentCount
+                )
+            )
+        }
+        if item.isSavingsContribution {
+            parts.append(NSLocalizedString("Savings contribution", comment: "Accessibility"))
+        }
+        if item.isLoanPayment {
+            parts.append(NSLocalizedString("Loan payment", comment: "Accessibility"))
         }
 
         return parts.joined(separator: ", ")

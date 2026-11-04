@@ -50,6 +50,15 @@
 		AA0000000000000000000345 /* ActivitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000135 /* ActivitiesView.swift */; };
 		AA0000000000000000000346 /* ReminderEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000136 /* ReminderEditorView.swift */; };
 		AA0000000000000000000347 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000137 /* Localizable.xcstrings */; };
+		AA0000000000000000000350 /* MoneyGoals.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000140 /* MoneyGoals.swift */; };
+		AA0000000000000000000351 /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000141 /* AttachmentStore.swift */; };
+		AA0000000000000000000352 /* HeroBalanceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000142 /* HeroBalanceCardView.swift */; };
+		AA0000000000000000000353 /* AttachmentStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000143 /* AttachmentStripView.swift */; };
+		AA0000000000000000000354 /* AmountEntrySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000144 /* AmountEntrySheet.swift */; };
+		AA0000000000000000000355 /* CategoryEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000145 /* CategoryEditorView.swift */; };
+		AA0000000000000000000356 /* SavingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000146 /* SavingsView.swift */; };
+		AA0000000000000000000357 /* LoansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000147 /* LoansView.swift */; };
+		AA0000000000000000000358 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000148 /* InsightsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +107,15 @@
 		AA0000000000000000000135 /* ActivitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000136 /* ReminderEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderEditorView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000137 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		AA0000000000000000000140 /* MoneyGoals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyGoals.swift; sourceTree = "<group>"; };
+		AA0000000000000000000141 /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
+		AA0000000000000000000142 /* HeroBalanceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroBalanceCardView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000143 /* AttachmentStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStripView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000144 /* AmountEntrySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountEntrySheet.swift; sourceTree = "<group>"; };
+		AA0000000000000000000145 /* CategoryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryEditorView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000146 /* SavingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavingsView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000147 /* LoansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoansView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000148 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +175,7 @@
 		AA0000000000000000000202 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000140 /* MoneyGoals.swift */,
 				AA0000000000000000000130 /* PaymentReminder.swift */,
 				AA0000000000000000000103 /* DefaultCategories.swift */,
 				AA0000000000000000000104 /* SettingsModels.swift */,
@@ -189,6 +208,9 @@
 			children = (
 				AA0000000000000000000221 /* Activities */,
 				AA0000000000000000000206 /* Home */,
+				AA0000000000000000000224 /* Insights */,
+				AA0000000000000000000223 /* Loans */,
+				AA0000000000000000000222 /* Savings */,
 				AA0000000000000000000220 /* Root */,
 				AA0000000000000000000207 /* Settings */,
 				AA0000000000000000000208 /* Transactions */,
@@ -219,6 +241,7 @@
 		AA0000000000000000000208 /* Transactions */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000145 /* CategoryEditorView.swift */,
 				AA000000000000000000010F /* TransactionFormView.swift */,
 			);
 			path = Transactions;
@@ -235,6 +258,9 @@
 		AA000000000000000000020A /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000142 /* HeroBalanceCardView.swift */,
+				AA0000000000000000000143 /* AttachmentStripView.swift */,
+				AA0000000000000000000144 /* AmountEntrySheet.swift */,
 				AA0000000000000000000132 /* PeriodHeaderView.swift */,
 				AA0000000000000000000133 /* SpendingChartView.swift */,
 				AA0000000000000000000111 /* CategoryTotalsCardView.swift */,
@@ -252,6 +278,7 @@
 		AA000000000000000000020B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000141 /* AttachmentStore.swift */,
 				AA0000000000000000000131 /* ReminderScheduler.swift */,
 				AA0000000000000000000119 /* AppBackupDocument.swift */,
 				AA000000000000000000011A /* RecurringTransactionService.swift */,
@@ -312,6 +339,30 @@
 				AA0000000000000000000135 /* ActivitiesView.swift */,
 			);
 			path = Activities;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000222 /* Savings */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000146 /* SavingsView.swift */,
+			);
+			path = Savings;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000223 /* Loans */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000147 /* LoansView.swift */,
+			);
+			path = Loans;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000224 /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000148 /* InsightsView.swift */,
+			);
+			path = Insights;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -420,6 +471,15 @@
 				AA000000000000000000031F /* DecimalAmountValidator.swift in Sources */,
 				AA0000000000000000000320 /* TransactionAnalytics.swift in Sources */,
 				AA0000000000000000000321 /* MockData.swift in Sources */,
+				AA0000000000000000000350 /* MoneyGoals.swift in Sources */,
+				AA0000000000000000000351 /* AttachmentStore.swift in Sources */,
+				AA0000000000000000000352 /* HeroBalanceCardView.swift in Sources */,
+				AA0000000000000000000353 /* AttachmentStripView.swift in Sources */,
+				AA0000000000000000000354 /* AmountEntrySheet.swift in Sources */,
+				AA0000000000000000000355 /* CategoryEditorView.swift in Sources */,
+				AA0000000000000000000356 /* SavingsView.swift in Sources */,
+				AA0000000000000000000357 /* LoansView.swift in Sources */,
+				AA0000000000000000000358 /* InsightsView.swift in Sources */,
 				AA0000000000000000000340 /* PaymentReminder.swift in Sources */,
 				AA0000000000000000000341 /* ReminderScheduler.swift in Sources */,
 				AA0000000000000000000342 /* PeriodHeaderView.swift in Sources */,

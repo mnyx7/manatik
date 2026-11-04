@@ -56,13 +56,36 @@ enum CategoryKind: String, Codable {
 
 struct TransactionCategory: Identifiable, Codable, Hashable {
     let id: String
-    /// English source string, also the localization key.
+    /// For built-in categories this is the English source string and doubles as
+    /// the localization key. For user-made ones it is literal text.
     let name: String
     let icon: String
     let kind: CategoryKind
+    var isCustom: Bool
+
+    init(id: String, name: String, icon: String, kind: CategoryKind, isCustom: Bool = false) {
+        self.id = id
+        self.name = name
+        self.icon = icon
+        self.kind = kind
+        self.isCustom = isCustom
+    }
 
     var localizedName: String {
-        NSLocalizedString(name, comment: "Category name")
+        isCustom ? name : NSLocalizedString(name, comment: "Category name")
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, icon, kind, isCustom
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        icon = try container.decode(String.self, forKey: .icon)
+        kind = try container.decode(CategoryKind.self, forKey: .kind)
+        isCustom = try container.decodeIfPresent(Bool.self, forKey: .isCustom) ?? true
     }
 }
 
@@ -80,6 +103,14 @@ struct Transaction: Identifiable, Codable, Hashable {
     var updatedAt: Date
     var seriesID: UUID?
 
+    /// Bookmarked by the user as a bill worth finding again.
+    var isFeatured: Bool
+    var attachments: [Attachment]
+    /// Set when this entry is money put into a savings goal.
+    var savingsGoalID: UUID?
+    /// Set when this entry is a payment against a loan.
+    var loanID: UUID?
+
     init(
         id: UUID = UUID(),
         amount: Decimal,
@@ -89,7 +120,11 @@ struct Transaction: Identifiable, Codable, Hashable {
         date: Date,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
-        seriesID: UUID? = nil
+        seriesID: UUID? = nil,
+        isFeatured: Bool = false,
+        attachments: [Attachment] = [],
+        savingsGoalID: UUID? = nil,
+        loanID: UUID? = nil
     ) {
         self.id = id
         self.amount = amount
@@ -100,6 +135,38 @@ struct Transaction: Identifiable, Codable, Hashable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.seriesID = seriesID
+        self.isFeatured = isFeatured
+        self.attachments = attachments
+        self.savingsGoalID = savingsGoalID
+        self.loanID = loanID
+    }
+
+    var isSavingsContribution: Bool { savingsGoalID != nil }
+    var isLoanPayment: Bool { loanID != nil }
+    var hasAttachments: Bool { !attachments.isEmpty }
+
+    enum CodingKeys: String, CodingKey {
+        case id, amount, note, categoryID, type, date, createdAt, updatedAt, seriesID
+        case isFeatured, attachments, savingsGoalID, loanID
+    }
+
+    /// New fields decode permissively so files written by earlier versions keep
+    /// loading instead of failing and looking like lost data.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        amount = try container.decode(Decimal.self, forKey: .amount)
+        note = try container.decodeIfPresent(String.self, forKey: .note) ?? ""
+        categoryID = try container.decode(String.self, forKey: .categoryID)
+        type = try container.decode(TransactionType.self, forKey: .type)
+        date = try container.decode(Date.self, forKey: .date)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt) ?? Date()
+        seriesID = try container.decodeIfPresent(UUID.self, forKey: .seriesID)
+        isFeatured = try container.decodeIfPresent(Bool.self, forKey: .isFeatured) ?? false
+        attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments) ?? []
+        savingsGoalID = try container.decodeIfPresent(UUID.self, forKey: .savingsGoalID)
+        loanID = try container.decodeIfPresent(UUID.self, forKey: .loanID)
     }
 }
 
@@ -169,13 +236,82 @@ struct TransactionOccurrence: Identifiable, Hashable {
     let date: Date
     /// True when the row is a forecast rather than a recorded entry.
     let isProjected: Bool
+    let isFeatured: Bool
+    let attachmentCount: Int
+    let savingsGoalID: UUID?
+    let loanID: UUID?
+
+    init(
+        id: String,
+        transactionID: UUID?,
+        seriesID: UUID?,
+        amount: Decimal,
+        note: String,
+        categoryID: String,
+        type: TransactionType,
+        date: Date,
+        isProjected: Bool,
+        isFeatured: Bool = false,
+        attachmentCount: Int = 0,
+        savingsGoalID: UUID? = nil,
+        loanID: UUID? = nil
+    ) {
+        self.id = id
+        self.transactionID = transactionID
+        self.seriesID = seriesID
+        self.amount = amount
+        self.note = note
+        self.categoryID = categoryID
+        self.type = type
+        self.date = date
+        self.isProjected = isProjected
+        self.isFeatured = isFeatured
+        self.attachmentCount = attachmentCount
+        self.savingsGoalID = savingsGoalID
+        self.loanID = loanID
+    }
 
     var isRecurring: Bool { seriesID != nil }
+    var hasAttachments: Bool { attachmentCount > 0 }
+    var isSavingsContribution: Bool { savingsGoalID != nil }
+    var isLoanPayment: Bool { loanID != nil }
+
+    /// Linked rows are managed from their goal or loan, not edited freehand.
+    var isLinkedToGoalOrLoan: Bool { isSavingsContribution || isLoanPayment }
 
     /// Signed contribution to a balance: income positive, expense negative.
     var signedAmount: Decimal {
         type == .income ? amount : -amount
     }
+}
+
+/// Which slice of the ledger the Activities screen is showing.
+enum ActivityScope: String, CaseIterable, Identifiable, Hashable {
+    case all
+    case income
+    case expense
+    case bills
+
+    var id: String { rawValue }
+
+    var localizedTitle: String {
+        switch self {
+        case .all: return NSLocalizedString("All", comment: "Activity scope")
+        case .income: return NSLocalizedString("Income", comment: "Activity scope")
+        case .expense: return NSLocalizedString("Expense", comment: "Activity scope")
+        case .bills: return NSLocalizedString("Bills", comment: "Activity scope")
+        }
+    }
+
+    var transactionType: TransactionType? {
+        switch self {
+        case .income: return .income
+        case .expense: return .expense
+        case .all, .bills: return nil
+        }
+    }
+
+    var onlyFeatured: Bool { self == .bills }
 }
 
 struct DailyTransactionSection: Identifiable, Hashable {

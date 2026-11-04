@@ -24,8 +24,14 @@ enum DefaultCategories {
         .init(id: "fuel", name: "Fuel", icon: "\u{26FD}", kind: .expense),
         .init(id: "pharmacy", name: "Pharmacy", icon: "\u{1F48A}", kind: .expense),
         .init(id: "pet", name: "Pet", icon: "\u{1F43E}", kind: .expense),
+        .init(id: "loan", name: "Loan", icon: "\u{1F3E6}", kind: .expense),
         .init(id: "other", name: "Other", icon: "\u{1F516}", kind: .both)
     ]
+
+    /// Category used for money moved into a savings goal.
+    static let savingsCategoryID = "savings"
+    /// Category used for loan instalments.
+    static let loanCategoryID = "loan"
 
     static let quickAddCategoryIDs: [String] = [
         "groceries", "cafe", "transport", "salary", "rent", "subscription"
@@ -46,12 +52,52 @@ enum DefaultCategories {
         byID[id] ?? fallback
     }
 
+    /// Looks a category up across the built-in list and the user's own.
+    static func category(for id: String, custom: [TransactionCategory]) -> TransactionCategory {
+        byID[id] ?? custom.first { $0.id == id } ?? fallback
+    }
+
     static func categories(for type: TransactionType) -> [TransactionCategory] {
-        all.filter {
+        filtered(all, for: type)
+    }
+
+    /// Built-in plus user-made, keeping user-made at the end so the list the
+    /// person added to stays stable.
+    static func merged(with custom: [TransactionCategory]) -> [TransactionCategory] {
+        let builtInIDs = Set(all.map(\.id))
+        return all + custom.filter { !builtInIDs.contains($0.id) }
+    }
+
+    static func filtered(
+        _ categories: [TransactionCategory],
+        for type: TransactionType
+    ) -> [TransactionCategory] {
+        categories.filter {
             $0.kind == .both ||
             (type == .income && $0.kind == .income) ||
             (type == .expense && $0.kind == .expense)
         }
+    }
+
+    /// Turns a display name into a stable, collision-free id.
+    static func makeCustomID(from name: String, existing: [String]) -> String {
+        let slug = name
+            .lowercased()
+            .map { $0.isLetter || $0.isNumber ? $0 : "-" }
+            .reduce(into: "") { partial, character in
+                if character == "-", partial.hasSuffix("-") { return }
+                partial.append(character)
+            }
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+
+        let base = slug.isEmpty ? "category" : "custom-\(slug)"
+        guard existing.contains(base) else { return base }
+
+        var index = 2
+        while existing.contains("\(base)-\(index)") {
+            index += 1
+        }
+        return "\(base)-\(index)"
     }
 
     /// True when the localized or source name of `id` matches a search term.

@@ -6,19 +6,12 @@ struct SettingsView: View {
     @StateObject var viewModel: SettingsViewModel
 
     @FocusState private var isStartDayFocused: Bool
-    @FocusState private var focusedGoalField: GoalField?
-
-    private enum GoalField: Hashable {
-        case target
-        case current
-    }
 
     var body: some View {
         Form {
             generalSection
             remindersSection
-            repeatingSection
-            savingsSection
+            organiseSection
             backupSection
             aboutSection
         }
@@ -26,10 +19,7 @@ struct SettingsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("Done") {
-                    isStartDayFocused = false
-                    focusedGoalField = nil
-                }
+                Button("Done") { isStartDayFocused = false }
             }
         }
         .sheet(isPresented: $viewModel.isShowingReminderEditor) {
@@ -38,9 +28,7 @@ struct SettingsView: View {
                 currency: viewModel.currentCurrency
             ) { saved in
                 viewModel.saveReminder(saved)
-                Task {
-                    await syncReminders()
-                }
+                Task { await syncReminders() }
             }
         }
         .fileExporter(
@@ -49,7 +37,6 @@ struct SettingsView: View {
             contentType: .json,
             defaultFilename: "manatik-backup"
         ) { result in
-            // The result used to be thrown away, hiding failed exports.
             viewModel.handleExportResult(result)
         }
         .fileImporter(
@@ -106,16 +93,16 @@ struct SettingsView: View {
 
     private var generalSection: some View {
         Section {
-            // A plain Picker would switch currency instantly; switching
-            // relabels every historical amount without converting it, so it
-            // goes through a confirmation instead.
             Menu {
                 ForEach(Currency.allCases) { currency in
                     Button {
                         viewModel.requestCurrencyChange(to: currency)
                     } label: {
                         if currency == viewModel.currentCurrency {
-                            Label("\(currency.rawValue) \u{2014} \(currency.localizedName)", systemImage: "checkmark")
+                            Label(
+                                "\(currency.rawValue) \u{2014} \(currency.localizedName)",
+                                systemImage: "checkmark"
+                            )
                         } else {
                             Text("\(currency.rawValue) \u{2014} \(currency.localizedName)")
                         }
@@ -138,7 +125,7 @@ struct SettingsView: View {
             .accessibilityValue(viewModel.currentCurrency.rawValue)
 
             HStack {
-                Text("Period starts on day")
+                Text("Start date of the month")
                 Spacer()
                 TextField("1", text: $viewModel.monthStartDayInput)
                     .keyboardType(.numberPad)
@@ -149,7 +136,7 @@ struct SettingsView: View {
                         if !focused { viewModel.commitMonthStartDay() }
                     }
                     .onSubmit { viewModel.commitMonthStartDay() }
-                    .accessibilityLabel(Text("Period starts on day of month"))
+                    .accessibilityLabel(Text("Start day of the month"))
             }
 
             if let error = viewModel.monthStartDayError {
@@ -259,15 +246,23 @@ struct SettingsView: View {
         return parts.joined(separator: " \u{00B7} ")
     }
 
-    // MARK: - Repeating entries
+    // MARK: - Organise
 
-    private var repeatingSection: some View {
+    private var organiseSection: some View {
         Section {
-            if viewModel.store.state.recurringSeries.isEmpty {
-                Text("No repeating entries yet.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
+            NavigationLink {
+                CustomCategoriesListView(viewModel: viewModel)
+            } label: {
+                HStack {
+                    Label("My categories", systemImage: "tag")
+                    Spacer()
+                    Text("\(viewModel.customCategories.count)")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(minHeight: AppTheme.minimumTapTarget)
+            }
+
+            if !viewModel.store.state.recurringSeries.isEmpty {
                 NavigationLink {
                     RecurringSeriesListView(store: viewModel.store)
                 } label: {
@@ -281,60 +276,9 @@ struct SettingsView: View {
                 }
             }
         } header: {
-            Text("Repeating")
-        }
-    }
-
-    // MARK: - Savings
-
-    private var savingsSection: some View {
-        Section {
-            HStack {
-                Text("Target amount")
-                Spacer()
-                TextField(
-                    "0",
-                    text: Binding(
-                        get: { viewModel.goalTargetInput },
-                        set: { viewModel.handleGoalTargetChange($0) }
-                    )
-                )
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.trailing)
-                .focused($focusedGoalField, equals: .target)
-            }
-
-            if !viewModel.useAmountLeftForProgress {
-                HStack {
-                    Text("Saved so far")
-                    Spacer()
-                    TextField(
-                        "0",
-                        text: Binding(
-                            get: { viewModel.goalCurrentInput },
-                            set: { viewModel.handleGoalCurrentChange($0) }
-                        )
-                    )
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .focused($focusedGoalField, equals: .current)
-                }
-            }
-
-            Toggle("Track what is left this period", isOn: $viewModel.useAmountLeftForProgress)
-                .onChange(of: viewModel.useAmountLeftForProgress) { _, _ in
-                    viewModel.commitSavingsGoal()
-                }
-        } header: {
-            Text("Savings Goal")
+            Text("Organise")
         } footer: {
-            Text(viewModel.useAmountLeftForProgress
-                 ? "Progress follows income minus expenses for the current period."
-                 : "Progress follows the saved amount you enter here.")
-        }
-        // Values are written when a field loses focus, not on every keystroke.
-        .onChange(of: focusedGoalField) { _, newValue in
-            if newValue == nil { viewModel.commitSavingsGoal() }
+            Text("New categories are added while entering an amount, from the plus beside the category picker.")
         }
     }
 
@@ -358,8 +302,27 @@ struct SettingsView: View {
         } header: {
             Text("Backup")
         } footer: {
-            Text("\(viewModel.entryCountDescription). Importing replaces everything on this device, so the current data is saved as a file first.")
+            // Said plainly here rather than discovered on a restore.
+            Text(backupFooterText)
         }
+    }
+
+    private var backupFooterText: String {
+        var text = viewModel.entryCountDescription + ". "
+        text += NSLocalizedString(
+            "Importing replaces everything on this device, so the current data is saved as a file first.",
+            comment: "Backup footer"
+        )
+        if viewModel.attachmentCount > 0 {
+            text += " " + String(
+                format: NSLocalizedString(
+                    "Your %d bill photos and documents stay on this device: the backup file records that they existed but does not contain them.",
+                    comment: "Backup footer"
+                ),
+                viewModel.attachmentCount
+            )
+        }
+        return text
     }
 
     private var aboutSection: some View {
@@ -414,6 +377,54 @@ struct SettingsView: View {
     }
 }
 
+/// The user's own categories, with how many entries each one holds.
+struct CustomCategoriesListView: View {
+    @ObservedObject var viewModel: SettingsViewModel
+
+    var body: some View {
+        List {
+            if viewModel.customCategories.isEmpty {
+                Text("You have not added any categories yet. Use the plus beside the category picker when entering an amount.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(viewModel.customCategories) { category in
+                    HStack(spacing: 12) {
+                        Text(category.icon)
+                            .font(.title3)
+                            .accessibilityHidden(true)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(category.localizedName)
+                                .font(.subheadline.weight(.medium))
+                            Text(
+                                String(
+                                    format: NSLocalizedString("%d entries", comment: "Count"),
+                                    viewModel.usageCount(for: category)
+                                )
+                            )
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+                    }
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+                    .accessibilityElement(children: .combine)
+                }
+                .onDelete { offsets in
+                    for index in offsets {
+                        guard viewModel.customCategories.indices.contains(index) else { continue }
+                        viewModel.deleteCustomCategory(viewModel.customCategories[index])
+                    }
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("My Categories")
+    }
+}
+
 /// Lets the user end, pause or remove a repeating entry without hunting for one
 /// of its rows in the ledger.
 struct RecurringSeriesListView: View {
@@ -424,10 +435,10 @@ struct RecurringSeriesListView: View {
             ForEach(store.state.recurringSeries) { series in
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text(DefaultCategories.category(for: series.categoryID).icon)
+                        Text(store.category(for: series.categoryID).icon)
                             .accessibilityHidden(true)
                         Text(series.note.isEmpty
-                             ? DefaultCategories.category(for: series.categoryID).localizedName
+                             ? store.category(for: series.categoryID).localizedName
                              : series.note)
                             .font(.subheadline.weight(.medium))
                         Spacer()
@@ -485,12 +496,5 @@ struct RecurringSeriesListView: View {
             parts.append(NSLocalizedString("paused", comment: "Series detail"))
         }
         return parts.joined(separator: " \u{00B7} ")
-    }
-}
-
-#Preview {
-    NavigationStack {
-        SettingsView(viewModel: SettingsViewModel(store: MockData.previewStore()))
-            .environmentObject(ReminderScheduler())
     }
 }

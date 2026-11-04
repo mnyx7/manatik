@@ -16,9 +16,17 @@ final class TransactionFormViewModel: ObservableObject {
     @Published var hasEndDate: Bool = false
     @Published var endDate: Date = Date()
 
+    /// Bookmarks the entry as a bill to find again later.
+    @Published var isFeatured: Bool = false
+    @Published var attachments: [Attachment] = []
+
+    @Published var isShowingCategoryEditor = false
+
     /// Shown only after a failed save attempt, so the form does not scold the
     /// user while they are still typing.
     @Published var errorMessage: String?
+    /// Brief confirmation after "Save and add another".
+    @Published var savedConfirmation: String?
 
     let mode: Mode
     let store: AppStore
@@ -45,8 +53,15 @@ final class TransactionFormViewModel: ObservableObject {
         }
     }
 
+    var isAdding: Bool {
+        switch mode {
+        case .add: return true
+        case .edit: return false
+        }
+    }
+
     var availableCategories: [TransactionCategory] {
-        DefaultCategories.categories(for: type)
+        store.categories(for: type)
     }
 
     var editingOccurrence: TransactionOccurrence? {
@@ -60,13 +75,31 @@ final class TransactionFormViewModel: ObservableObject {
         editingOccurrence?.isRecurring ?? false
     }
 
-    var isEditingProjection: Bool {
-        editingOccurrence?.isProjected ?? false
+    /// Entries created by a savings goal or a loan are managed from there, so
+    /// the form keeps its hands off their links.
+    var isLinkedEntry: Bool {
+        editingOccurrence?.isLinkedToGoalOrLoan ?? false
     }
 
-    /// Recurrence is a property of the series, so it is only editable when
-    /// creating an entry or when changing a whole series going forward.
+    var linkedContextDescription: String? {
+        guard let occurrence = editingOccurrence else { return nil }
+        if let goalID = occurrence.savingsGoalID, let goal = store.state.savingsGoal(id: goalID) {
+            return String(
+                format: NSLocalizedString("Money put into %@.", comment: "Linked entry note"),
+                goal.name
+            )
+        }
+        if let loanID = occurrence.loanID, let loan = store.state.loan(id: loanID) {
+            return String(
+                format: NSLocalizedString("Payment towards %@.", comment: "Linked entry note"),
+                loan.name
+            )
+        }
+        return nil
+    }
+
     var canEditRecurrence: Bool {
+        guard !isLinkedEntry else { return false }
         switch mode {
         case .add: return true
         case .edit: return isEditingRecurringOccurrence
@@ -100,6 +133,16 @@ final class TransactionFormViewModel: ObservableObject {
         selectedCategoryID = availableCategories.first?.id ?? "other"
     }
 
+    /// Adds a user-made category and selects it straight away.
+    func createCategory(name: String, icon: String, kind: CategoryKind) {
+        guard let created = store.addCustomCategory(name: name, icon: icon, kind: kind) else {
+            return
+        }
+        selectedCategoryID = created.id
+        if created.kind == .income { type = .income }
+        if created.kind == .expense { type = .expense }
+    }
+
     // MARK: - Saving
 
     func draft() -> TransactionDraft? {
@@ -110,12 +153,13 @@ final class TransactionFormViewModel: ObservableObject {
             categoryID: selectedCategoryID,
             type: type,
             date: date,
-            recurrenceRule: recurrenceRule,
-            recurrenceEndDate: hasEndDate ? endDate : nil
+            recurrenceRule: isLinkedEntry ? .none : recurrenceRule,
+            recurrenceEndDate: hasEndDate ? endDate : nil,
+            isFeatured: isFeatured,
+            attachments: attachments
         )
     }
 
-    /// True when saving requires asking how much of a series to affect.
     var requiresScopeChoice: Bool {
         isEditingRecurringOccurrence
     }
@@ -137,6 +181,30 @@ final class TransactionFormViewModel: ObservableObject {
         return true
     }
 
+    /// Saves, then clears the amount, note and attachments while keeping type,
+    /// category and date, which is what makes entering a stack of receipts fast.
+    @discardableResult
+    func saveAndStartAnother() -> Bool {
+        guard save() else { return false }
+
+        savedConfirmation = String(
+            format: NSLocalizedString("Saved %@", comment: "Confirmation"),
+            CurrencyFormatting.format(
+                amount: parsedAmount ?? 0,
+                currency: store.state.settings.currency
+            )
+        )
+
+        amountInput = ""
+        note = ""
+        attachments = []
+        isFeatured = false
+        recurrenceRule = .none
+        hasEndDate = false
+        errorMessage = nil
+        return true
+    }
+
     // MARK: - Setup
 
     private func configureInitialState() {
@@ -144,7 +212,7 @@ final class TransactionFormViewModel: ObservableObject {
         case .add(let preselectedCategoryID):
             guard let categoryID = preselectedCategoryID else { return }
             selectedCategoryID = categoryID
-            switch DefaultCategories.category(for: categoryID).kind {
+            switch store.category(for: categoryID).kind {
             case .income: type = .income
             case .expense: type = .expense
             case .both: break
@@ -156,6 +224,8 @@ final class TransactionFormViewModel: ObservableObject {
             selectedCategoryID = occurrence.categoryID
             type = occurrence.type
             date = occurrence.date
+            isFeatured = occurrence.isFeatured
+            attachments = store.transaction(id: occurrence.transactionID)?.attachments ?? []
 
             if let series = store.series(for: occurrence.seriesID) {
                 recurrenceRule = series.rule

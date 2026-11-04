@@ -26,44 +26,31 @@ enum Currency: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct SavingsGoal: Codable, Hashable {
-    var targetAmount: Decimal
-    var currentSavedAmount: Decimal
-    /// When true the goal tracks what is left over this period. When false it
-    /// tracks `currentSavedAmount`, a figure the user maintains by hand.
-    var useAmountLeftForProgress: Bool
-
-    static let `default` = SavingsGoal(
-        targetAmount: 1_000,
-        currentSavedAmount: 0,
-        useAmountLeftForProgress: true
-    )
-
-    /// Lowest target that still makes a percentage meaningful.
-    static let minimumTarget = Decimal(1)
-}
-
 struct AppSettings: Codable, Hashable {
     var currency: Currency
     /// Day of month a budgeting period begins. Constrained to 1...28 so every
     /// month has the day and periods never overlap or leave gaps.
     var monthStartDay: Int
-    var savingsGoal: SavingsGoal
 
-    static let `default` = AppSettings(
-        currency: .azn,
-        monthStartDay: 1,
-        savingsGoal: .default
-    )
+    static let `default` = AppSettings(currency: .azn, monthStartDay: 1)
+
+    enum CodingKeys: String, CodingKey {
+        case currency, monthStartDay
+    }
+
+    init(currency: Currency, monthStartDay: Int) {
+        self.currency = currency
+        self.monthStartDay = monthStartDay
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        currency = try container.decodeIfPresent(Currency.self, forKey: .currency) ?? .azn
+        monthStartDay = try container.decodeIfPresent(Int.self, forKey: .monthStartDay) ?? 1
+    }
 
     mutating func normalize() {
         monthStartDay = DateRangeCalculator.clampMonthStartDay(monthStartDay)
-        if savingsGoal.targetAmount < SavingsGoal.minimumTarget {
-            savingsGoal.targetAmount = SavingsGoal.minimumTarget
-        }
-        if savingsGoal.currentSavedAmount < 0 {
-            savingsGoal.currentSavedAmount = 0
-        }
     }
 }
 
@@ -71,12 +58,14 @@ struct AppState: Codable, Hashable {
     var transactions: [Transaction]
     var recurringSeries: [RecurringSeries]
     var paymentReminders: [PaymentReminder]
+    var customCategories: [TransactionCategory]
+    var savingsGoals: [SavingsGoal]
+    var loans: [Loan]
     var settings: AppSettings
 
     static let `default` = AppState(
         transactions: [],
         recurringSeries: [],
-        paymentReminders: [],
         settings: .default
     )
 
@@ -84,16 +73,26 @@ struct AppState: Codable, Hashable {
         transactions: [Transaction],
         recurringSeries: [RecurringSeries],
         paymentReminders: [PaymentReminder] = [],
+        customCategories: [TransactionCategory] = [],
+        savingsGoals: [SavingsGoal] = [],
+        loans: [Loan] = [],
         settings: AppSettings
     ) {
         self.transactions = transactions
         self.recurringSeries = recurringSeries
         self.paymentReminders = paymentReminders
+        self.customCategories = customCategories
+        self.savingsGoals = savingsGoals
+        self.loans = loans
         self.settings = settings
     }
 
     var isEmpty: Bool {
         transactions.isEmpty && recurringSeries.isEmpty
+    }
+
+    var hasAnythingAtAll: Bool {
+        !isEmpty || !savingsGoals.isEmpty || !loans.isEmpty
     }
 
     func series(id: UUID) -> RecurringSeries? {
@@ -102,6 +101,14 @@ struct AppState: Codable, Hashable {
 
     func reminder(id: UUID) -> PaymentReminder? {
         paymentReminders.first { $0.id == id }
+    }
+
+    func savingsGoal(id: UUID) -> SavingsGoal? {
+        savingsGoals.first { $0.id == id }
+    }
+
+    func loan(id: UUID) -> Loan? {
+        loans.first { $0.id == id }
     }
 }
 
@@ -113,6 +120,8 @@ struct TransactionFilter: Hashable {
     /// an unexplained empty list.
     var dateInterval: DateInterval?
     var searchText: String = ""
+    /// Restricts to entries bookmarked as bills.
+    var onlyFeatured: Bool = false
 
     var trimmedSearchText: String {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -120,12 +129,23 @@ struct TransactionFilter: Hashable {
 
     /// Filters that narrow rows inside whichever range is being browsed.
     var hasRowFilters: Bool {
-        categoryID != nil || type != nil || !trimmedSearchText.isEmpty
+        categoryID != nil || type != nil || onlyFeatured || !trimmedSearchText.isEmpty
     }
 
     var isActive: Bool {
         hasRowFilters || dateInterval != nil
     }
 
+    /// Filters the user set by hand, as opposed to the Activities segment,
+    /// which also writes `type` and `onlyFeatured`.
+    var hasUserChosenFilters: Bool {
+        categoryID != nil || dateInterval != nil || !trimmedSearchText.isEmpty
+    }
+
     static let empty = TransactionFilter()
+
+    mutating func applyScope(_ scope: ActivityScope) {
+        type = scope.transactionType
+        onlyFeatured = scope.onlyFeatured
+    }
 }

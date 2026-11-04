@@ -1,13 +1,18 @@
 import Foundation
 
-/// UI state for the main page and the activities list.
+/// UI state shared by the main page and the activities list.
 ///
 /// Holds no derived data and does not republish the store. Views observe the
-/// store directly through the environment, so the old `objectWillChange`
-/// bridge (which re-rendered twice and lagged by a runloop hop) is gone.
+/// store directly through the environment.
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published var filter: TransactionFilter = .empty
+
+    /// Which slice of the ledger Activities is showing. Writes the type and
+    /// bills flags into `filter`, leaving the user's own filters alone.
+    @Published var scope: ActivityScope = .all {
+        didSet { filter.applyScope(scope) }
+    }
 
     @Published var isShowingAddSheet = false
     @Published var isShowingPeriodPicker = false
@@ -18,6 +23,14 @@ final class HomeViewModel: ObservableObject {
 
     @Published var editingOccurrence: TransactionOccurrence?
     @Published var pendingDelete: TransactionOccurrence?
+
+    // Savings and loan flows
+    @Published var contributingGoal: SavingsGoal?
+    @Published var payingLoan: Loan?
+    @Published var isShowingGoalEditor = false
+    @Published var editingGoal: SavingsGoal?
+    @Published var isShowingLoanEditor = false
+    @Published var editingLoan: Loan?
 
     var quickAddCategories: [TransactionCategory] {
         DefaultCategories.quickAddCategoryIDs.map { DefaultCategories.category(for: $0) }
@@ -42,7 +55,29 @@ final class HomeViewModel: ObservableObject {
         isShowingAddSheet = true
     }
 
+    /// Clears what the user set, keeping the Activities segment intact.
     func clearFilters() {
         filter = .empty
+        filter.applyScope(scope)
+    }
+
+    func newGoal() {
+        editingGoal = nil
+        isShowingGoalEditor = true
+    }
+
+    func edit(goal: SavingsGoal) {
+        editingGoal = goal
+        isShowingGoalEditor = true
+    }
+
+    func newLoan() {
+        editingLoan = nil
+        isShowingLoanEditor = true
+    }
+
+    func edit(loan: Loan) {
+        editingLoan = loan
+        isShowingLoanEditor = true
     }
 }

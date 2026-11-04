@@ -1,15 +1,18 @@
 import SwiftUI
 
-/// The main page. Shows where the current period stands and gives one-tap
-/// capture; the full ledger lives behind Activities in the bottom bar.
+/// The main page. Kept deliberately short: what is left, the goals and debts
+/// being worked on, a fast way to add something, and the latest few entries.
+/// Charts and breakdowns live behind Insights.
 struct HomeView: View {
     @EnvironmentObject private var store: AppStore
     @ObservedObject var viewModel: HomeViewModel
 
     let onOpenActivities: () -> Void
-    let onOpenYearOverview: () -> Void
+    let onOpenSavings: () -> Void
+    let onOpenLoans: () -> Void
+    let onOpenInsights: () -> Void
 
-    private let recentLimit = 5
+    private let recentLimit = 4
 
     private var period: DateInterval { store.selectedPeriod }
     private var summary: TransactionSummary { store.summary(in: period) }
@@ -19,82 +22,87 @@ struct HomeView: View {
         Array(store.occurrences(in: period).prefix(recentLimit))
     }
 
-    private var savingsCurrent: Decimal {
-        let goal = store.state.settings.savingsGoal
-        // Overspend is passed through rather than clamped, so a negative month
-        // no longer looks identical to "no progress yet".
-        return goal.useAmountLeftForProgress ? summary.netBalance : goal.currentSavedAmount
-    }
-
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                PeriodHeaderView(
-                    periodText: DateRangeCalculator.periodDisplayText(for: period),
-                    isCurrentPeriod: store.isViewingCurrentPeriod,
+            VStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
+                periodStrip
+
+                HeroBalanceCardView(
                     income: summary.income,
                     expense: summary.expense,
                     netBalance: summary.netBalance,
                     currency: currency,
-                    hasProjections: summary.hasProjections,
-                    onPrevious: { store.movePeriod(byMonths: -1) },
-                    onNext: { store.movePeriod(byMonths: 1) },
-                    onPickPeriod: { viewModel.isShowingPeriodPicker = true },
-                    onGoToToday: { store.resetPeriodToToday() }
+                    periodText: DateRangeCalculator.periodDisplayText(for: period),
+                    hasProjections: summary.hasProjections
                 )
 
                 quickAdd
-
-                if store.hasAnyData {
-                    SpendingChartView(
-                        points: store.dailySpend(in: period),
-                        averagePerDay: summary.averageSpendingPerDay,
-                        currency: currency
-                    )
-
-                    SavingsGoalCardView(
-                        currentAmount: savingsCurrent,
-                        targetAmount: store.state.settings.savingsGoal.targetAmount,
-                        currency: currency,
-                        tracksAmountLeft: store.state.settings.savingsGoal.useAmountLeftForProgress
-                    )
-
-                    StatisticsCardView(
-                        averagePerDay: CurrencyFormatting.format(
-                            amount: summary.averageSpendingPerDay,
-                            currency: currency
-                        ),
-                        biggestExpense: CurrencyFormatting.format(
-                            amount: summary.biggestExpense,
-                            currency: currency
-                        ),
-                        transactionCount: summary.totalTransactions,
-                        projectedCount: summary.projectedTransactions,
-                        elapsedDays: DateRangeCalculator.elapsedDayCount(for: period),
-                        totalDays: DateRangeCalculator.dayCount(for: period)
-                    )
-
-                    CategoryTotalsCardView(
-                        totals: store.categorySpending(in: period),
-                        currency: currency
-                    )
-
-                    recentActivity
-                    yearOverviewLink
-                } else {
-                    EmptyStateView.noData(onAdd: { viewModel.beginAdd() })
-                }
+                savingsSection
+                loansSection
+                recentActivity
+                insightsLink
             }
             .padding(.horizontal)
-            .padding(.bottom, 12)
+            .padding(.bottom, 10)
         }
-        .background(AppTheme.groupedBackground)
+        .background(AppTheme.pageBackground)
         .navigationTitle("manatik")
         .navigationBarTitleDisplayMode(.inline)
     }
 
+    // MARK: - Period
+
+    private var periodStrip: some View {
+        HStack(spacing: 4) {
+            Button {
+                store.movePeriod(byMonths: -1)
+            } label: {
+                Image(systemName: "chevron.left")
+                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+            }
+            .accessibilityLabel(Text("Previous period"))
+
+            Button {
+                viewModel.isShowingPeriodPicker = true
+            } label: {
+                HStack(spacing: 5) {
+                    Text(DateRangeCalculator.periodDisplayText(for: period))
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                        .accessibilityHidden(true)
+                }
+                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel(Text("Change period"))
+
+            Button {
+                store.movePeriod(byMonths: 1)
+            } label: {
+                Image(systemName: "chevron.right")
+                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+            }
+            .accessibilityLabel(Text("Next period"))
+
+            if !store.isViewingCurrentPeriod {
+                Button {
+                    store.resetPeriodToToday()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                }
+                .accessibilityLabel(Text("Back to today"))
+            }
+        }
+    }
+
+    // MARK: - Quick add
+
     private var quickAdd: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Quick Add")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -105,24 +113,120 @@ struct HomeView: View {
         }
     }
 
-    private var recentActivity: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Recent Activity")
-                    .font(.headline)
-                Spacer()
-                Button(action: onOpenActivities) {
-                    Text("See all")
-                        .font(.footnote.weight(.semibold))
-                        .frame(minHeight: AppTheme.minimumTapTarget)
+    // MARK: - Savings
+
+    @ViewBuilder
+    private var savingsSection: some View {
+        let goals = store.activeSavingsGoals
+
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(
+                title: "Savings",
+                actionTitle: goals.isEmpty ? nil : "All",
+                action: goals.isEmpty ? nil : onOpenSavings
+            )
+
+            if goals.isEmpty {
+                Button {
+                    viewModel.newGoal()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "target")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.savingsAccent)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Set a savings goal")
+                                .font(.subheadline.weight(.semibold))
+                            Text("Track what you are putting aside.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(AppTheme.savingsAccent)
+                    }
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+                    .cozyCard(AppTheme.savingsSurface)
+                }
+                .buttonStyle(.plain)
+            } else {
+                // Only the two most pressing goals, so the page stays short.
+                ForEach(goals.prefix(2)) { progress in
+                    SavingsGoalCardView(
+                        progress: progress,
+                        currency: currency,
+                        onAddMoney: { viewModel.contributingGoal = progress.goal },
+                        onOpen: onOpenSavings
+                    )
                 }
             }
+        }
+    }
+
+    // MARK: - Loans
+
+    @ViewBuilder
+    private var loansSection: some View {
+        let loans = store.activeLoans
+
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(
+                title: "Loans",
+                actionTitle: loans.isEmpty ? nil : "All",
+                action: loans.isEmpty ? nil : onOpenLoans
+            )
+
+            if loans.isEmpty {
+                Button {
+                    viewModel.newLoan()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "building.columns")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.loanAccent)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Track a loan")
+                                .font(.subheadline.weight(.semibold))
+                            Text("See what you borrowed, paid and still owe.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(AppTheme.loanAccent)
+                    }
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+                    .cozyCard(AppTheme.loanSurface)
+                }
+                .buttonStyle(.plain)
+            } else {
+                ForEach(loans.prefix(2)) { progress in
+                    LoanCardView(
+                        progress: progress,
+                        currency: currency,
+                        onRecordPayment: { viewModel.payingLoan = progress.loan },
+                        onOpen: onOpenLoans
+                    )
+                }
+            }
+        }
+    }
+
+    // MARK: - Recent
+
+    private var recentActivity: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(title: "Recent", actionTitle: "See all", action: onOpenActivities)
 
             if recentOccurrences.isEmpty {
-                EmptyStateView.emptyPeriod(
-                    isCurrent: store.isViewingCurrentPeriod,
-                    onGoToToday: { store.resetPeriodToToday() }
-                )
+                if store.hasAnyData {
+                    EmptyStateView.emptyPeriod(
+                        isCurrent: store.isViewingCurrentPeriod,
+                        onGoToToday: { store.resetPeriodToToday() }
+                    )
+                } else {
+                    EmptyStateView.noData(onAdd: { viewModel.beginAdd() })
+                }
             } else {
                 VStack(spacing: 0) {
                     ForEach(recentOccurrences) { item in
@@ -131,53 +235,61 @@ struct HomeView: View {
                         } label: {
                             TransactionRowView(
                                 item: item,
-                                category: DefaultCategories.category(for: item.categoryID),
+                                category: store.category(for: item.categoryID),
                                 currency: currency
                             )
                         }
                         .buttonStyle(.plain)
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, 14)
 
                         if item.id != recentOccurrences.last?.id {
-                            Divider().padding(.leading, 60)
+                            Divider().padding(.leading, 62)
                         }
                     }
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
                 .background(
                     AppTheme.cardBackground,
                     in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
                 )
+                .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
             }
         }
     }
 
-    private var yearOverviewLink: some View {
-        // Previously this screen was reachable only by tapping unstyled year
-        // text, which gave no sign it was a control at all.
-        Button(action: onOpenYearOverview) {
+    private var insightsLink: some View {
+        Button(action: onOpenInsights) {
             HStack {
-                Label("Year Overview", systemImage: "calendar")
+                Label("Insights", systemImage: "chart.bar.xaxis")
                     .font(.subheadline.weight(.medium))
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            .padding()
             .frame(minHeight: AppTheme.minimumTapTarget)
-            .background(
-                AppTheme.cardBackground,
-                in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
-            )
+            .cozyCard()
         }
         .buttonStyle(.plain)
     }
-}
 
-#Preview {
-    NavigationStack {
-        HomeView(viewModel: HomeViewModel(), onOpenActivities: {}, onOpenYearOverview: {})
-            .environmentObject(MockData.previewStore())
+    @ViewBuilder
+    private func sectionHeader(
+        title: LocalizedStringKey,
+        actionTitle: LocalizedStringKey?,
+        action: (() -> Void)?
+    ) -> some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+            Spacer()
+            if let actionTitle, let action {
+                Button(action: action) {
+                    Text(actionTitle)
+                        .font(.footnote.weight(.semibold))
+                        .frame(minHeight: 32)
+                }
+            }
+        }
     }
 }
