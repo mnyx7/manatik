@@ -168,8 +168,11 @@ final class AppStatePersistence: AppStatePersisting {
         var recurringSeries: [RecurringSeries]
         var paymentReminders: [PaymentReminder]
         var customCategories: [TransactionCategory]
+        var categoryOrder: [String]
+        var hiddenCategoryIDs: Set<String>
         var savingsGoals: [SavingsGoal]
         var loans: [Loan]
+        var feedbackNotes: [FeedbackNote]
         var settings: AppSettings
 
         init(state: AppState) {
@@ -178,8 +181,11 @@ final class AppStatePersistence: AppStatePersisting {
             recurringSeries = state.recurringSeries
             paymentReminders = state.paymentReminders
             customCategories = state.customCategories
+            categoryOrder = state.categoryOrder
+            hiddenCategoryIDs = state.hiddenCategoryIDs
             savingsGoals = state.savingsGoals
             loans = state.loans
+            feedbackNotes = state.feedbackNotes
             settings = state.settings
         }
 
@@ -193,8 +199,11 @@ final class AppStatePersistence: AppStatePersisting {
             recurringSeries = try container.decodeIfPresent([RecurringSeries].self, forKey: .recurringSeries) ?? []
             paymentReminders = try container.decodeIfPresent([PaymentReminder].self, forKey: .paymentReminders) ?? []
             customCategories = try container.decodeIfPresent([TransactionCategory].self, forKey: .customCategories) ?? []
+            categoryOrder = try container.decodeIfPresent([String].self, forKey: .categoryOrder) ?? []
+            hiddenCategoryIDs = try container.decodeIfPresent(Set<String>.self, forKey: .hiddenCategoryIDs) ?? []
             savingsGoals = try container.decodeIfPresent([SavingsGoal].self, forKey: .savingsGoals) ?? []
             loans = try container.decodeIfPresent([Loan].self, forKey: .loans) ?? []
+            feedbackNotes = try container.decodeIfPresent([FeedbackNote].self, forKey: .feedbackNotes) ?? []
             settings = try container.decode(AppSettings.self, forKey: .settings)
         }
 
@@ -204,8 +213,11 @@ final class AppStatePersistence: AppStatePersisting {
                 recurringSeries: recurringSeries,
                 paymentReminders: paymentReminders,
                 customCategories: customCategories,
+                categoryOrder: categoryOrder,
+                hiddenCategoryIDs: hiddenCategoryIDs,
                 savingsGoals: savingsGoals,
                 loans: loans,
+                feedbackNotes: feedbackNotes,
                 settings: settings
             )
         }

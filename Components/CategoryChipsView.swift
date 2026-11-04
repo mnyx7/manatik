@@ -25,7 +25,13 @@ struct CategoryChipsView: View {
     }
 
     private var visible: [TransactionCategory] {
-        isExpanded ? all : collapsed
+        guard isExpanded else { return collapsed }
+
+        // Expanding keeps the collapsed chips exactly where they were and
+        // appends the rest. Showing `all` straight out meant every chip jumped
+        // to a new place the moment More was tapped.
+        let shown = Set(collapsed.map(\.id))
+        return collapsed + all.filter { !shown.contains($0.id) }
     }
 
     var body: some View {

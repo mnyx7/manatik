@@ -22,6 +22,9 @@ final class SettingsViewModel: ObservableObject {
     @Published var editingReminder: PaymentReminder?
     @Published var isShowingReminderEditor = false
     @Published var isShowingCategoryEditor = false
+    /// Non-nil when the category editor was opened to change an existing one.
+    @Published var editingCategory: TransactionCategory?
+    @Published var feedbackDraft = ""
 
     let store: AppStore
 
@@ -91,16 +94,63 @@ final class SettingsViewModel: ObservableObject {
 
     // MARK: - Categories
 
+    // MARK: - Categories
+
+    /// Every category, hidden ones included, in the user's order.
+    var allCategories: [TransactionCategory] { store.allCategoriesInOrder }
+
+    var showsRecentsFirst: Bool {
+        get { store.state.settings.showsRecentCategoriesFirst }
+        set { store.updateSettings(showsRecentCategoriesFirst: newValue) }
+    }
+
     func usageCount(for category: TransactionCategory) -> Int {
         store.transactionCount(usingCategory: category.id)
+    }
+
+    func isHidden(_ category: TransactionCategory) -> Bool {
+        store.isCategoryHidden(category.id)
+    }
+
+    func canHide(_ category: TransactionCategory) -> Bool {
+        store.canHideCategory(category.id)
+    }
+
+    func setHidden(_ category: TransactionCategory, hidden: Bool) {
+        store.setCategoryHidden(category.id, hidden: hidden)
+    }
+
+    func moveCategories(from source: IndexSet, to destination: Int) {
+        store.moveCategories(from: source, to: destination)
+    }
+
+    func resetCategoryOrder() {
+        store.resetCategoryOrder()
     }
 
     func createCategory(name: String, icon: String, kind: CategoryKind) {
         store.addCustomCategory(name: name, icon: icon, kind: kind)
     }
 
+    func saveCategoryEdit(id: String, name: String, icon: String, kind: CategoryKind) {
+        store.updateCustomCategory(id: id, name: name, icon: icon, kind: kind)
+    }
+
     func deleteCustomCategory(_ category: TransactionCategory) {
         store.deleteCustomCategory(id: category.id)
+    }
+
+    // MARK: - Feedback
+
+    var feedbackNotes: [FeedbackNote] { store.feedbackNotes }
+
+    func saveFeedback() {
+        store.addFeedback(feedbackDraft)
+        feedbackDraft = ""
+    }
+
+    func deleteFeedback(_ note: FeedbackNote) {
+        store.deleteFeedback(id: note.id)
     }
 
     // MARK: - Reminders

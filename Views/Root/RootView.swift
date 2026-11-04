@@ -262,9 +262,20 @@ struct RootView: View {
             .padding(.top, 6)
             .padding(.bottom, 2)
         }
-        // Extends the material through the home-indicator area, which was
-        // showing the page background as a strip under the bar.
-        .background(.bar, ignoresSafeAreaEdges: .bottom)
+        // The bar pads itself down over the home-indicator strip and keeps a
+        // plain background. Using ignoresSafeAreaEdges instead made the bar
+        // taller than the inset SwiftUI reserved for it, which left the bottom
+        // of the page sitting underneath the bar.
+        .padding(.bottom, bottomSafeAreaInset)
+        .background(.bar)
+    }
+
+    private var bottomSafeAreaInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.bottom ?? 0
     }
 
     @ViewBuilder

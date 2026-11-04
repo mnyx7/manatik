@@ -128,13 +128,44 @@ final class AppStore: ObservableObject {
 
     // MARK: - Categories
 
-    /// Built-in categories plus the user's own.
+    /// Built-in plus the user's own, in the order the user arranged, with
+    /// hidden ones removed. This is what the pickers and filters offer.
     var categories: [TransactionCategory] {
         if categoryCacheRevision != revision {
-            mergedCategories = DefaultCategories.merged(with: state.customCategories)
+            mergedCategories = orderedCategories.filter {
+                !state.hiddenCategoryIDs.contains($0.id)
+            }
             categoryCacheRevision = revision
         }
         return mergedCategories
+    }
+
+    /// Every category including hidden ones, in the user's order. The manager
+    /// in Settings needs the hidden ones listed so they can be brought back.
+    var allCategoriesInOrder: [TransactionCategory] {
+        orderedCategories
+    }
+
+    private var orderedCategories: [TransactionCategory] {
+        let merged = DefaultCategories.merged(with: state.customCategories)
+        guard !state.categoryOrder.isEmpty else { return merged }
+
+        let rank = Dictionary(
+            state.categoryOrder.enumerated().map { ($1, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        // Decorated sort: Swift's sort is not stable, so anything the user has
+        // not explicitly ranked keeps its original position instead of
+        // shuffling about on every read.
+        return merged.enumerated()
+            .sorted { lhs, rhs in
+                let left = rank[lhs.element.id] ?? Int.max
+                let right = rank[rhs.element.id] ?? Int.max
+                if left != right { return left < right }
+                return lhs.offset < rhs.offset
+            }
+            .map(\.element)
     }
 
     func categories(for type: TransactionType) -> [TransactionCategory] {
@@ -152,6 +183,12 @@ final class AppStore: ObservableObject {
     /// there is not enough history yet.
     func recentCategories(for type: TransactionType, limit: Int = 5) -> [TransactionCategory] {
         let allowed = categories(for: type)
+
+        // Turned off, the form simply follows the order set in Settings.
+        guard state.settings.showsRecentCategoriesFirst else {
+            return Array(allowed.prefix(limit))
+        }
+
         let allowedIDs = Set(allowed.map(\.id))
 
         var seen = Set<String>()
@@ -204,6 +241,87 @@ final class AppStore: ObservableObject {
 
     func transactionCount(usingCategory id: String) -> Int {
         state.transactions.filter { $0.categoryID == id }.count
+    }
+
+    /// Categories the app itself writes to. Hiding these would leave savings
+    /// contributions and loan payments pointing at something the user cannot
+    /// see, so they stay available.
+    static let protectedCategoryIDs: Set<String> = [
+        DefaultCategories.savingsCategoryID,
+        DefaultCategories.loanCategoryID,
+        "other"
+    ]
+
+    func canHideCategory(_ id: String) -> Bool {
+        !Self.protectedCategoryIDs.contains(id)
+    }
+
+    func isCategoryHidden(_ id: String) -> Bool {
+        state.hiddenCategoryIDs.contains(id)
+    }
+
+    func setCategoryHidden(_ id: String, hidden: Bool) {
+        guard canHideCategory(id) || !hidden else { return }
+        if hidden {
+            state.hiddenCategoryIDs.insert(id)
+        } else {
+            state.hiddenCategoryIDs.remove(id)
+        }
+        mutated()
+    }
+
+    /// Reorders using offsets taken against `allCategoriesInOrder`, so the
+    /// stored order always covers every category and stays unambiguous.
+    func moveCategories(from source: IndexSet, to destination: Int) {
+        var ids = allCategoriesInOrder.map(\.id)
+        ids.move(fromOffsets: source, toOffset: destination)
+        state.categoryOrder = ids
+        mutated()
+    }
+
+    func resetCategoryOrder() {
+        state.categoryOrder = []
+        mutated()
+    }
+
+    /// Only user-made categories can be renamed: the built-in names are
+    /// localization keys, so editing one would break its translations.
+    func updateCustomCategory(
+        id: String,
+        name: String,
+        icon: String,
+        kind: CategoryKind
+    ) {
+        guard let index = state.customCategories.firstIndex(where: { $0.id == id }) else { return }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        state.customCategories[index] = TransactionCategory(
+            id: id,
+            name: trimmed,
+            icon: icon.isEmpty ? "\u{1F516}" : icon,
+            kind: kind,
+            isCustom: true
+        )
+        mutated()
+    }
+
+    // MARK: - Feedback
+
+    var feedbackNotes: [FeedbackNote] {
+        state.feedbackNotes.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    func addFeedback(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        state.feedbackNotes.append(FeedbackNote(text: trimmed))
+        mutated()
+    }
+
+    func deleteFeedback(id: UUID) {
+        state.feedbackNotes.removeAll { $0.id == id }
+        mutated()
     }
 
     // MARK: - Period
@@ -932,10 +1050,17 @@ final class AppStore: ObservableObject {
 
     // MARK: - Settings
 
-    func updateSettings(currency: Currency? = nil, monthStartDay: Int? = nil) {
+    func updateSettings(
+        currency: Currency? = nil,
+        monthStartDay: Int? = nil,
+        showsRecentCategoriesFirst: Bool? = nil
+    ) {
         var settings = state.settings
         if let currency { settings.currency = currency }
         if let monthStartDay { settings.monthStartDay = monthStartDay }
+        if let showsRecentCategoriesFirst {
+            settings.showsRecentCategoriesFirst = showsRecentCategoriesFirst
+        }
         settings.normalize()
 
         guard settings != state.settings else { return }

@@ -31,26 +31,64 @@ struct AppSettings: Codable, Hashable {
     /// Day of month a budgeting period begins. Constrained to 1...28 so every
     /// month has the day and periods never overlap or leave gaps.
     var monthStartDay: Int
+    /// When true the entry form leads with recently used categories. When
+    /// false it follows the order set in Settings.
+    var showsRecentCategoriesFirst: Bool
 
-    static let `default` = AppSettings(currency: .azn, monthStartDay: 1)
+    static let `default` = AppSettings(
+        currency: .azn,
+        monthStartDay: 1,
+        showsRecentCategoriesFirst: true
+    )
 
     enum CodingKeys: String, CodingKey {
-        case currency, monthStartDay
+        case currency, monthStartDay, showsRecentCategoriesFirst
     }
 
-    init(currency: Currency, monthStartDay: Int) {
+    init(currency: Currency, monthStartDay: Int, showsRecentCategoriesFirst: Bool = true) {
         self.currency = currency
         self.monthStartDay = monthStartDay
+        self.showsRecentCategoriesFirst = showsRecentCategoriesFirst
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         currency = try container.decodeIfPresent(Currency.self, forKey: .currency) ?? .azn
         monthStartDay = try container.decodeIfPresent(Int.self, forKey: .monthStartDay) ?? 1
+        showsRecentCategoriesFirst = try container.decodeIfPresent(
+            Bool.self,
+            forKey: .showsRecentCategoriesFirst
+        ) ?? true
     }
 
     mutating func normalize() {
         monthStartDay = DateRangeCalculator.clampMonthStartDay(monthStartDay)
+    }
+}
+
+/// A note the user wrote about the app, kept on the device so it can be
+/// re-read and shared later rather than lost when the screen closes.
+struct FeedbackNote: Identifiable, Codable, Hashable {
+    let id: UUID
+    var text: String
+    let appVersion: String
+    let createdAt: Date
+
+    init(
+        id: UUID = UUID(),
+        text: String,
+        appVersion: String = AppVersionProvider.versionText,
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.text = text
+        self.appVersion = appVersion
+        self.createdAt = createdAt
+    }
+
+    /// What gets shared: the note plus the context that makes it useful.
+    var shareableText: String {
+        "\(text)\n\n---\nmanatik \(appVersion)\n\(DateFormatting.dayMonthYear(createdAt))"
     }
 }
 
@@ -59,8 +97,15 @@ struct AppState: Codable, Hashable {
     var recurringSeries: [RecurringSeries]
     var paymentReminders: [PaymentReminder]
     var customCategories: [TransactionCategory]
+    /// The order the user arranged categories in. Ids missing from this list
+    /// keep their built-in position, so it does not have to be exhaustive.
+    var categoryOrder: [String]
+    /// Categories kept out of the pickers without deleting them. Entries that
+    /// already use one still resolve it.
+    var hiddenCategoryIDs: Set<String>
     var savingsGoals: [SavingsGoal]
     var loans: [Loan]
+    var feedbackNotes: [FeedbackNote]
     var settings: AppSettings
 
     static let `default` = AppState(
@@ -74,16 +119,22 @@ struct AppState: Codable, Hashable {
         recurringSeries: [RecurringSeries],
         paymentReminders: [PaymentReminder] = [],
         customCategories: [TransactionCategory] = [],
+        categoryOrder: [String] = [],
+        hiddenCategoryIDs: Set<String> = [],
         savingsGoals: [SavingsGoal] = [],
         loans: [Loan] = [],
+        feedbackNotes: [FeedbackNote] = [],
         settings: AppSettings
     ) {
         self.transactions = transactions
         self.recurringSeries = recurringSeries
         self.paymentReminders = paymentReminders
         self.customCategories = customCategories
+        self.categoryOrder = categoryOrder
+        self.hiddenCategoryIDs = hiddenCategoryIDs
         self.savingsGoals = savingsGoals
         self.loans = loans
+        self.feedbackNotes = feedbackNotes
         self.settings = settings
     }
 

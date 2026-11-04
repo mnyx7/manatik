@@ -13,6 +13,7 @@ struct SettingsView: View {
             remindersSection
             organiseSection
             backupSection
+            feedbackSection
             aboutSection
         }
         .navigationTitle("Settings")
@@ -220,12 +221,12 @@ struct SettingsView: View {
     private var organiseSection: some View {
         Section {
             NavigationLink {
-                CustomCategoriesListView(viewModel: viewModel)
+                CategoryManagerView(viewModel: viewModel)
             } label: {
                 HStack {
                     Label("My categories", systemImage: "tag")
                     Spacer()
-                    Text("\(viewModel.customCategories.count)")
+                    Text("\(viewModel.allCategories.count)")
                         .foregroundStyle(.secondary)
                 }
                 .frame(minHeight: AppTheme.minimumTapTarget)
@@ -246,8 +247,6 @@ struct SettingsView: View {
             }
         } header: {
             Text("Organise")
-        } footer: {
-            Text("Add or remove your own categories here, or from the New chip while entering an amount.")
         }
     }
 
@@ -271,7 +270,6 @@ struct SettingsView: View {
         } header: {
             Text("Backup")
         } footer: {
-            // Said plainly here rather than discovered on a restore.
             Text(backupFooterText)
         }
     }
@@ -292,6 +290,28 @@ struct SettingsView: View {
             )
         }
         return text
+    }
+
+    // MARK: - Feedback
+
+    private var feedbackSection: some View {
+        Section {
+            NavigationLink {
+                FeedbackView(viewModel: viewModel)
+            } label: {
+                HStack {
+                    Label("Feedback and ideas", systemImage: "bubble.left.and.text.bubble.right")
+                    Spacer()
+                    if !viewModel.feedbackNotes.isEmpty {
+                        Text("\(viewModel.feedbackNotes.count)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(minHeight: AppTheme.minimumTapTarget)
+            }
+        } header: {
+            Text("Feedback")
+        }
     }
 
     private var aboutSection: some View {
@@ -339,69 +359,55 @@ struct SettingsView: View {
     }
 }
 
-/// The user's own categories, with how many entries each one holds.
-struct CustomCategoriesListView: View {
+/// Every category in one place: reorder, hide, edit, delete, add.
+struct CategoryManagerView: View {
     @ObservedObject var viewModel: SettingsViewModel
+    @Environment(\.editMode) private var editMode
 
     var body: some View {
         List {
             Section {
+                Toggle(isOn: Binding(
+                    get: { viewModel.showsRecentsFirst },
+                    set: { viewModel.showsRecentsFirst = $0 }
+                )) {
+                    Label("Show recent first", systemImage: "clock.arrow.circlepath")
+                }
+            } footer: {
+                Text(viewModel.showsRecentsFirst
+                     ? "The entry form leads with the categories you used most recently."
+                     : "The entry form follows the order below.")
+            }
+
+            Section {
+                // Offsets line up with this list, which is why it shows hidden
+                // categories too rather than filtering them out.
+                ForEach(viewModel.allCategories) { category in
+                    row(category)
+                }
+                .onMove { source, destination in
+                    viewModel.moveCategories(from: source, to: destination)
+                }
+            } header: {
+                Text("Order")
+            } footer: {
+                Text("Drag to reorder. Hidden categories stay out of the pickers but keep the entries already filed under them.")
+            }
+
+            Section {
                 Button {
+                    viewModel.editingCategory = nil
                     viewModel.isShowingCategoryEditor = true
                 } label: {
                     Label("Add a category", systemImage: "plus.circle")
                         .frame(minHeight: AppTheme.minimumTapTarget)
                 }
-            }
 
-            if viewModel.customCategories.isEmpty {
-                Text("You have not added any categories yet.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                ForEach(viewModel.customCategories) { category in
-                    HStack(spacing: 12) {
-                        Text(category.icon)
-                            .font(.title3)
-                            .accessibilityHidden(true)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(category.localizedName)
-                                .font(.subheadline.weight(.medium))
-                            Text(
-                                String(
-                                    format: NSLocalizedString("%d entries", comment: "Count"),
-                                    viewModel.usageCount(for: category)
-                                )
-                            )
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-                    }
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-                    .accessibilityElement(children: .combine)
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            viewModel.deleteCustomCategory(category)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .contextMenu {
-                        Button(role: .destructive) {
-                            viewModel.deleteCustomCategory(category)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                }
-                .onDelete { offsets in
-                    for index in offsets {
-                        guard viewModel.customCategories.indices.contains(index) else { continue }
-                        viewModel.deleteCustomCategory(viewModel.customCategories[index])
-                    }
+                Button {
+                    viewModel.resetCategoryOrder()
+                } label: {
+                    Label("Reset to the original order", systemImage: "arrow.uturn.backward")
+                        .frame(minHeight: AppTheme.minimumTapTarget)
                 }
             }
         }
@@ -409,17 +415,203 @@ struct CustomCategoriesListView: View {
         .navigationTitle("My Categories")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    viewModel.isShowingCategoryEditor = true
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .accessibilityLabel(Text("Add a category"))
+                EditButton()
             }
         }
         .sheet(isPresented: $viewModel.isShowingCategoryEditor) {
-            CategoryEditorView(suggestedKind: .expense) { name, icon, kind in
-                viewModel.createCategory(name: name, icon: icon, kind: kind)
+            CategoryEditorView(
+                suggestedKind: .expense,
+                editing: viewModel.editingCategory
+            ) { name, icon, kind in
+                if let editing = viewModel.editingCategory {
+                    viewModel.saveCategoryEdit(id: editing.id, name: name, icon: icon, kind: kind)
+                } else {
+                    viewModel.createCategory(name: name, icon: icon, kind: kind)
+                }
+                viewModel.editingCategory = nil
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func row(_ category: TransactionCategory) -> some View {
+        let hidden = viewModel.isHidden(category)
+        let uses = viewModel.usageCount(for: category)
+
+        HStack(spacing: 12) {
+            Text(category.icon)
+                .font(.title3)
+                .opacity(hidden ? 0.4 : 1)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(category.localizedName)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(hidden ? .secondary : .primary)
+
+                    if category.isCustom {
+                        Text("Mine")
+                            .font(.caption2.weight(.semibold))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(AppTheme.savingsSurface, in: Capsule())
+                            .foregroundStyle(AppTheme.savingsAccent)
+                    }
+
+                    if hidden {
+                        Image(systemName: "eye.slash")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                    }
+                }
+
+                Text(String(format: NSLocalizedString("%d entries", comment: "Count"), uses))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .frame(minHeight: AppTheme.minimumTapTarget)
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(
+            hidden
+                ? NSLocalizedString("hidden", comment: "Accessibility")
+                : NSLocalizedString("shown", comment: "Accessibility")
+        )
+        .swipeActions(edge: .trailing) {
+            if category.isCustom {
+                Button(role: .destructive) {
+                    viewModel.deleteCustomCategory(category)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+
+            if viewModel.canHide(category) {
+                Button {
+                    viewModel.setHidden(category, hidden: !hidden)
+                } label: {
+                    Label(
+                        hidden ? "Show" : "Hide",
+                        systemImage: hidden ? "eye" : "eye.slash"
+                    )
+                }
+                .tint(.secondary)
+            }
+        }
+        .contextMenu {
+            if category.isCustom {
+                Button {
+                    viewModel.editingCategory = category
+                    viewModel.isShowingCategoryEditor = true
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+            }
+
+            if viewModel.canHide(category) {
+                Button {
+                    viewModel.setHidden(category, hidden: !hidden)
+                } label: {
+                    Label(
+                        hidden ? "Show in pickers" : "Hide from pickers",
+                        systemImage: hidden ? "eye" : "eye.slash"
+                    )
+                }
+            }
+
+            if category.isCustom {
+                Button(role: .destructive) {
+                    viewModel.deleteCustomCategory(category)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+        }
+    }
+}
+
+/// Somewhere to write down what the app should do better.
+///
+/// There is no server to send this to, so notes are kept on the device and
+/// each one can be shared wherever the user likes.
+struct FeedbackView: View {
+    @ObservedObject var viewModel: SettingsViewModel
+    @FocusState private var isWriting: Bool
+
+    private var canSave: Bool {
+        !viewModel.feedbackDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextField(
+                    "What would make manatik better?",
+                    text: $viewModel.feedbackDraft,
+                    axis: .vertical
+                )
+                .lineLimit(4...10)
+                .focused($isWriting)
+
+                Button {
+                    isWriting = false
+                    viewModel.saveFeedback()
+                } label: {
+                    Label("Save this note", systemImage: "square.and.pencil")
+                        .frame(minHeight: AppTheme.minimumTapTarget)
+                }
+                .disabled(!canSave)
+            } header: {
+                Text("New note")
+            } footer: {
+                Text("Notes are kept on this device with the app version attached, so you can send them on whenever you like.")
+            }
+
+            if !viewModel.feedbackNotes.isEmpty {
+                Section("Saved notes") {
+                    ForEach(viewModel.feedbackNotes) { note in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(note.text)
+                                .font(.subheadline)
+
+                            HStack(spacing: 10) {
+                                Text(DateFormatting.dayMonthYear(note.createdAt))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                Text(note.appVersion)
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+
+                                Spacer()
+
+                                ShareLink(item: note.shareableText) {
+                                    Label("Share", systemImage: "square.and.arrow.up")
+                                        .font(.caption.weight(.semibold))
+                                        .labelStyle(.iconOnly)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            guard viewModel.feedbackNotes.indices.contains(index) else { continue }
+                            viewModel.deleteFeedback(viewModel.feedbackNotes[index])
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Feedback")
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { isWriting = false }
             }
         }
     }

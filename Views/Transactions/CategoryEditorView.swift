@@ -1,14 +1,16 @@
 import SwiftUI
 
-/// Creates a user-made category from the entry form.
+/// Creates a user-made category, or edits one that already exists.
 struct CategoryEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
-    let suggestedKind: CategoryKind
-    let onCreate: (String, String, CategoryKind) -> Void
+    /// Non-nil when editing. Only user-made categories can be edited: built-in
+    /// names are localization keys, so renaming one would break translations.
+    private let existing: TransactionCategory?
+    private let onSave: (String, String, CategoryKind) -> Void
 
-    @State private var name = ""
-    @State private var icon = "\u{1F516}"
+    @State private var name: String
+    @State private var icon: String
     @State private var kind: CategoryKind
     @FocusState private var isNameFocused: Bool
 
@@ -20,10 +22,16 @@ struct CategoryEditorView: View {
         "\u{1F354}", "\u{1F6BF}", "\u{1F455}", "\u{26BD}", "\u{1F3AC}", "\u{1F4B0}"
     ]
 
-    init(suggestedKind: CategoryKind, onCreate: @escaping (String, String, CategoryKind) -> Void) {
-        self.suggestedKind = suggestedKind
-        self.onCreate = onCreate
-        _kind = State(initialValue: suggestedKind)
+    init(
+        suggestedKind: CategoryKind,
+        editing: TransactionCategory? = nil,
+        onSave: @escaping (String, String, CategoryKind) -> Void
+    ) {
+        self.existing = editing
+        self.onSave = onSave
+        _name = State(initialValue: editing?.name ?? "")
+        _icon = State(initialValue: editing?.icon ?? "\u{1F516}")
+        _kind = State(initialValue: editing?.kind ?? suggestedKind)
     }
 
     private var trimmedName: String {
@@ -89,15 +97,15 @@ struct CategoryEditorView: View {
                     Text("Choosing Both makes the category available for income and expenses.")
                 }
             }
-            .navigationTitle("New Category")
+            .navigationTitle(existing == nil ? "New Category" : "Edit Category")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Add") {
-                        onCreate(trimmedName, normalizedIcon, kind)
+                    Button(existing == nil ? "Add" : "Save") {
+                        onSave(trimmedName, normalizedIcon, kind)
                         dismiss()
                     }
                     .disabled(trimmedName.isEmpty)
@@ -105,7 +113,7 @@ struct CategoryEditorView: View {
                 }
             }
             .task {
-                isNameFocused = true
+                if existing == nil { isNameFocused = true }
             }
         }
     }
