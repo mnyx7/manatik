@@ -1,6 +1,9 @@
 import SwiftUI
 
 /// One savings goal: saved, left, optional due date, and a way to put more in.
+///
+/// Rows are fixed in number and names are single-line, so cards in a
+/// side-scrolling row come out the same height whatever their content.
 struct SavingsGoalCardView: View {
     let progress: SavingsGoalProgress
     let currency: Currency
@@ -24,6 +27,7 @@ struct SavingsGoalCardView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(progress.goal.name)
                     .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
                 Spacer(minLength: 8)
                 Text("\(Int((progress.fraction * 100).rounded()))%")
                     .font(.subheadline.weight(.semibold))
@@ -35,7 +39,7 @@ struct SavingsGoalCardView: View {
                 .tint(AppTheme.savingsAccent)
                 .accessibilityHidden(true)
 
-            HStack {
+            HStack(alignment: .top) {
                 MoneyFactView(title: "Saved", value: savedText, accent: AppTheme.savingsAccent)
                 MoneyFactView(
                     title: progress.isReached ? "Target reached" : "Still to go",
@@ -44,30 +48,37 @@ struct SavingsGoalCardView: View {
                 )
             }
 
-            if let days = progress.daysRemaining {
-                DueDateLabel(days: days, dueDate: progress.goal.dueDate)
-            }
+            // Always present, so every card is the same height.
+            MetaLineView(
+                systemImage: metaIcon,
+                text: metaText,
+                tint: isOverdue ? AppTheme.expenseAccent : .secondary
+            )
 
             if onAddMoney != nil || onOpen != nil {
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
                     if let onAddMoney {
                         Button(action: onAddMoney) {
-                            Label("Add money", systemImage: "plus.circle.fill")
-                                .font(.footnote.weight(.semibold))
-                                .frame(minHeight: AppTheme.minimumTapTarget)
+                            Label("Add money", systemImage: "plus")
+                                .font(.caption.weight(.semibold))
                         }
                         .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
                         .tint(AppTheme.savingsAccent)
                     }
 
                     if let onOpen {
                         Button(action: onOpen) {
                             Text("Details")
-                                .font(.footnote.weight(.semibold))
-                                .frame(minHeight: AppTheme.minimumTapTarget)
+                                .font(.caption.weight(.semibold))
                         }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
                     }
+
+                    Spacer(minLength: 0)
                 }
+                .frame(minHeight: AppTheme.minimumTapTarget)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -79,6 +90,32 @@ struct SavingsGoalCardView: View {
                 format: NSLocalizedString("%1$@ saved of %2$@, %3$@ to go", comment: "Accessibility"),
                 savedText, targetText, remainingText
             )
+        )
+    }
+
+    private var isOverdue: Bool {
+        (progress.daysRemaining ?? 0) < 0 && progress.goal.dueDate != nil
+    }
+
+    private var metaIcon: String {
+        guard progress.goal.dueDate != nil else { return "infinity" }
+        return isOverdue ? "exclamationmark.circle" : "calendar"
+    }
+
+    private var metaText: String {
+        guard let dueDate = progress.goal.dueDate, let days = progress.daysRemaining else {
+            return NSLocalizedString("No deadline", comment: "Goal meta")
+        }
+        if days < 0 {
+            return String(format: NSLocalizedString("%d days overdue", comment: "Due date"), abs(days))
+        }
+        if days == 0 {
+            return NSLocalizedString("Due today", comment: "Due date")
+        }
+        return String(
+            format: NSLocalizedString("%1$d days left, due %2$@", comment: "Due date"),
+            days,
+            DateFormatting.dayAndMonth(dueDate)
         )
     }
 }
@@ -108,6 +145,7 @@ struct LoanCardView: View {
                 Label(progress.loan.name, systemImage: "building.columns")
                     .font(.subheadline.weight(.semibold))
                     .labelStyle(.titleAndIcon)
+                    .lineLimit(1)
                 Spacer(minLength: 8)
                 Text("\(Int((progress.fraction * 100).rounded()))%")
                     .font(.subheadline.weight(.semibold))
@@ -125,42 +163,38 @@ struct LoanCardView: View {
                 MoneyFactView(title: "Left", value: remainingText, accent: AppTheme.loanAccent)
             }
 
-            if let instalments = progress.estimatedPaymentsRemaining {
-                Text(
-                    String(
-                        format: NSLocalizedString(
-                            "About %d payments left at the current instalment.",
-                            comment: "Loan forecast"
-                        ),
-                        instalments
-                    )
-                )
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-            }
-
-            DueDateLabel(days: daysUntilDue, dueDate: progress.loan.dueDate)
+            // One line carrying both the instalment estimate and the deadline,
+            // so a loan card matches a goal card row for row.
+            MetaLineView(
+                systemImage: metaIcon,
+                text: metaText,
+                tint: isOverdue ? AppTheme.expenseAccent : .secondary
+            )
 
             if onRecordPayment != nil || onOpen != nil {
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
                     if let onRecordPayment {
                         Button(action: onRecordPayment) {
-                            Label("Record payment", systemImage: "arrow.up.circle.fill")
-                                .font(.footnote.weight(.semibold))
-                                .frame(minHeight: AppTheme.minimumTapTarget)
+                            Label("Record payment", systemImage: "arrow.up")
+                                .font(.caption.weight(.semibold))
                         }
                         .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
                         .tint(AppTheme.loanAccent)
                     }
 
                     if let onOpen {
                         Button(action: onOpen) {
                             Text("Details")
-                                .font(.footnote.weight(.semibold))
-                                .frame(minHeight: AppTheme.minimumTapTarget)
+                                .font(.caption.weight(.semibold))
                         }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
                     }
+
+                    Spacer(minLength: 0)
                 }
+                .frame(minHeight: AppTheme.minimumTapTarget)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -184,6 +218,63 @@ struct LoanCardView: View {
             to: calendar.startOfDay(for: dueDate)
         ).day
     }
+
+    private var isOverdue: Bool {
+        (daysUntilDue ?? 0) < 0 && progress.loan.dueDate != nil
+    }
+
+    private var metaIcon: String {
+        if isOverdue { return "exclamationmark.circle" }
+        if progress.estimatedPaymentsRemaining != nil { return "number" }
+        return progress.loan.dueDate == nil ? "infinity" : "calendar"
+    }
+
+    private var metaText: String {
+        var parts: [String] = []
+
+        if let instalments = progress.estimatedPaymentsRemaining {
+            parts.append(
+                String(
+                    format: NSLocalizedString("about %d payments left", comment: "Loan forecast"),
+                    instalments
+                )
+            )
+        }
+
+        if let days = daysUntilDue {
+            if days < 0 {
+                parts.append(
+                    String(format: NSLocalizedString("%d days overdue", comment: "Due date"), abs(days))
+                )
+            } else if days == 0 {
+                parts.append(NSLocalizedString("due today", comment: "Due date"))
+            } else {
+                parts.append(
+                    String(format: NSLocalizedString("%d days left", comment: "Due date"), days)
+                )
+            }
+        }
+
+        guard !parts.isEmpty else {
+            return NSLocalizedString("No deadline", comment: "Loan meta")
+        }
+        return parts.joined(separator: " \u{00B7} ")
+    }
+}
+
+/// The single always-present detail line on a goal or loan card.
+struct MetaLineView: View {
+    let systemImage: String
+    let text: String
+    let tint: Color
+
+    var body: some View {
+        Label(text, systemImage: systemImage)
+            .font(.caption2)
+            .foregroundStyle(tint)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }
 
 /// Small label/amount pair used inside the goal and loan cards.
@@ -197,45 +288,16 @@ struct MoneyFactView: View {
             Text(title)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Text(value)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(accent)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(value)
-    }
-}
-
-/// States the deadline in plain words, and says so when it has passed.
-struct DueDateLabel: View {
-    let days: Int?
-    let dueDate: Date?
-
-    var body: some View {
-        if let days, let dueDate {
-            let text: String = {
-                if days < 0 {
-                    return String(
-                        format: NSLocalizedString("%d days overdue", comment: "Due date"),
-                        abs(days)
-                    )
-                }
-                if days == 0 {
-                    return NSLocalizedString("Due today", comment: "Due date")
-                }
-                return String(
-                    format: NSLocalizedString("%1$d days left, due %2$@", comment: "Due date"),
-                    days,
-                    DateFormatting.dayAndMonth(dueDate)
-                )
-            }()
-
-            Label(text, systemImage: days < 0 ? "exclamationmark.circle" : "calendar")
-                .font(.caption2)
-                .foregroundStyle(days < 0 ? AppTheme.expenseAccent : .secondary)
-        }
     }
 }

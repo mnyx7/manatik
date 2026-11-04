@@ -1,12 +1,12 @@
 import Combine
 import SwiftUI
 
+/// Screens pushed on top of whichever tab is showing. The tabs themselves are
+/// not destinations: they swap the stack's root, so every tab behaves the same
+/// way instead of Home alone popping back.
 enum RootDestination: Hashable {
-    case activities
-    case settings
     case savings
     case loans
-    case overview
     case yearOverview
 }
 
@@ -49,17 +49,29 @@ struct RootView: View {
 
     @StateObject private var viewModel = HomeViewModel()
     @StateObject private var keyboard = KeyboardObserver()
+    @State private var tab: Tab = .home
     @State private var path: [RootDestination] = []
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack(path: $path) {
-            HomeView(
-                viewModel: viewModel,
-                onOpenActivities: { select(.activities) },
-                onOpenSavings: { push(.savings) },
-                onOpenLoans: { push(.loans) }
-            )
+            Group {
+                switch tab {
+                case .home:
+                    HomeView(
+                        viewModel: viewModel,
+                        onOpenActivities: { select(.activities) },
+                        onOpenSavings: { push(.savings) },
+                        onOpenLoans: { push(.loans) }
+                    )
+                case .activities:
+                    ActivitiesView(viewModel: viewModel)
+                case .settings:
+                    SettingsView(viewModel: SettingsViewModel(store: store))
+                case .overview:
+                    OverviewView()
+                }
+            }
             .navigationDestination(for: RootDestination.self, destination: destination)
         }
         // Inset the whole stack, not just the root, so the bar stays put when
@@ -219,16 +231,6 @@ struct RootView: View {
 
     // MARK: - Bottom bar
 
-    private var activeTab: Tab? {
-        switch path.last {
-        case .none: return .home
-        case .activities: return .activities
-        case .settings: return .settings
-        case .overview: return .overview
-        default: return nil
-        }
-    }
-
     private var bottomBar: some View {
         VStack(spacing: 0) {
             Divider()
@@ -267,15 +269,10 @@ struct RootView: View {
         systemImage: String,
         title: LocalizedStringKey
     ) -> some View {
-        let isActive = activeTab == tab
+        let isActive = self.tab == tab && path.isEmpty
 
         Button {
-            switch tab {
-            case .home: select(nil)
-            case .activities: select(.activities)
-            case .settings: select(.settings)
-            case .overview: select(.overview)
-            }
+            select(tab)
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: systemImage)
@@ -294,15 +291,13 @@ struct RootView: View {
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }
 
-    /// Switches slot. Tapping the slot already shown does nothing, rather than
-    /// bouncing back to the main page.
-    private func select(_ destination: RootDestination?) {
-        guard let destination else {
-            if !path.isEmpty { path.removeAll() }
-            return
-        }
-        guard path.last != destination else { return }
-        path = [destination]
+    /// Switches which tab's screen is the stack root. Any pushed screen is
+    /// dropped, the way a tab bar normally behaves. Tapping the tab already
+    /// showing does nothing.
+    private func select(_ newTab: Tab) {
+        guard newTab != tab || !path.isEmpty else { return }
+        path.removeAll()
+        tab = newTab
     }
 
     /// Pushes on top of wherever the user is, for screens reached from content.
@@ -315,16 +310,10 @@ struct RootView: View {
     @ViewBuilder
     private func destination(_ destination: RootDestination) -> some View {
         switch destination {
-        case .activities:
-            ActivitiesView(viewModel: viewModel)
-        case .settings:
-            SettingsView(viewModel: SettingsViewModel(store: store))
         case .savings:
             SavingsView(viewModel: viewModel)
         case .loans:
             LoansView(viewModel: viewModel)
-        case .overview:
-            OverviewView()
         case .yearOverview:
             YearlyOverviewView(
                 viewModel: YearlyOverviewViewModel(store: store, year: store.selectedYear)

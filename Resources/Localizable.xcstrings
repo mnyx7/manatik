@@ -22,10 +22,19 @@
     "%1$d entries, %2$d repeating": {
       "extractionState": "manual"
     },
+    "%@ %@": {
+      "extractionState": "manual"
+    },
     "%@ expense": {
       "extractionState": "manual"
     },
     "%@ income": {
+      "extractionState": "manual"
+    },
+    "%@ — %@": {
+      "extractionState": "manual"
+    },
+    "%@, %@": {
       "extractionState": "manual"
     },
     "%d attached": {
@@ -33,6 +42,23 @@
     },
     "%d attachments": {
       "extractionState": "manual"
+    },
+    "%d days left": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d gün qalıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "осталось %d дней"
+          }
+        }
+      }
     },
     "%d days overdue": {
       "extractionState": "manual"
@@ -79,9 +105,6 @@
           }
         }
       }
-    },
-    "About %d payments left at the current instalment.": {
-      "extractionState": "manual"
     },
     "Activities": {
       "extractionState": "manual",
@@ -2723,6 +2746,23 @@
         }
       }
     },
+    "No deadline": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son tarix yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Без срока"
+          }
+        }
+      }
+    },
     "No entries": {
       "extractionState": "manual",
       "localizations": {
@@ -5001,8 +5041,42 @@
     "\\(viewModel.store.state.recurringSeries.count)": {
       "extractionState": "manual"
     },
+    "about %d payments left": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "təxminən %d ödəniş qalıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "осталось примерно %d платежей"
+          }
+        }
+      }
+    },
     "avg %@": {
       "extractionState": "manual"
+    },
+    "due today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bu gün ödənilməli"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "срок сегодня"
+          }
+        }
+      }
     },
     "from %@": {
       "extractionState": "manual"

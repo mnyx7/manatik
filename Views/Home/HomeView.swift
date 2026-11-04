@@ -151,7 +151,7 @@ struct HomeView: View {
                 // Scrolls sideways like Quick Add, so several goals fit without
                 // pushing the rest of the page down.
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(alignment: .top, spacing: 12) {
                         ForEach(goals) { progress in
                             SavingsGoalCardView(
                                 progress: progress,
@@ -209,7 +209,7 @@ struct HomeView: View {
                 .buttonStyle(.plain)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(alignment: .top, spacing: 12) {
                         ForEach(loans) { progress in
                             LoanCardView(
                                 progress: progress,
