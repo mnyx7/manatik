@@ -5,29 +5,35 @@ struct QuickAddBarView: View {
     let onTap: (TransactionCategory) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Quick Add")
-                .font(.headline)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(categories) { category in
-                        Button {
-                            onTap(category)
-                        } label: {
-                            HStack(spacing: 6) {
-                                Text(category.icon)
-                                Text(category.name)
-                                    .font(.footnote.weight(.medium))
-                            }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(Color(.secondarySystemBackground), in: Capsule())
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(categories) { category in
+                    Button {
+                        onTap(category)
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(category.icon)
+                                .accessibilityHidden(true)
+                            Text(category.localizedName)
+                                .font(.footnote.weight(.medium))
+                                .lineLimit(1)
                         }
-                        .buttonStyle(.plain)
+                        .padding(.horizontal, 12)
+                        // Chips used to be ~34pt tall, under the 44pt minimum.
+                        .frame(minHeight: AppTheme.minimumTapTarget)
+                        .background(AppTheme.cardBackground, in: Capsule())
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(
+                        String(
+                            format: NSLocalizedString("Add %@ entry", comment: "Accessibility"),
+                            category.localizedName
+                        )
+                    )
                 }
             }
+            .padding(.vertical, 2)
         }
+        .scrollClipDisabled()
     }
 }

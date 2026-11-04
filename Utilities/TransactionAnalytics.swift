@@ -1,65 +1,197 @@
 import Foundation
 
-struct TransactionSummary {
-    let income: Double
-    let expense: Double
-    let amountLeft: Double
-    let averageSpendingPerDay: Double
-    let biggestExpense: Double
+struct TransactionSummary: Hashable {
+    let income: Decimal
+    let expense: Decimal
+    /// Income minus expense for the period. A net result, not a spendable budget.
+    let netBalance: Decimal
+    /// Expense divided by the days of the period that have already happened.
+    let averageSpendingPerDay: Decimal
+    let biggestExpense: Decimal
     let totalTransactions: Int
+    /// How many of those rows are forecasts rather than recorded entries.
+    let projectedTransactions: Int
+
+    var hasProjections: Bool { projectedTransactions > 0 }
+
+    static let empty = TransactionSummary(
+        income: 0,
+        expense: 0,
+        netBalance: 0,
+        averageSpendingPerDay: 0,
+        biggestExpense: 0,
+        totalTransactions: 0,
+        projectedTransactions: 0
+    )
 }
 
-struct CategorySpending: Identifiable {
+struct CategorySpending: Identifiable, Hashable {
     var id: String { category.id }
     let category: TransactionCategory
-    let total: Double
+    let total: Decimal
+    /// Fraction of total period expense, 0...1.
+    let share: Double
+}
+
+struct DailySpendPoint: Identifiable, Hashable {
+    var id: Date { date }
+    let date: Date
+    let expense: Decimal
+    let income: Decimal
+    /// True for days after today, whose figures are forecasts.
+    let isProjected: Bool
 }
 
 enum TransactionAnalytics {
-    static func summary(occurrences: [TransactionOccurrence], dayCount: Int) -> TransactionSummary {
-        let income = occurrences.filter { $0.type == .income }.reduce(0) { $0 + $1.amount }
-        let expense = occurrences.filter { $0.type == .expense }.reduce(0) { $0 + $1.amount }
-        let biggestExpense = occurrences.filter { $0.type == .expense }.map { $0.amount }.max() ?? 0
-        let avg = dayCount > 0 ? expense / Double(dayCount) : 0
+    static func summary(
+        occurrences: [TransactionOccurrence],
+        elapsedDayCount: Int
+    ) -> TransactionSummary {
+        var income = Decimal.zero
+        var expense = Decimal.zero
+        var biggestExpense = Decimal.zero
+        var projected = 0
+
+        for item in occurrences {
+            switch item.type {
+            case .income:
+                income += item.amount
+            case .expense:
+                expense += item.amount
+                if item.amount > biggestExpense {
+                    biggestExpense = item.amount
+                }
+            }
+            if item.isProjected {
+                projected += 1
+            }
+        }
+
+        let average: Decimal
+        if elapsedDayCount > 0 {
+            average = (expense / Decimal(elapsedDayCount)).rounded(scale: 2)
+        } else {
+            average = 0
+        }
 
         return TransactionSummary(
             income: income,
             expense: expense,
-            amountLeft: income - expense,
-            averageSpendingPerDay: avg,
+            netBalance: income - expense,
+            averageSpendingPerDay: average,
             biggestExpense: biggestExpense,
-            totalTransactions: occurrences.count
+            totalTransactions: occurrences.count,
+            projectedTransactions: projected
         )
     }
 
-    static func topCategorySpending(
+    static func categorySpending(
         from occurrences: [TransactionOccurrence],
         categories: [TransactionCategory]
     ) -> [CategorySpending] {
         let expenses = occurrences.filter { $0.type == .expense }
-        let grouped = Dictionary(grouping: expenses, by: { $0.categoryID })
+        guard !expenses.isEmpty else { return [] }
 
-        return grouped.map { key, values in
-            let category = categories.first(where: { $0.id == key }) ?? DefaultCategories.category(for: key)
-            let total = values.reduce(0) { $0 + $1.amount }
-            return CategorySpending(category: category, total: total)
+        let lookup = Dictionary(uniqueKeysWithValues: categories.map { ($0.id, $0) })
+        var totals: [String: Decimal] = [:]
+        var overall = Decimal.zero
+
+        for item in expenses {
+            totals[item.categoryID, default: .zero] += item.amount
+            overall += item.amount
         }
-        .sorted(by: { $0.total > $1.total })
+
+        let divisor = NSDecimalNumber(decimal: overall).doubleValue
+
+        return totals
+            .map { categoryID, total in
+                let share: Double
+                if divisor > 0 {
+                    share = NSDecimalNumber(decimal: total).doubleValue / divisor
+                } else {
+                    share = 0
+                }
+                return CategorySpending(
+                    category: lookup[categoryID] ?? DefaultCategories.category(for: categoryID),
+                    total: total,
+                    share: min(max(share, 0), 1)
+                )
+            }
+            .sorted { lhs, rhs in
+                if lhs.total == rhs.total {
+                    return lhs.category.id < rhs.category.id
+                }
+                return lhs.total > rhs.total
+            }
     }
 
-    static func groupedByDay(_ occurrences: [TransactionOccurrence], calendar: Calendar = .current) -> [DailyTransactionSection] {
+    static func groupedByDay(
+        _ occurrences: [TransactionOccurrence],
+        calendar: Calendar = .current
+    ) -> [DailyTransactionSection] {
         let grouped = Dictionary(grouping: occurrences) { calendar.startOfDay(for: $0.date) }
 
         return grouped
             .map { day, items in
-                let sortedItems = items.sorted { $0.date > $1.date }
-                return DailyTransactionSection(
-                    id: ISO8601DateFormatter().string(from: day),
+                DailyTransactionSection(
+                    id: sectionID(for: day, calendar: calendar),
                     title: DateFormatting.daySectionTitle(day, calendar: calendar),
                     date: day,
-                    items: sortedItems
+                    items: items.sorted { lhs, rhs in
+                        if lhs.date == rhs.date {
+                            return lhs.id < rhs.id
+                        }
+                        return lhs.date > rhs.date
+                    }
                 )
             }
             .sorted { $0.date > $1.date }
+    }
+
+    /// Per-day totals across the period, for the chart. Days with no activity
+    /// are included so the line does not imply spending on empty days.
+    static func dailySpend(
+        occurrences: [TransactionOccurrence],
+        in interval: DateInterval,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> [DailySpendPoint] {
+        var expenses: [Date: Decimal] = [:]
+        var incomes: [Date: Decimal] = [:]
+
+        for item in occurrences {
+            let day = calendar.startOfDay(for: item.date)
+            switch item.type {
+            case .expense: expenses[day, default: .zero] += item.amount
+            case .income: incomes[day, default: .zero] += item.amount
+            }
+        }
+
+        let today = calendar.startOfDay(for: now)
+        var points: [DailySpendPoint] = []
+        var cursor = calendar.startOfDay(for: interval.start)
+        var guardCount = 0
+
+        while cursor < interval.end, guardCount < 400 {
+            guardCount += 1
+            points.append(
+                DailySpendPoint(
+                    date: cursor,
+                    expense: expenses[cursor] ?? .zero,
+                    income: incomes[cursor] ?? .zero,
+                    isProjected: cursor > today
+                )
+            )
+            guard let next = calendar.date(byAdding: .day, value: 1, to: cursor) else { break }
+            cursor = next
+        }
+
+        return points
+    }
+
+    /// Avoids allocating an ISO8601DateFormatter per section.
+    private static func sectionID(for day: Date, calendar: Calendar) -> String {
+        let parts = calendar.dateComponents([.year, .month, .day], from: day)
+        return "\(parts.year ?? 0)-\(parts.month ?? 0)-\(parts.day ?? 0)"
     }
 }

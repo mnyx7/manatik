@@ -1,95 +1,48 @@
-import Combine
 import Foundation
 
+/// UI state for the main page and the activities list.
+///
+/// Holds no derived data and does not republish the store. Views observe the
+/// store directly through the environment, so the old `objectWillChange`
+/// bridge (which re-rendered twice and lagged by a runloop hop) is gone.
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published var filter: TransactionFilter = .empty
+
     @Published var isShowingAddSheet = false
-    @Published var isShowingSettings = false
-    @Published var isShowingYearlyOverview = false
     @Published var isShowingPeriodPicker = false
-    @Published var editingTransactionID: UUID?
-    @Published var pendingDeleteID: UUID?
+    @Published var isShowingDateFilter = false
 
-    let store: AppStore
+    /// Pre-selected category when the add sheet was opened from a quick-add chip.
+    @Published var quickAddCategoryID: String?
 
-    private var cancellables = Set<AnyCancellable>()
-
-    init(store: AppStore) {
-        self.store = store
-
-        store.$state
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-    }
-
-    var selectedYearText: String {
-        String(store.selectedYear)
-    }
-
-    var selectedPeriodText: String {
-        DateRangeCalculator.periodDisplayText(for: store.selectedPeriod)
-    }
-
-    var summary: TransactionSummary {
-        store.summaryForSelectedPeriod()
-    }
-
-    var categoryTotals: [CategorySpending] {
-        store.categoryTotalsForSelectedPeriod()
-    }
-
-    var sections: [DailyTransactionSection] {
-        store.groupedSectionsForSelectedPeriod(filter: filter)
-    }
+    @Published var editingOccurrence: TransactionOccurrence?
+    @Published var pendingDelete: TransactionOccurrence?
 
     var quickAddCategories: [TransactionCategory] {
         DefaultCategories.quickAddCategoryIDs.map { DefaultCategories.category(for: $0) }
     }
 
-    var hasActiveFilter: Bool {
-        filter.isActive
+    /// The range actually being browsed. An explicit date filter wins over the
+    /// selected period, so a range outside the current month returns its real
+    /// contents instead of nothing.
+    func browsedInterval(defaultPeriod: DateInterval) -> DateInterval {
+        filter.dateInterval ?? defaultPeriod
     }
 
-    var currency: Currency {
-        store.state.settings.currency
-    }
-
-    var savingsGoal: SavingsGoal {
-        store.state.settings.savingsGoal
-    }
-
-    func amountText(_ amount: Double) -> String {
-        CurrencyFormatting.format(amount: amount, currency: currency)
-    }
-
-    func monthlySavingsProgress() -> (current: Double, target: Double, progress: Double) {
-        let current = savingsGoal.useAmountLeftForProgress ? max(summary.amountLeft, 0) : max(savingsGoal.currentSavedAmount, 0)
-        let target = max(savingsGoal.targetAmount, 1)
-        let progress = min(current / target, 1)
-        return (current, target, progress)
-    }
-
-    func startQuickAdd(with category: TransactionCategory) {
-        editingTransactionID = nil
+    func beginAdd() {
+        quickAddCategoryID = nil
+        editingOccurrence = nil
         isShowingAddSheet = true
-        filter.type = nil
     }
 
-    func deletePendingTransaction() {
-        guard let id = pendingDeleteID else { return }
-        store.deleteTransaction(id: id)
-        pendingDeleteID = nil
+    func beginQuickAdd(_ category: TransactionCategory) {
+        quickAddCategoryID = category.id
+        editingOccurrence = nil
+        isShowingAddSheet = true
     }
 
-    func setPeriodAnchorDate(_ date: Date) {
-        store.setSelectedPeriod(anchorDate: date)
-    }
-
-    func movePeriod(by months: Int) {
-        store.moveSelectedPeriod(byMonths: months)
+    func clearFilters() {
+        filter = .empty
     }
 }

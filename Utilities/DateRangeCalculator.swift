@@ -1,55 +1,110 @@
 import Foundation
 
 enum DateRangeCalculator {
-    static func period(for anchorDate: Date, monthStartDay: Int, calendar: Calendar = .current) -> DateInterval {
-        let startDay = min(max(monthStartDay, 1), 31)
-        let normalizedAnchor = calendar.startOfDay(for: anchorDate)
+    /// Periods start on days 1...28 only. Every month has those days, so
+    /// consecutive periods always meet exactly: no overlap, no gap, and no
+    /// per-month clamping that would make period length jump around.
+    static let minimumMonthStartDay = 1
+    static let maximumMonthStartDay = 28
 
-        let anchorComponents = calendar.dateComponents([.year, .month], from: normalizedAnchor)
-        guard let monthStartCandidate = date(year: anchorComponents.year!, month: anchorComponents.month!, day: startDay, calendar: calendar) else {
-            return DateInterval(start: normalizedAnchor, end: calendar.date(byAdding: .day, value: 1, to: normalizedAnchor) ?? normalizedAnchor)
+    static func clampMonthStartDay(_ value: Int) -> Int {
+        min(max(value, minimumMonthStartDay), maximumMonthStartDay)
+    }
+
+    static func period(
+        for anchorDate: Date,
+        monthStartDay: Int,
+        calendar: Calendar = .current
+    ) -> DateInterval {
+        let startDay = clampMonthStartDay(monthStartDay)
+        let anchor = calendar.startOfDay(for: anchorDate)
+        let components = calendar.dateComponents([.year, .month], from: anchor)
+
+        guard
+            let year = components.year,
+            let month = components.month,
+            let candidate = calendar.date(
+                from: DateComponents(year: year, month: month, day: startDay)
+            )
+        else {
+            let end = calendar.date(byAdding: .day, value: 1, to: anchor) ?? anchor
+            return DateInterval(start: anchor, end: end)
         }
 
-        let periodStart: Date
-        if normalizedAnchor < monthStartCandidate {
-            let previousMonthDate = calendar.date(byAdding: .month, value: -1, to: monthStartCandidate) ?? normalizedAnchor
-            let previousComponents = calendar.dateComponents([.year, .month], from: previousMonthDate)
-            periodStart = date(year: previousComponents.year!, month: previousComponents.month!, day: startDay, calendar: calendar) ?? monthStartCandidate
+        let start: Date
+        if anchor < candidate {
+            start = calendar.date(byAdding: .month, value: -1, to: candidate) ?? candidate
         } else {
-            periodStart = monthStartCandidate
+            start = candidate
         }
 
-        let nextMonth = calendar.date(byAdding: .month, value: 1, to: periodStart) ?? periodStart
-        let nextComponents = calendar.dateComponents([.year, .month], from: nextMonth)
-        let periodEnd = date(year: nextComponents.year!, month: nextComponents.month!, day: startDay, calendar: calendar) ?? nextMonth
+        let end = calendar.date(byAdding: .month, value: 1, to: start)
+            ?? calendar.date(byAdding: .day, value: 30, to: start)
+            ?? start
 
-        return DateInterval(start: periodStart, end: periodEnd)
+        return DateInterval(start: start, end: end)
     }
 
-    static func periodDisplayText(for interval: DateInterval, calendar: Calendar = .current) -> String {
-        let displayEnd = calendar.date(byAdding: .day, value: -1, to: interval.end) ?? interval.end
-        let formatter = DateFormatter()
-        formatter.calendar = calendar
-        formatter.dateFormat = "d MMMM"
-        return "\(formatter.string(from: interval.start)) - \(formatter.string(from: displayEnd))"
+    static func monthAnchor(
+        year: Int,
+        month: Int,
+        monthStartDay: Int,
+        calendar: Calendar = .current
+    ) -> Date {
+        let day = clampMonthStartDay(monthStartDay)
+        return calendar.date(from: DateComponents(year: year, month: month, day: day))
+            ?? Date()
     }
 
+    /// Total days in the period.
     static func dayCount(for interval: DateInterval, calendar: Calendar = .current) -> Int {
         let days = calendar.dateComponents([.day], from: interval.start, to: interval.end).day ?? 0
         return max(days, 1)
     }
 
-    static func monthAnchor(year: Int, month: Int, monthStartDay: Int, calendar: Calendar = .current) -> Date {
-        date(year: year, month: month, day: monthStartDay, calendar: calendar) ?? Date()
+    /// Days of the period that have actually happened, today included.
+    ///
+    /// This is what a daily average must divide by. Dividing by the full period
+    /// length understates spending by up to ~30x on the first days of a month.
+    static func elapsedDayCount(
+        for interval: DateInterval,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Int {
+        let today = calendar.startOfDay(for: now)
+
+        if today >= interval.end {
+            return dayCount(for: interval)
+        }
+        if today < interval.start {
+            return 0
+        }
+
+        let days = calendar.dateComponents([.day], from: interval.start, to: today).day ?? 0
+        return max(days + 1, 1)
     }
 
-    private static func date(year: Int, month: Int, day: Int, calendar: Calendar) -> Date? {
-        let monthRange = calendar.range(of: .day, in: .month, for: calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date())
-        let normalizedDay = min(day, monthRange?.upperBound.advanced(by: -1) ?? day)
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = normalizedDay
-        return calendar.date(from: components)
+    static func isCurrentPeriod(
+        _ interval: DateInterval,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Bool {
+        let today = calendar.startOfDay(for: now)
+        return today >= interval.start && today < interval.end
+    }
+
+    /// Inclusive last day of the period, for display.
+    static func displayEnd(for interval: DateInterval, calendar: Calendar = .current) -> Date {
+        calendar.date(byAdding: .day, value: -1, to: interval.end) ?? interval.end
+    }
+
+    static func periodDisplayText(
+        for interval: DateInterval,
+        calendar: Calendar = .current
+    ) -> String {
+        let end = displayEnd(for: interval, calendar: calendar)
+        let startText = DateFormatting.dayAndMonth(interval.start, calendar: calendar)
+        let endText = DateFormatting.dayAndMonth(end, calendar: calendar)
+        return "\(startText) - \(endText)"
     }
 }

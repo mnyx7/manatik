@@ -42,6 +42,13 @@
 		AA0000000000000000000320 /* TransactionAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000121 /* TransactionAnalytics.swift */; };
 		AA0000000000000000000321 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000122 /* MockData.swift */; };
 		AA0000000000000000000330 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000123 /* Assets.xcassets */; };
+		AA0000000000000000000340 /* PaymentReminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000130 /* PaymentReminder.swift */; };
+		AA0000000000000000000341 /* ReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000131 /* ReminderScheduler.swift */; };
+		AA0000000000000000000342 /* PeriodHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000132 /* PeriodHeaderView.swift */; };
+		AA0000000000000000000343 /* SpendingChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000133 /* SpendingChartView.swift */; };
+		AA0000000000000000000344 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000134 /* RootView.swift */; };
+		AA0000000000000000000345 /* ActivitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000135 /* ActivitiesView.swift */; };
+		AA0000000000000000000346 /* ReminderEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000136 /* ReminderEditorView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +89,13 @@
 		AA0000000000000000000122 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		AA0000000000000000000123 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA0000000000000000000124 /* manatik.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = manatik.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000130 /* PaymentReminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentReminder.swift; sourceTree = "<group>"; };
+		AA0000000000000000000131 /* ReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderScheduler.swift; sourceTree = "<group>"; };
+		AA0000000000000000000132 /* PeriodHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodHeaderView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000133 /* SpendingChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingChartView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000134 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000135 /* ActivitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000136 /* ReminderEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderEditorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +155,7 @@
 		AA0000000000000000000202 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000130 /* PaymentReminder.swift */,
 				AA0000000000000000000103 /* DefaultCategories.swift */,
 				AA0000000000000000000104 /* SettingsModels.swift */,
 				AA0000000000000000000105 /* TransactionModels.swift */,
@@ -170,7 +185,9 @@
 		AA0000000000000000000205 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000221 /* Activities */,
 				AA0000000000000000000206 /* Home */,
+				AA0000000000000000000220 /* Root */,
 				AA0000000000000000000207 /* Settings */,
 				AA0000000000000000000208 /* Transactions */,
 				AA0000000000000000000209 /* Yearly */,
@@ -191,6 +208,7 @@
 		AA0000000000000000000207 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000136 /* ReminderEditorView.swift */,
 				AA000000000000000000010E /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -215,6 +233,8 @@
 		AA000000000000000000020A /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000132 /* PeriodHeaderView.swift */,
+				AA0000000000000000000133 /* SpendingChartView.swift */,
 				AA0000000000000000000111 /* CategoryTotalsCardView.swift */,
 				AA0000000000000000000112 /* EmptyStateView.swift */,
 				AA0000000000000000000113 /* FilterBarView.swift */,
@@ -230,6 +250,7 @@
 		AA000000000000000000020B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000131 /* ReminderScheduler.swift */,
 				AA0000000000000000000119 /* AppBackupDocument.swift */,
 				AA000000000000000000011A /* RecurringTransactionService.swift */,
 			);
@@ -272,6 +293,22 @@
 				AA0000000000000000000122 /* MockData.swift */,
 			);
 			path = MockData;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000220 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000134 /* RootView.swift */,
+			);
+			path = Root;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000221 /* Activities */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000135 /* ActivitiesView.swift */,
+			);
+			path = Activities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -377,6 +414,13 @@
 				AA000000000000000000031F /* DecimalAmountValidator.swift in Sources */,
 				AA0000000000000000000320 /* TransactionAnalytics.swift in Sources */,
 				AA0000000000000000000321 /* MockData.swift in Sources */,
+				AA0000000000000000000340 /* PaymentReminder.swift in Sources */,
+				AA0000000000000000000341 /* ReminderScheduler.swift in Sources */,
+				AA0000000000000000000342 /* PeriodHeaderView.swift in Sources */,
+				AA0000000000000000000343 /* SpendingChartView.swift in Sources */,
+				AA0000000000000000000344 /* RootView.swift in Sources */,
+				AA0000000000000000000345 /* ActivitiesView.swift in Sources */,
+				AA0000000000000000000346 /* ReminderEditorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,266 +1,183 @@
 import SwiftUI
 
+/// The main page. Shows where the current period stands and gives one-tap
+/// capture; the full ledger lives behind Activities in the bottom bar.
 struct HomeView: View {
-    @StateObject var viewModel: HomeViewModel
+    @EnvironmentObject private var store: AppStore
+    @ObservedObject var viewModel: HomeViewModel
 
-    @State private var showingDateFilterSheet = false
-    @State private var showingPeriodPicker = false
-    @State private var quickAddCategoryID: String?
+    let onOpenActivities: () -> Void
+    let onOpenYearOverview: () -> Void
+
+    private let recentLimit = 5
+
+    private var period: DateInterval { store.selectedPeriod }
+    private var summary: TransactionSummary { store.summary(in: period) }
+    private var currency: Currency { store.state.settings.currency }
+
+    private var recentOccurrences: [TransactionOccurrence] {
+        Array(store.occurrences(in: period).prefix(recentLimit))
+    }
+
+    private var savingsCurrent: Decimal {
+        let goal = store.state.settings.savingsGoal
+        // Overspend is passed through rather than clamped, so a negative month
+        // no longer looks identical to "no progress yet".
+        return goal.useAmountLeftForProgress ? summary.netBalance : goal.currentSavedAmount
+    }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    periodHeader
-                    summaryCards
-                    savingsCard
-                    statsCard
-                    quickAddBar
-                    filterBar
-                    categoryTotals
-                    transactionsSection
-                }
-                .padding()
-            }
-            .background(AppTheme.groupedBackground)
-            .navigationTitle("manatik")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        viewModel.isShowingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                PeriodHeaderView(
+                    periodText: DateRangeCalculator.periodDisplayText(for: period),
+                    isCurrentPeriod: store.isViewingCurrentPeriod,
+                    income: summary.income,
+                    expense: summary.expense,
+                    netBalance: summary.netBalance,
+                    currency: currency,
+                    hasProjections: summary.hasProjections,
+                    onPrevious: { store.movePeriod(byMonths: -1) },
+                    onNext: { store.movePeriod(byMonths: 1) },
+                    onPickPeriod: { viewModel.isShowingPeriodPicker = true },
+                    onGoToToday: { store.resetPeriodToToday() }
+                )
 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        quickAddCategoryID = nil
-                        viewModel.editingTransactionID = nil
-                        viewModel.isShowingAddSheet = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $viewModel.isShowingAddSheet) {
-                TransactionFormView(
-                    viewModel: TransactionFormViewModel(
-                        store: viewModel.store,
-                        mode: .add(preselectedCategoryID: quickAddCategoryID)
+                quickAdd
+
+                if store.hasAnyData {
+                    SpendingChartView(
+                        points: store.dailySpend(in: period),
+                        averagePerDay: summary.averageSpendingPerDay,
+                        currency: currency
                     )
-                )
-            }
-            .sheet(isPresented: $viewModel.isShowingSettings) {
-                SettingsView(viewModel: SettingsViewModel(store: viewModel.store))
-            }
-            .sheet(isPresented: $viewModel.isShowingYearlyOverview) {
-                YearlyOverviewView(
-                    viewModel: YearlyOverviewViewModel(
-                        store: viewModel.store,
-                        year: viewModel.store.selectedYear
+
+                    SavingsGoalCardView(
+                        currentAmount: savingsCurrent,
+                        targetAmount: store.state.settings.savingsGoal.targetAmount,
+                        currency: currency,
+                        tracksAmountLeft: store.state.settings.savingsGoal.useAmountLeftForProgress
                     )
-                )
-            }
-            .sheet(isPresented: $showingDateFilterSheet) {
-                DateFilterSheetView(filter: $viewModel.filter)
-            }
-            .sheet(isPresented: $showingPeriodPicker) {
-                PeriodPickerSheet(
-                    selectedDate: viewModel.store.state.selectedPeriodAnchorDate,
-                    onSelect: { viewModel.setPeriodAnchorDate($0) }
-                )
-            }
-            .confirmationDialog(
-                "Delete this transaction?",
-                isPresented: Binding(
-                    get: { viewModel.pendingDeleteID != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            viewModel.pendingDeleteID = nil
-                        }
-                    }
-                ),
-                titleVisibility: .visible
-            ) {
-                Button("Delete", role: .destructive) {
-                    viewModel.deletePendingTransaction()
-                }
-                Button("Cancel", role: .cancel) {
-                    viewModel.pendingDeleteID = nil
+
+                    StatisticsCardView(
+                        averagePerDay: CurrencyFormatting.format(
+                            amount: summary.averageSpendingPerDay,
+                            currency: currency
+                        ),
+                        biggestExpense: CurrencyFormatting.format(
+                            amount: summary.biggestExpense,
+                            currency: currency
+                        ),
+                        transactionCount: summary.totalTransactions,
+                        projectedCount: summary.projectedTransactions,
+                        elapsedDays: DateRangeCalculator.elapsedDayCount(for: period),
+                        totalDays: DateRangeCalculator.dayCount(for: period)
+                    )
+
+                    CategoryTotalsCardView(
+                        totals: store.categorySpending(in: period),
+                        currency: currency
+                    )
+
+                    recentActivity
+                    yearOverviewLink
+                } else {
+                    EmptyStateView.noData(onAdd: { viewModel.beginAdd() })
                 }
             }
+            .padding(.horizontal)
+            .padding(.bottom, 12)
         }
+        .background(AppTheme.groupedBackground)
+        .navigationTitle("manatik")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
-    private var periodHeader: some View {
+    private var quickAdd: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Button {
-                viewModel.isShowingYearlyOverview = true
-            } label: {
-                Text(viewModel.selectedYearText)
-                    .font(.title2.bold())
-            }
-            .buttonStyle(.plain)
+            Text("Quick Add")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
 
-            Button {
-                showingPeriodPicker = true
-            } label: {
-                HStack(spacing: 6) {
-                    Text(viewModel.selectedPeriodText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+            QuickAddBarView(categories: viewModel.quickAddCategories) { category in
+                viewModel.beginQuickAdd(category)
+            }
+        }
+    }
+
+    private var recentActivity: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Recent Activity")
+                    .font(.headline)
+                Spacer()
+                Button(action: onOpenActivities) {
+                    Text("See all")
+                        .font(.footnote.weight(.semibold))
+                        .frame(minHeight: AppTheme.minimumTapTarget)
                 }
             }
-            .buttonStyle(.plain)
 
-            HStack {
-                Button("Previous") { viewModel.movePeriod(by: -1) }
-                Spacer()
-                Button("Next") { viewModel.movePeriod(by: 1) }
-            }
-            .font(.footnote.weight(.medium))
-        }
-    }
-
-    private var summaryCards: some View {
-        let summary = viewModel.summary
-        return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-            SummaryCardView(
-                title: "Income",
-                value: viewModel.amountText(summary.income),
-                backgroundColor: AppTheme.incomeColor,
-                valueColor: .green
-            )
-            SummaryCardView(
-                title: "Expense",
-                value: viewModel.amountText(summary.expense),
-                backgroundColor: AppTheme.expenseColor,
-                valueColor: .red
-            )
-            SummaryCardView(
-                title: "Amount Left",
-                value: viewModel.amountText(summary.amountLeft),
-                backgroundColor: AppTheme.savingsColor,
-                valueColor: summary.amountLeft < 0 ? .red : .blue
-            )
-            SummaryCardView(
-                title: "Avg/day",
-                value: viewModel.amountText(summary.averageSpendingPerDay),
-                backgroundColor: Color(.secondarySystemBackground),
-                valueColor: .primary
-            )
-        }
-    }
-
-    private var savingsCard: some View {
-        let progress = viewModel.monthlySavingsProgress()
-        return SavingsGoalCardView(
-            currentText: viewModel.amountText(progress.current),
-            targetText: viewModel.amountText(progress.target),
-            progress: progress.progress
-        )
-    }
-
-    private var statsCard: some View {
-        let summary = viewModel.summary
-        return StatisticsCardView(
-            averagePerDay: viewModel.amountText(summary.averageSpendingPerDay),
-            biggestExpense: viewModel.amountText(summary.biggestExpense),
-            transactionCount: summary.totalTransactions,
-            amountLeft: viewModel.amountText(summary.amountLeft)
-        )
-    }
-
-    private var quickAddBar: some View {
-        QuickAddBarView(categories: viewModel.quickAddCategories) { category in
-            quickAddCategoryID = category.id
-            viewModel.isShowingAddSheet = true
-        }
-    }
-
-    private var filterBar: some View {
-        FilterBarView(
-            filter: $viewModel.filter,
-            categories: viewModel.store.categories,
-            onDateFilterTap: { showingDateFilterSheet = true }
-        )
-    }
-
-    private var categoryTotals: some View {
-        CategoryTotalsCardView(
-            totals: viewModel.categoryTotals,
-            amountText: viewModel.amountText
-        )
-    }
-
-    private var transactionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Transactions")
-                .font(.headline)
-
-            if viewModel.sections.isEmpty {
-                EmptyStateView(
-                    title: "No transactions",
-                    subtitle: "Tap + to add your first income or expense."
+            if recentOccurrences.isEmpty {
+                EmptyStateView.emptyPeriod(
+                    isCurrent: store.isViewingCurrentPeriod,
+                    onGoToToday: { store.resetPeriodToToday() }
                 )
             } else {
-                ForEach(viewModel.sections) { section in
-                    Section {
-                        ForEach(section.items) { item in
-                            let category = DefaultCategories.category(for: item.categoryID)
+                VStack(spacing: 0) {
+                    ForEach(recentOccurrences) { item in
+                        Button {
+                            viewModel.editingOccurrence = item
+                        } label: {
                             TransactionRowView(
                                 item: item,
-                                category: category,
-                                amountText: viewModel.amountText(item.amount)
+                                category: DefaultCategories.category(for: item.categoryID),
+                                currency: currency
                             )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                viewModel.editingTransactionID = item.transactionID
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    viewModel.pendingDeleteID = item.transactionID
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
                         }
-                    } header: {
-                        Text(section.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 8)
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 12)
+
+                        if item.id != recentOccurrences.last?.id {
+                            Divider().padding(.leading, 60)
+                        }
                     }
                 }
-            }
-        }
-        .sheet(
-            isPresented: Binding(
-                get: { viewModel.editingTransactionID != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        viewModel.editingTransactionID = nil
-                    }
-                }
-            )
-        ) {
-            if let id = viewModel.editingTransactionID {
-                TransactionFormView(
-                    viewModel: TransactionFormViewModel(
-                        store: viewModel.store,
-                        mode: .edit(transactionID: id)
-                    )
+                .padding(.vertical, 4)
+                .background(
+                    AppTheme.cardBackground,
+                    in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
                 )
             }
         }
+    }
+
+    private var yearOverviewLink: some View {
+        // Previously this screen was reachable only by tapping unstyled year
+        // text, which gave no sign it was a control at all.
+        Button(action: onOpenYearOverview) {
+            HStack {
+                Label("Year Overview", systemImage: "calendar")
+                    .font(.subheadline.weight(.medium))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .background(
+                AppTheme.cardBackground,
+                in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
 #Preview {
-    HomeView(viewModel: HomeViewModel(store: AppStore()))
+    NavigationStack {
+        HomeView(viewModel: HomeViewModel(), onOpenActivities: {}, onOpenYearOverview: {})
+            .environmentObject(MockData.previewStore())
+    }
 }

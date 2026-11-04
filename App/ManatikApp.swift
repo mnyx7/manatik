@@ -3,11 +3,18 @@ import SwiftUI
 @main
 struct ManatikApp: App {
     @StateObject private var store = AppStore()
+    @StateObject private var reminderScheduler = ReminderScheduler()
 
     var body: some Scene {
         WindowGroup {
-            HomeView(viewModel: HomeViewModel(store: store))
+            RootView()
                 .environmentObject(store)
+                .environmentObject(reminderScheduler)
+                .task {
+                    // Turn every repeating date up to today into a real entry
+                    // before the first frame reads the ledger.
+                    store.materializeDueOccurrences()
+                }
         }
     }
 }
