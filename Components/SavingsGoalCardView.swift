@@ -47,14 +47,14 @@ struct SavingsGoalCardView: View {
                     Label("Add money", systemImage: "plus")
                         .font(.caption.weight(.semibold))
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .tint(AppTheme.savingsAccent)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard(AppTheme.savingsSurface)
+        .glassCard(tint: AppTheme.savingsAccent)
     }
 
     private var summary: some View {
@@ -67,7 +67,7 @@ struct SavingsGoalCardView: View {
                 Text("\(Int((progress.fraction * 100).rounded()))%")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(AppTheme.savingsAccent)
-                    .monospacedDigit()
+                    .moneyDigits()
             }
 
             ProgressView(value: progress.fraction)
@@ -169,14 +169,14 @@ struct LoanCardView: View {
                     Label("Record payment", systemImage: "arrow.up")
                         .font(.caption.weight(.semibold))
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.glass)
                 .controlSize(.small)
                 .tint(AppTheme.loanAccent)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard(AppTheme.loanSurface)
+        .glassCard(tint: AppTheme.loanAccent)
     }
 
     private var summary: some View {
@@ -190,7 +190,7 @@ struct LoanCardView: View {
                 Text("\(Int((progress.fraction * 100).rounded()))%")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(AppTheme.loanAccent)
-                    .monospacedDigit()
+                    .moneyDigits()
             }
 
             ProgressView(value: progress.fraction)

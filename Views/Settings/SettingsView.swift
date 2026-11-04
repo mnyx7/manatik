@@ -2,8 +2,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SettingsView: View {
-    @EnvironmentObject private var reminderScheduler: ReminderScheduler
-    @StateObject var viewModel: SettingsViewModel
+    @Environment(ReminderScheduler.self) private var reminderScheduler
+    @State var viewModel: SettingsViewModel
 
     @FocusState private var isStartDayFocused: Bool
 
@@ -17,6 +17,7 @@ struct SettingsView: View {
             aboutSection
         }
         .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -361,7 +362,7 @@ struct SettingsView: View {
 
 /// Every category in one place: reorder, hide, edit, delete, add.
 struct CategoryManagerView: View {
-    @ObservedObject var viewModel: SettingsViewModel
+    @Bindable var viewModel: SettingsViewModel
     @Environment(\.editMode) private var editMode
 
     var body: some View {
@@ -439,10 +440,8 @@ struct CategoryManagerView: View {
         let uses = viewModel.usageCount(for: category)
 
         HStack(spacing: 12) {
-            Text(category.icon)
-                .font(.title3)
+            CategoryIconView(category: category, size: .medium)
                 .opacity(hidden ? 0.4 : 1)
-                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
@@ -539,7 +538,7 @@ struct CategoryManagerView: View {
 /// There is no server to send this to, so notes are kept on the device and
 /// each one can be shared wherever the user likes.
 struct FeedbackView: View {
-    @ObservedObject var viewModel: SettingsViewModel
+    @Bindable var viewModel: SettingsViewModel
     @FocusState private var isWriting: Bool
 
     private var canSave: Bool {
@@ -620,15 +619,17 @@ struct FeedbackView: View {
 /// Lets the user end, pause or remove a repeating entry without hunting for one
 /// of its rows in the ledger.
 struct RecurringSeriesListView: View {
-    @ObservedObject var store: AppStore
+    let store: AppStore
 
     var body: some View {
         List {
             ForEach(store.state.recurringSeries) { series in
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text(store.category(for: series.categoryID).icon)
-                            .accessibilityHidden(true)
+                        CategoryIconView(
+                            category: store.category(for: series.categoryID),
+                            size: .small
+                        )
                         Text(series.note.isEmpty
                              ? store.category(for: series.categoryID).localizedName
                              : series.note)

@@ -14,14 +14,6 @@ struct CategoryEditorView: View {
     @State private var kind: CategoryKind
     @FocusState private var isNameFocused: Bool
 
-    /// A small, hand-picked set beats asking people to find the emoji keyboard.
-    private let suggestions = [
-        "\u{1F516}", "\u{1F6D2}", "\u{1F3E0}", "\u{1F697}", "\u{1F4BB}", "\u{1F3AF}",
-        "\u{1F4DA}", "\u{1F3A8}", "\u{1F3C3}", "\u{1F487}", "\u{1F9F4}", "\u{1F6E0}",
-        "\u{1F381}", "\u{2708}", "\u{1F3E5}", "\u{1F43E}", "\u{1F4F6}", "\u{1F4B3}",
-        "\u{1F354}", "\u{1F6BF}", "\u{1F455}", "\u{26BD}", "\u{1F3AC}", "\u{1F4B0}"
-    ]
-
     init(
         suggestedKind: CategoryKind,
         editing: TransactionCategory? = nil,
@@ -30,7 +22,10 @@ struct CategoryEditorView: View {
         self.existing = editing
         self.onSave = onSave
         _name = State(initialValue: editing?.name ?? "")
-        _icon = State(initialValue: editing?.icon ?? "\u{1F516}")
+        _icon = State(
+            initialValue: editing.map { CategoryVisuals.symbolName(for: $0) }
+                ?? CategoryVisuals.fallbackSymbol
+        )
         _kind = State(initialValue: editing?.kind ?? suggestedKind)
     }
 
@@ -51,37 +46,29 @@ struct CategoryEditorView: View {
                         columns: Array(repeating: GridItem(.flexible()), count: 6),
                         spacing: 10
                     ) {
-                        ForEach(suggestions, id: \.self) { candidate in
+                        ForEach(CategoryVisuals.pickerSymbols, id: \.self) { candidate in
+                            let isSelected = icon == candidate
+
                             Button {
                                 icon = candidate
                             } label: {
-                                Text(candidate)
-                                    .font(.title3)
+                                Image(systemName: candidate)
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundStyle(isSelected ? .white : Color.accentColor)
                                     .frame(width: 42, height: 42)
                                     .background(
-                                        icon == candidate
-                                            ? AppTheme.savingsSurface
-                                            : AppTheme.cardBackground,
-                                        in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .strokeBorder(
-                                                icon == candidate ? AppTheme.savingsAccent : .clear,
-                                                lineWidth: 2
-                                            )
+                                        isSelected
+                                            ? AnyShapeStyle(Color.accentColor)
+                                            : AnyShapeStyle(Color.accentColor.opacity(0.12)),
+                                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     )
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(Text("Icon \(candidate)"))
-                            .accessibilityAddTraits(icon == candidate ? [.isSelected] : [])
+                            .accessibilityLabel(Text(candidate))
+                            .accessibilityAddTraits(isSelected ? [.isSelected] : [])
                         }
                     }
                     .padding(.vertical, 4)
-
-                    TextField("Or paste any emoji", text: $icon)
-                        .multilineTextAlignment(.center)
-                        .font(.title3)
                 }
 
                 Section {
@@ -118,11 +105,11 @@ struct CategoryEditorView: View {
         }
     }
 
-    /// Keeps a single glyph, so a pasted sentence cannot become the icon.
+    /// The picker only ever offers real symbol names, so this just guards
+    /// against an empty value.
     private var normalizedIcon: String {
         let trimmed = icon.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let first = trimmed.first else { return "\u{1F516}" }
-        return String(first)
+        return trimmed.isEmpty ? CategoryVisuals.fallbackSymbol : trimmed
     }
 }
 

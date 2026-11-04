@@ -23,8 +23,11 @@ struct FilterMenuContent: View {
             Picker(selection: $filter.categoryID) {
                 Text("All categories").tag(String?.none)
                 ForEach(categories) { category in
-                    Text("\(category.icon) \(category.localizedName)")
-                        .tag(String?.some(category.id))
+                    Label(
+                        category.localizedName,
+                        systemImage: CategoryVisuals.symbolName(for: category)
+                    )
+                    .tag(String?.some(category.id))
                 }
             } label: {
                 Text("Category")

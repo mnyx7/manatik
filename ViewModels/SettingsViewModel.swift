@@ -1,30 +1,32 @@
 import Foundation
 import UniformTypeIdentifiers
+import Observation
 
 @MainActor
-final class SettingsViewModel: ObservableObject {
+@Observable
+final class SettingsViewModel {
     /// Typed by hand and committed when the field loses focus, so a full state
     /// write no longer happens on every keystroke.
-    @Published var monthStartDayInput: String
+    var monthStartDayInput: String
 
-    @Published var isShowingExporter = false
-    @Published var isShowingImporter = false
-    @Published var exportDocument: AppBackupDocument?
+    var isShowingExporter = false
+    var isShowingImporter = false
+    var exportDocument: AppBackupDocument?
 
     /// Decoded but not yet applied, so the view can state what will be replaced.
-    @Published var pendingImport: PendingImport?
+    var pendingImport: PendingImport?
 
-    @Published var infoMessage: String?
-    @Published var errorMessage: String?
-    @Published var monthStartDayError: String?
+    var infoMessage: String?
+    var errorMessage: String?
+    var monthStartDayError: String?
 
     // Reminder editing
-    @Published var editingReminder: PaymentReminder?
-    @Published var isShowingReminderEditor = false
-    @Published var isShowingCategoryEditor = false
+    var editingReminder: PaymentReminder?
+    var isShowingReminderEditor = false
+    var isShowingCategoryEditor = false
     /// Non-nil when the category editor was opened to change an existing one.
-    @Published var editingCategory: TransactionCategory?
-    @Published var feedbackDraft = ""
+    var editingCategory: TransactionCategory?
+    var feedbackDraft = ""
 
     let store: AppStore
 

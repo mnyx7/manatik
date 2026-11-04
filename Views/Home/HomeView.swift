@@ -1,11 +1,14 @@
 import SwiftUI
 
-/// The main page. Kept deliberately short: what is left, the goals and debts
-/// being worked on, a fast way to add something, and the latest few entries.
-/// Charts and breakdowns live behind Insights.
+/// The main page. Deliberately short: what is left, the goals and debts being
+/// worked on, a fast way to add something, and the latest few entries.
+///
+/// The period controls moved into the navigation bar. They used to take a whole
+/// content row of their own, and the range was then printed a second time
+/// inside the balance card directly below it.
 struct HomeView: View {
-    @EnvironmentObject private var store: AppStore
-    @ObservedObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
 
     let onOpenActivities: () -> Void
     let onOpenSavings: () -> Void
@@ -14,6 +17,7 @@ struct HomeView: View {
     let onOpenLoan: (UUID) -> Void
 
     private let recentLimit = 4
+    private let carouselCardWidth: CGFloat = 268
 
     private var period: DateInterval { store.selectedPeriod }
     private var summary: TransactionSummary { store.summary(in: period) }
@@ -23,89 +27,123 @@ struct HomeView: View {
         Array(store.occurrences(in: period).prefix(recentLimit))
     }
 
+    /// A brand new install: no entries, no goals, no loans. One clear next step
+    /// beats three competing "add something" prompts.
+    private var isFirstRun: Bool {
+        !store.hasAnyData
+            && store.activeSavingsGoals.isEmpty
+            && store.activeLoans.isEmpty
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                periodStrip
+                if isFirstRun {
+                    welcomeCard
+                } else {
+                    HeroBalanceCardView(
+                        income: summary.income,
+                        expense: summary.expense,
+                        netBalance: summary.netBalance,
+                        currency: currency,
+                        hasProjections: summary.hasProjections
+                    )
 
-                HeroBalanceCardView(
-                    income: summary.income,
-                    expense: summary.expense,
-                    netBalance: summary.netBalance,
-                    currency: currency,
-                    periodText: DateRangeCalculator.periodDisplayText(for: period),
-                    hasProjections: summary.hasProjections
-                )
-
-                quickAdd
-                savingsSection
-                loansSection
-                recentActivity
+                    quickAdd
+                    savingsSection
+                    loansSection
+                    recentActivity
+                }
             }
-            .padding(.horizontal)
-            .padding(.bottom, 10)
+            .padding(.horizontal, AppTheme.pageHorizontalPadding)
+            .padding(.top, 4)
         }
-        .background(AppTheme.pageBackground)
-        .navigationTitle("manatik")
+        .scrollIndicators(.hidden)
+        // The bar floats over the page, so the last row needs room to clear it.
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
+        .navigationTitle(DateRangeCalculator.periodDisplayText(for: period))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { periodToolbar }
     }
 
-    // MARK: - Period
+    // MARK: - Period controls
 
-    private var periodStrip: some View {
-        HStack(spacing: 4) {
+    @ToolbarContentBuilder
+    private var periodToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
             Button {
                 store.movePeriod(byMonths: -1)
             } label: {
                 Image(systemName: "chevron.left")
-                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
             }
             .accessibilityLabel(Text("Previous period"))
+        }
+
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if !store.isViewingCurrentPeriod {
+                Button {
+                    store.resetPeriodToToday()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                }
+                .accessibilityLabel(Text("Back to today"))
+            }
 
             Button {
                 viewModel.isShowingPeriodPicker = true
             } label: {
-                HStack(spacing: 5) {
-                    Text(DateRangeCalculator.periodDisplayText(for: period))
-                        .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                        .accessibilityHidden(true)
-                }
-                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
+                Image(systemName: "calendar")
             }
-            .buttonStyle(.bordered)
             .accessibilityLabel(Text("Change period"))
 
             Button {
                 store.movePeriod(byMonths: 1)
             } label: {
                 Image(systemName: "chevron.right")
-                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
             }
             .accessibilityLabel(Text("Next period"))
+        }
+    }
 
-            if !store.isViewingCurrentPeriod {
-                Button {
-                    store.resetPeriodToToday()
-                } label: {
-                    Image(systemName: "arrow.uturn.backward")
-                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-                }
-                .accessibilityLabel(Text("Back to today"))
+    // MARK: - First run
+
+    private var welcomeCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Start with one entry")
+                    .font(.title3.weight(.semibold))
+                Text("Add something you spent or earned today. Savings goals and loans can wait until you want them.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button {
+                viewModel.beginAdd()
+            } label: {
+                Text("Add an entry")
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+            }
+            .buttonStyle(.glassProminent)
+
+            QuickAddBarView(categories: viewModel.quickAddCategories) { category in
+                viewModel.beginQuickAdd(category)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .glassCard()
     }
 
     // MARK: - Quick add
 
     private var quickAdd: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Quick Add")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(title: "Quick add", actionTitle: nil, action: nil)
 
             QuickAddBarView(categories: viewModel.quickAddCategories) { category in
                 viewModel.beginQuickAdd(category)
@@ -127,48 +165,25 @@ struct HomeView: View {
             )
 
             if goals.isEmpty {
-                Button {
-                    viewModel.newGoal()
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "target")
-                            .font(.title3)
-                            .foregroundStyle(AppTheme.savingsAccent)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Set a savings goal")
-                                .font(.subheadline.weight(.semibold))
-                            Text("Track what you are putting aside.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(AppTheme.savingsAccent)
-                    }
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-                    .cozyCard(AppTheme.savingsSurface)
-                }
-                .buttonStyle(.plain)
+                promptCard(
+                    symbol: "target",
+                    tint: AppTheme.savingsAccent,
+                    title: "Set a savings goal",
+                    subtitle: "Track what you are putting aside.",
+                    action: { viewModel.newGoal() }
+                )
             } else {
-                // Scrolls sideways like Quick Add, so several goals fit without
-                // pushing the rest of the page down.
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: 12) {
-                        ForEach(goals) { progress in
-                            SavingsGoalCardView(
-                                progress: progress,
-                                currency: currency,
-                                onAddMoney: { viewModel.contributingGoal = progress.goal },
-                                onOpen: { onOpenGoal(progress.goal.id) }
-                            )
-                            .frame(width: 290)
-                        }
+                carousel {
+                    ForEach(goals) { progress in
+                        SavingsGoalCardView(
+                            progress: progress,
+                            currency: currency,
+                            onAddMoney: { viewModel.contributingGoal = progress.goal },
+                            onOpen: { onOpenGoal(progress.goal.id) }
+                        )
+                        .frame(width: carouselCardWidth)
                     }
-                    .padding(.vertical, 2)
-                    .scrollTargetLayout()
                 }
-                .scrollTargetBehavior(.viewAligned)
-                .scrollClipDisabled()
             }
         }
     }
@@ -187,46 +202,25 @@ struct HomeView: View {
             )
 
             if loans.isEmpty {
-                Button {
-                    viewModel.newLoan()
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "building.columns")
-                            .font(.title3)
-                            .foregroundStyle(AppTheme.loanAccent)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Track a loan")
-                                .font(.subheadline.weight(.semibold))
-                            Text("See what you borrowed, paid and still owe.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(AppTheme.loanAccent)
-                    }
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-                    .cozyCard(AppTheme.loanSurface)
-                }
-                .buttonStyle(.plain)
+                promptCard(
+                    symbol: "building.columns",
+                    tint: AppTheme.loanAccent,
+                    title: "Track a loan",
+                    subtitle: "See what you borrowed, paid and still owe.",
+                    action: { viewModel.newLoan() }
+                )
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: 12) {
-                        ForEach(loans) { progress in
-                            LoanCardView(
-                                progress: progress,
-                                currency: currency,
-                                onRecordPayment: { viewModel.payingLoan = progress.loan },
-                                onOpen: { onOpenLoan(progress.loan.id) }
-                            )
-                            .frame(width: 290)
-                        }
+                carousel {
+                    ForEach(loans) { progress in
+                        LoanCardView(
+                            progress: progress,
+                            currency: currency,
+                            onRecordPayment: { viewModel.payingLoan = progress.loan },
+                            onOpen: { onOpenLoan(progress.loan.id) }
+                        )
+                        .frame(width: carouselCardWidth)
                     }
-                    .padding(.vertical, 2)
-                    .scrollTargetLayout()
                 }
-                .scrollTargetBehavior(.viewAligned)
-                .scrollClipDisabled()
             }
         }
     }
@@ -238,14 +232,10 @@ struct HomeView: View {
             sectionHeader(title: "Recent", actionTitle: "See all", action: onOpenActivities)
 
             if recentOccurrences.isEmpty {
-                if store.hasAnyData {
-                    EmptyStateView.emptyPeriod(
-                        isCurrent: store.isViewingCurrentPeriod,
-                        onGoToToday: { store.resetPeriodToToday() }
-                    )
-                } else {
-                    EmptyStateView.noData(onAdd: { viewModel.beginAdd() })
-                }
+                EmptyStateView.emptyPeriod(
+                    isCurrent: store.isViewingCurrentPeriod,
+                    onGoToToday: { store.resetPeriodToToday() }
+                )
             } else {
                 VStack(spacing: 0) {
                     ForEach(recentOccurrences) { item in
@@ -259,21 +249,70 @@ struct HomeView: View {
                             )
                         }
                         .buttonStyle(.plain)
-                        .padding(.horizontal, 14)
 
                         if item.id != recentOccurrences.last?.id {
-                            Divider().padding(.leading, 62)
+                            Divider().padding(.leading, 52)
                         }
                     }
                 }
-                .padding(.vertical, 6)
-                .background(
-                    AppTheme.cardBackground,
-                    in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
-                )
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+                .glassCard(padding: 14)
             }
         }
+    }
+
+    // MARK: - Building blocks
+
+    /// Horizontally paged cards, so several goals fit without pushing the rest
+    /// of the page down.
+    @ViewBuilder
+    private func carousel<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .top, spacing: 12) {
+                content()
+            }
+            .padding(.vertical, 2)
+            .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.viewAligned)
+        .scrollClipDisabled()
+    }
+
+    @ViewBuilder
+    private func promptCard(
+        symbol: String,
+        tint: Color,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: symbol)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 40, height: 40)
+                    .background(tint.opacity(0.16), in: AppTheme.innerShape)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "plus")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(tint)
+                    .accessibilityHidden(true)
+            }
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .interactiveGlassCard(tint: tint)
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -284,13 +323,17 @@ struct HomeView: View {
     ) -> some View {
         HStack {
             Text(title)
-                .font(.headline)
+                .font(.sectionTitle())
             Spacer()
             if let actionTitle, let action {
                 Button(action: action) {
-                    Text(actionTitle)
-                        .font(.footnote.weight(.semibold))
-                        .frame(minHeight: 32)
+                    HStack(spacing: 2) {
+                        Text(actionTitle)
+                            .font(.footnote.weight(.semibold))
+                        Image(systemName: "chevron.right")
+                            .font(.caption2.weight(.bold))
+                    }
+                    .frame(minHeight: 32)
                 }
             }
         }

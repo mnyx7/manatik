@@ -57,7 +57,6 @@ enum MockData {
         )
     }
 
-    @MainActor
     static func previewStore() -> AppStore {
         let store = AppStore(
             persistence: InMemoryPersistence(),
@@ -65,33 +64,6 @@ enum MockData {
         )
         store.materializeDueOccurrences()
         return store
-    }
-
-    /// Previews mutate the store freely; without this they would write over the
-    /// real `manatik-state.json` in the simulator's Documents directory.
-    final class InMemoryPersistence: AppStatePersisting {
-        private var stored: AppState?
-
-        func load() -> StateLoadOutcome {
-            guard let stored else { return .fresh }
-            return .loaded(stored)
-        }
-
-        func save(_ state: AppState) throws {
-            stored = state
-        }
-
-        func exportData(from state: AppState) throws -> Data {
-            try JSONEncoder().encode(state)
-        }
-
-        func decodeState(from data: Data) throws -> AppState {
-            try JSONDecoder().decode(AppState.self, from: data)
-        }
-
-        func writeSnapshot(_ state: AppState, tag: String) throws -> URL {
-            URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(tag).json")
-        }
     }
 
     static func previewOccurrence(projected: Bool) -> TransactionOccurrence {

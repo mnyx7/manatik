@@ -1,32 +1,34 @@
 import Foundation
+import Observation
 
 @MainActor
-final class TransactionFormViewModel: ObservableObject {
+@Observable
+final class TransactionFormViewModel {
     enum Mode {
         case add(preselectedCategoryID: String?)
         case edit(occurrence: TransactionOccurrence)
     }
 
-    @Published var amountInput: String = ""
-    @Published var note: String = ""
-    @Published var selectedCategoryID: String = "other"
-    @Published var type: TransactionType = .expense
-    @Published var date: Date = Date()
-    @Published var recurrenceRule: RecurrenceRule = .none
-    @Published var hasEndDate: Bool = false
-    @Published var endDate: Date = Date()
+    var amountInput: String = ""
+    var note: String = ""
+    var selectedCategoryID: String = "other"
+    var type: TransactionType = .expense
+    var date: Date = Date()
+    var recurrenceRule: RecurrenceRule = .none
+    var hasEndDate: Bool = false
+    var endDate: Date = Date()
 
     /// Bookmarks the entry as a bill to find again later.
-    @Published var isFeatured: Bool = false
-    @Published var attachments: [Attachment] = []
+    var isFeatured: Bool = false
+    var attachments: [Attachment] = []
 
-    @Published var isShowingCategoryEditor = false
+    var isShowingCategoryEditor = false
 
     /// Shown only after a failed save attempt, so the form does not scold the
     /// user while they are still typing.
-    @Published var errorMessage: String?
+    var errorMessage: String?
     /// Brief confirmation after "Save and add another".
-    @Published var savedConfirmation: String?
+    var savedConfirmation: String?
 
     let mode: Mode
     let store: AppStore
@@ -215,12 +217,20 @@ final class TransactionFormViewModel: ObservableObject {
     private func configureInitialState() {
         switch mode {
         case .add(let preselectedCategoryID):
-            guard let categoryID = preselectedCategoryID else { return }
-            selectedCategoryID = categoryID
-            switch store.category(for: categoryID).kind {
-            case .income: type = .income
-            case .expense: type = .expense
-            case .both: break
+            // Falling through to the hard-coded "other" meant every new entry
+            // opened on a grey catch-all tile that looked like a placeholder.
+            if let categoryID = preselectedCategoryID {
+                selectedCategoryID = categoryID
+                // A quick-add chip for Salary should land on the income side.
+                switch store.category(for: categoryID).kind {
+                case .income: type = .income
+                case .expense: type = .expense
+                case .both: break
+                }
+            } else if let likely = recentCategories.first ?? availableCategories.first {
+                // Only the category is inferred here; the type stays on the
+                // expense default, which is what most entries are.
+                selectedCategoryID = likely.id
             }
 
         case .edit(let occurrence):

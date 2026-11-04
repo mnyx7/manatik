@@ -2,8 +2,8 @@ import SwiftUI
 
 /// All debts: still being paid, then settled.
 struct LoansView: View {
-    @EnvironmentObject private var store: AppStore
-    @ObservedObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
     let onOpenLoan: (UUID) -> Void
 
     private var currency: Currency { store.state.settings.currency }
@@ -95,17 +95,17 @@ struct LoansView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(AppTheme.incomeAccent)
         }
-        .cozyCard()
+        .glassCard()
         .accessibilityElement(children: .combine)
     }
 }
 
 /// One loan, its figures, and every payment made against it.
 struct LoanDetailView: View {
-    @EnvironmentObject private var store: AppStore
+    @Environment(AppStore.self) private var store
 
     let loanID: UUID
-    @ObservedObject var viewModel: HomeViewModel
+    @Bindable var viewModel: HomeViewModel
 
     @State private var reminderConfirmation: String?
 
@@ -146,7 +146,7 @@ struct LoanDetailView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .cozyCard()
+                        .glassCard()
                 }
 
                 HStack(spacing: 10) {
@@ -217,7 +217,7 @@ struct LoanDetailView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .cozyCard()
+                .glassCard()
 
                 Button(role: .destructive) {
                     store.deleteLoan(id: loan.id)

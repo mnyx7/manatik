@@ -2,7 +2,7 @@ import SwiftUI
 
 struct YearlyOverviewView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel: YearlyOverviewViewModel
+    @State var viewModel: YearlyOverviewViewModel
 
     private let grid = [GridItem(.flexible()), GridItem(.flexible())]
 

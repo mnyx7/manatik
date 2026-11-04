@@ -1,13 +1,15 @@
 import SwiftUI
 
-/// The one figure the main page leads with: what is left this period, with the
-/// two numbers it comes from underneath.
+/// The one figure the main page leads with: what is left this period, the two
+/// numbers it comes from, and how much of what came in has gone out.
+///
+/// The period text was removed: it is the navigation title now, and printing it
+/// here as well meant the same range appeared twice within 60pt of itself.
 struct HeroBalanceCardView: View {
     let income: Decimal
     let expense: Decimal
     let netBalance: Decimal
     let currency: Currency
-    let periodText: String
     let hasProjections: Bool
 
     private var isNegative: Bool { netBalance < 0 }
@@ -16,41 +18,51 @@ struct HeroBalanceCardView: View {
         CurrencyFormatting.format(amount: netBalance, currency: currency)
     }
 
+    /// Share of income already spent, clamped so an over-budget period fills
+    /// the bar rather than overflowing it.
+    private var spentFraction: Double {
+        guard income > 0 else { return expense > 0 ? 1 : 0 }
+        let value = NSDecimalNumber(decimal: expense).doubleValue
+            / NSDecimalNumber(decimal: income).doubleValue
+        return min(max(value, 0), 1)
+    }
+
+    private var accent: Color {
+        isNegative ? AppTheme.expenseAccent : AppTheme.savingsAccent
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(isNegative ? "Over budget" : "Left to spend")
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
 
                 Text(netText)
-                    .font(.system(size: 38, weight: .semibold, design: .rounded))
-                    .foregroundStyle(isNegative ? AppTheme.expenseAccent : AppTheme.savingsAccent)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .minimumScaleFactor(0.7)
-
-                Text(periodText)
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .font(.moneyHero())
+                    .foregroundStyle(accent)
+                    .moneyDigits()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(isNegative ? Text("Over budget") : Text("Left to spend"))
-            .accessibilityValue("\(netText), \(periodText)")
+            .accessibilityValue(netText)
 
-            Divider()
+            ratioBar
 
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
                 figure(
-                    title: "Income",
+                    title: "In",
                     amount: income,
                     accent: AppTheme.incomeAccent,
-                    systemImage: "arrow.down.left"
+                    systemImage: "arrow.down"
                 )
                 figure(
-                    title: "Expense",
+                    title: "Out",
                     amount: expense,
                     accent: AppTheme.expenseAccent,
-                    systemImage: "arrow.up.right"
+                    systemImage: "arrow.up"
                 )
             }
 
@@ -61,7 +73,31 @@ struct HeroBalanceCardView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard(AppTheme.savingsSurface, padding: 18)
+        .glassCard(tint: accent, padding: 20)
+    }
+
+    /// How much of what came in has gone out. A single glance answer that two
+    /// separate totals cannot give on their own.
+    private var ratioBar: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(.quaternary)
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppTheme.expenseAccent.opacity(0.75), AppTheme.expenseAccent],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: max(proxy.size.width * spentFraction, spentFraction > 0 ? 6 : 0))
+            }
+        }
+        .frame(height: 8)
+        .accessibilityElement()
+        .accessibilityLabel(Text("Share of income spent"))
+        .accessibilityValue(Text("\(Int((spentFraction * 100).rounded())) percent"))
     }
 
     @ViewBuilder
@@ -73,20 +109,24 @@ struct HeroBalanceCardView: View {
     ) -> some View {
         let text = CurrencyFormatting.format(amount: amount, currency: currency)
 
-        HStack(spacing: 8) {
+        HStack(spacing: 9) {
             Image(systemName: systemImage)
-                .font(.caption)
+                .font(.caption.weight(.bold))
                 .foregroundStyle(accent)
+                .frame(width: 26, height: 26)
+                .background(accent.opacity(0.16), in: .circle)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(title)
-                    .font(.caption2)
+                    .font(.caption2.weight(.medium))
                     .foregroundStyle(.secondary)
                 Text(text)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(accent)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .font(.moneyMedium())
+                    .foregroundStyle(.primary)
+                    .moneyDigits()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -97,14 +137,15 @@ struct HeroBalanceCardView: View {
 }
 
 #Preview {
-    HeroBalanceCardView(
-        income: 3_200,
-        expense: 1_010,
-        netBalance: 2_190,
-        currency: .azn,
-        periodText: "1 November - 30 November",
-        hasProjections: true
-    )
-    .padding()
-    .background(AppTheme.pageBackground)
+    ZStack {
+        AppBackgroundView()
+        HeroBalanceCardView(
+            income: 3_650,
+            expense: 1_010,
+            netBalance: 2_640,
+            currency: .azn,
+            hasProjections: true
+        )
+        .padding()
+    }
 }

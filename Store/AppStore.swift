@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Observation
 
 struct TransactionDraft {
     var amount: Decimal
@@ -45,18 +46,19 @@ struct PendingImport {
 }
 
 @MainActor
-final class AppStore: ObservableObject {
-    @Published private(set) var state: AppState
+@Observable
+final class AppStore {
+    private(set) var state: AppState
 
     /// Which period is being viewed. Deliberately NOT persisted: a budget app
     /// must open on the current month, not on whatever month was last browsed.
-    @Published private(set) var periodAnchorDate: Date
+    private(set) var periodAnchorDate: Date
 
-    @Published var persistenceIssue: PersistenceIssue?
+    var persistenceIssue: PersistenceIssue?
 
     /// True after an unreadable data file. While set, nothing is written, so a
     /// decode failure cannot overwrite real data with an empty state.
-    @Published private(set) var isPersistenceSuspended = false
+    private(set) var isPersistenceSuspended = false
 
     private let persistence: AppStatePersisting
     private let recurringService: RecurringTransactionServicing
@@ -223,7 +225,7 @@ final class AppStore: ObservableObject {
         let category = TransactionCategory(
             id: id,
             name: trimmed,
-            icon: icon.isEmpty ? "\u{1F516}" : icon,
+            icon: icon.isEmpty ? CategoryVisuals.fallbackSymbol : icon,
             kind: kind,
             isCustom: true
         )
@@ -299,7 +301,7 @@ final class AppStore: ObservableObject {
         state.customCategories[index] = TransactionCategory(
             id: id,
             name: trimmed,
-            icon: icon.isEmpty ? "\u{1F516}" : icon,
+            icon: icon.isEmpty ? CategoryVisuals.fallbackSymbol : icon,
             kind: kind,
             isCustom: true
         )

@@ -98,13 +98,46 @@ enum DateRangeCalculator {
         calendar.date(byAdding: .day, value: -1, to: interval.end) ?? interval.end
     }
 
+    /// Short label for the period, built to fit a navigation title beside
+    /// toolbar buttons.
+    ///
+    /// A period that is exactly one calendar month — the default, and what most
+    /// people will ever see — reads as just "November". Spelling it out as
+    /// "1 November - 30 November" was 24 characters that truncated to
+    /// "1 November - 30 Nove..." and said nothing the month name does not.
     static func periodDisplayText(
         for interval: DateInterval,
         calendar: Calendar = .current
     ) -> String {
         let end = displayEnd(for: interval, calendar: calendar)
+
+        if isWholeCalendarMonth(interval, calendar: calendar) {
+            let month = calendar.component(.month, from: interval.start)
+            let year = calendar.component(.year, from: interval.start)
+            let name = DateFormatting.monthName(month, calendar: calendar)
+            // The year is only worth the space when it is not this one.
+            guard year == calendar.component(.year, from: Date()) else {
+                return "\(name) \(year)"
+            }
+            return name
+        }
+
         let startText = DateFormatting.dayAndMonth(interval.start, calendar: calendar)
         let endText = DateFormatting.dayAndMonth(end, calendar: calendar)
         return "\(startText) - \(endText)"
+    }
+
+    /// True when the interval covers one calendar month exactly, which is the
+    /// case whenever the budgeting month starts on the 1st.
+    static func isWholeCalendarMonth(
+        _ interval: DateInterval,
+        calendar: Calendar = .current
+    ) -> Bool {
+        guard calendar.component(.day, from: interval.start) == 1,
+              let monthRange = calendar.dateInterval(of: .month, for: interval.start)
+        else { return false }
+
+        return calendar.isDate(monthRange.start, inSameDayAs: interval.start)
+            && abs(monthRange.end.timeIntervalSince(interval.end)) < 1
     }
 }

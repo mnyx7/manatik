@@ -1,4 +1,3 @@
-import Combine
 import SwiftUI
 
 /// Screens pushed on top of whichever tab is showing. The tabs themselves are
@@ -12,85 +11,73 @@ enum RootDestination: Hashable {
     case yearOverview
 }
 
-/// Tells the shell when a keyboard is on screen.
+/// The app shell: content under a floating Liquid Glass bar carrying Home,
+/// Activity, add, Overview and Settings.
 ///
-/// The bar is a bottom safe-area inset, and SwiftUI insets for the keyboard
-/// too. Both at once pushed focused fields up over the keyboard, so the bar
-/// steps out of the way while typing.
-@MainActor
-final class KeyboardObserver: ObservableObject {
-    @Published private(set) var isVisible = false
-
-    private var cancellables = Set<AnyCancellable>()
-
-    init() {
-        let center = NotificationCenter.default
-
-        center.publisher(for: UIResponder.keyboardWillShowNotification)
-            .sink { [weak self] _ in self?.isVisible = true }
-            .store(in: &cancellables)
-
-        center.publisher(for: UIResponder.keyboardWillHideNotification)
-            .sink { [weak self] _ in self?.isVisible = false }
-            .store(in: &cancellables)
-    }
-}
-
-/// The app shell: a five-slot bottom bar carrying Home, Activities, add,
-/// Settings and Overview, visible on every screen.
+/// The bar floats over the content rather than reserving a strip beneath it.
+/// That is the point of the material — the page scrolls underneath and shows
+/// through — so each screen keeps bottom content margin for the bar's height
+/// instead of being clipped by it.
 struct RootView: View {
-    private enum Tab: Hashable {
+    enum Tab: String, Hashable, CaseIterable {
         case home
         case activities
-        case settings
         case overview
-    }
+        case settings
 
-    @EnvironmentObject private var store: AppStore
-    @EnvironmentObject private var reminderScheduler: ReminderScheduler
-
-    @StateObject private var viewModel = HomeViewModel()
-    @StateObject private var keyboard = KeyboardObserver()
-    @State private var tab: Tab = .home
-    @State private var path: [RootDestination] = []
-    @Environment(\.scenePhase) private var scenePhase
-
-    var body: some View {
-        VStack(spacing: 0) {
-            NavigationStack(path: $path) {
-                Group {
-                    switch tab {
-                    case .home:
-                        HomeView(
-                            viewModel: viewModel,
-                            onOpenActivities: { select(.activities) },
-                            onOpenSavings: { push(.savings) },
-                            onOpenLoans: { push(.loans) },
-                            onOpenGoal: { push(.savingsGoal($0)) },
-                            onOpenLoan: { push(.loanDetail($0)) }
-                        )
-                    case .activities:
-                        ActivitiesView(viewModel: viewModel)
-                    case .settings:
-                        SettingsView(viewModel: SettingsViewModel(store: store))
-                    case .overview:
-                        OverviewView()
-                    }
-                }
-                .navigationDestination(for: RootDestination.self, destination: destination)
-            }
-
-            // A plain sibling of the stack rather than a safe-area inset. The
-            // stack gets the remaining height, so no screen can end up under
-            // the bar, and the buttons are ordinary views for hit-testing.
-            if !keyboard.isVisible {
-                bottomBar
+        var title: LocalizedStringKey {
+            switch self {
+            case .home: return "Home"
+            case .activities: return "Activity"
+            case .overview: return "Overview"
+            case .settings: return "Settings"
             }
         }
-        // Paints behind the bar and the home-indicator strip. Without it the
-        // window's own white shows through under a translucent material.
-        .background(AppTheme.pageBackground.ignoresSafeArea())
-        .tint(.accentColor)
+
+        /// Both states of the symbol: the selected tab fills in, which is how
+        /// every Apple tab bar signals position.
+        var symbol: String {
+            switch self {
+            case .home: return "house"
+            case .activities: return "list.bullet"
+            case .overview: return "chart.pie"
+            case .settings: return "gearshape"
+            }
+        }
+
+        var selectedSymbol: String {
+            switch self {
+            case .home: return "house.fill"
+            case .activities: return "list.bullet"
+            case .overview: return "chart.pie.fill"
+            case .settings: return "gearshape.fill"
+            }
+        }
+    }
+
+    @Environment(AppStore.self) private var store
+    @Environment(ReminderScheduler.self) private var reminderScheduler
+    @Environment(\.scenePhase) private var scenePhase
+
+    @State private var viewModel = HomeViewModel()
+    @State private var tab: Tab = .home
+    @State private var path: [RootDestination] = []
+
+    /// Lets the tab buttons and the add button share one glass system, so they
+    /// blend and separate together instead of reading as two unrelated chips.
+    @Namespace private var glassNamespace
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            NavigationStack(path: $path) {
+                content
+                    .navigationDestination(for: RootDestination.self, destination: destination)
+            }
+
+            bottomBar
+        }
+        .background(AppBackgroundView())
+        .tint(Color.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
                 store: store,
@@ -236,75 +223,100 @@ struct RootView: View {
                 )
             }
         }
-    }
-
-    // MARK: - Bottom bar
-
-    private var bottomBar: some View {
-        VStack(spacing: 0) {
-            Divider()
-
-            HStack(spacing: 0) {
-                tabButton(.home, systemImage: "house", title: "Home")
-                tabButton(.activities, systemImage: "list.bullet.rectangle", title: "Activities")
-
-                Button {
-                    viewModel.beginAdd()
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 54, height: 54)
-                        .background(Circle().fill(Color.accentColor))
-                        .shadow(color: .black.opacity(0.18), radius: 7, y: 2)
-                }
-                .frame(maxWidth: .infinity)
-                .accessibilityLabel(Text("Add income or expense"))
-
-                tabButton(.settings, systemImage: "gearshape", title: "Settings")
-                tabButton(.overview, systemImage: "chart.pie", title: "Overview")
-            }
-            .padding(.top, 6)
-            .padding(.bottom, 2)
-        }
-        // Only the material reaches past the safe area. The bar's own layout
-        // height stays the height of its buttons, so nothing is double-counted
-        // the way a manual safe-area padding was.
-        .background(
-            Rectangle()
-                .fill(.bar)
-                .ignoresSafeArea(edges: .bottom)
-        )
+        #if DEBUG
+        .task { applyQALaunchRouteIfNeeded() }
+        #endif
     }
 
     @ViewBuilder
-    private func tabButton(
-        _ slot: Tab,
-        systemImage: String,
-        title: LocalizedStringKey
-    ) -> some View {
-        // `slot` rather than `tab`: the old parameter name shadowed the state
-        // property of the same name, which made the active check and the tap
-        // action read ambiguously.
+    private var content: some View {
+        switch tab {
+        case .home:
+            HomeView(
+                viewModel: viewModel,
+                onOpenActivities: { select(.activities) },
+                onOpenSavings: { push(.savings) },
+                onOpenLoans: { push(.loans) },
+                onOpenGoal: { push(.savingsGoal($0)) },
+                onOpenLoan: { push(.loanDetail($0)) }
+            )
+        case .activities:
+            ActivitiesView(viewModel: viewModel)
+        case .overview:
+            OverviewView()
+        case .settings:
+            SettingsView(viewModel: SettingsViewModel(store: store))
+        }
+    }
+
+    // MARK: - Floating glass bar
+
+    private var bottomBar: some View {
+        // One container means the bar and the add button are a single piece of
+        // glass as far as the renderer is concerned: they refract together and
+        // the add button's tint bleeds correctly into the capsule beside it.
+        GlassEffectContainer(spacing: 18) {
+            HStack(spacing: 10) {
+                HStack(spacing: 2) {
+                    tabButton(.home)
+                    tabButton(.activities)
+                }
+
+                addButton
+
+                HStack(spacing: 2) {
+                    tabButton(.overview)
+                    tabButton(.settings)
+                }
+            }
+            .padding(.horizontal, 6)
+            .padding(.vertical, 6)
+            .glassEffect(.regular.interactive(), in: .capsule)
+            .glassEffectID("bar", in: glassNamespace)
+        }
+        .padding(.bottom, 8)
+    }
+
+    private var addButton: some View {
+        Button {
+            viewModel.beginAdd()
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 52, height: 52)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(
+            .regular.tint(Color.accentColor.opacity(0.85)).interactive(),
+            in: .circle
+        )
+        .glassEffectID("add", in: glassNamespace)
+        .accessibilityLabel(Text("Add income or expense"))
+    }
+
+    @ViewBuilder
+    private func tabButton(_ slot: Tab) -> some View {
         let isActive = tab == slot && path.isEmpty
 
         Button {
             select(slot)
         } label: {
-            VStack(spacing: 3) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 19, weight: isActive ? .semibold : .regular))
-                Text(title)
-                    .font(.caption2.weight(isActive ? .semibold : .regular))
+            VStack(spacing: 2) {
+                Image(systemName: isActive ? slot.selectedSymbol : slot.symbol)
+                    .font(.system(size: 17, weight: isActive ? .semibold : .regular))
+                    .symbolVariant(.none)
+                Text(slot.title)
+                    .font(.system(size: 10, weight: isActive ? .semibold : .medium))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .contentShape(Rectangle())
+            .frame(width: 60, height: 46)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
-        .accessibilityLabel(Text(title))
+        .accessibilityLabel(slot.title)
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }
 
@@ -313,8 +325,10 @@ struct RootView: View {
     /// showing does nothing.
     private func select(_ newTab: Tab) {
         guard newTab != tab || !path.isEmpty else { return }
-        path.removeAll()
-        tab = newTab
+        withAnimation(.smooth(duration: 0.25)) {
+            path.removeAll()
+            tab = newTab
+        }
     }
 
     /// Pushes on top of wherever the user is, for screens reached from content.
@@ -425,27 +439,30 @@ struct RootView: View {
             copy.lastPathComponent
         )
     }
-}
 
-/// `sheet(item:)` for an optional `Identifiable` binding.
-extension View {
-    func sheet<Item: Identifiable, Content: View>(
-        item: Binding<Item?>,
-        @ViewBuilder content: @escaping (Item) -> Content
-    ) -> some View {
-        sheet(isPresented: Binding(
-            get: { item.wrappedValue != nil },
-            set: { if !$0 { item.wrappedValue = nil } }
-        )) {
-            if let value = item.wrappedValue {
-                content(value)
-            }
+    // MARK: - Screenshot QA
+
+    #if DEBUG
+    private func applyQALaunchRouteIfNeeded() {
+        if let name = QALaunch.tab, let slot = Tab(rawValue: name) {
+            tab = slot
+        }
+
+        switch QALaunch.route {
+        case "savings": path = [.savings]
+        case "loans": path = [.loans]
+        case "year": path = [.yearOverview]
+        case "goal": path = [.savingsGoal(QALaunch.goalID)]
+        case "loan": path = [.loanDetail(QALaunch.loanID)]
+        case "add": viewModel.isShowingAddSheet = true
+        default: break
         }
     }
+    #endif
 }
 
 #Preview {
     RootView()
-        .environmentObject(MockData.previewStore())
-        .environmentObject(ReminderScheduler())
+        .environment(AppStore(persistence: InMemoryPersistence(), initialState: MockData.previewState()))
+        .environment(ReminderScheduler())
 }

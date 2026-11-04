@@ -63,8 +63,7 @@ struct CategoryTotalsCardView: View {
 
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 10) {
-                Text(item.category.icon)
-                    .accessibilityHidden(true)
+                CategoryIconView(category: item.category, size: .small)
 
                 Text(item.category.localizedName)
                     .font(.subheadline)

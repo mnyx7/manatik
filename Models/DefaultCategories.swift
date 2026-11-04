@@ -1,31 +1,34 @@
 import Foundation
 
 enum DefaultCategories {
+    /// `icon` holds an SF Symbol name. Earlier releases stored an emoji here;
+    /// `CategoryVisuals.symbolName(for:)` maps those across, so old files keep
+    /// working untouched.
     static let all: [TransactionCategory] = [
-        .init(id: "groceries", name: "Groceries", icon: "\u{1F6D2}", kind: .expense),
-        .init(id: "home", name: "Home", icon: "\u{1F3E0}", kind: .expense),
-        .init(id: "gift", name: "Gift", icon: "\u{1F381}", kind: .expense),
-        .init(id: "utility", name: "Utility", icon: "\u{1F4A1}", kind: .expense),
-        .init(id: "shopping", name: "Shopping", icon: "\u{1F6CD}", kind: .expense),
-        .init(id: "transport", name: "Transport", icon: "\u{1F68C}", kind: .expense),
-        .init(id: "health", name: "Health", icon: "\u{1FA7A}", kind: .expense),
-        .init(id: "entertainment", name: "Entertainment", icon: "\u{1F3AC}", kind: .expense),
-        .init(id: "restaurant", name: "Restaurant", icon: "\u{1F37D}", kind: .expense),
-        .init(id: "cafe", name: "Cafe", icon: "\u{2615}", kind: .expense),
-        .init(id: "travel", name: "Travel", icon: "\u{2708}", kind: .expense),
-        .init(id: "kids", name: "Kids", icon: "\u{1F9D2}", kind: .expense),
-        .init(id: "education", name: "Education", icon: "\u{1F4DA}", kind: .expense),
-        .init(id: "salary", name: "Salary", icon: "\u{1F4BC}", kind: .income),
-        .init(id: "freelance", name: "Freelance", icon: "\u{1F4BB}", kind: .income),
-        .init(id: "bonus", name: "Bonus", icon: "\u{1F3C6}", kind: .income),
-        .init(id: "savings", name: "Savings", icon: "\u{1F4B0}", kind: .both),
-        .init(id: "subscription", name: "Subscription", icon: "\u{1F4F1}", kind: .expense),
-        .init(id: "rent", name: "Rent", icon: "\u{1F3D8}", kind: .expense),
-        .init(id: "fuel", name: "Fuel", icon: "\u{26FD}", kind: .expense),
-        .init(id: "pharmacy", name: "Pharmacy", icon: "\u{1F48A}", kind: .expense),
-        .init(id: "pet", name: "Pet", icon: "\u{1F43E}", kind: .expense),
-        .init(id: "loan", name: "Loan", icon: "\u{1F3E6}", kind: .expense),
-        .init(id: "other", name: "Other", icon: "\u{1F516}", kind: .both)
+        .init(id: "groceries", name: "Groceries", icon: "cart.fill", kind: .expense),
+        .init(id: "home", name: "Home", icon: "house.fill", kind: .expense),
+        .init(id: "gift", name: "Gift", icon: "gift.fill", kind: .expense),
+        .init(id: "utility", name: "Utility", icon: "lightbulb.fill", kind: .expense),
+        .init(id: "shopping", name: "Shopping", icon: "bag.fill", kind: .expense),
+        .init(id: "transport", name: "Transport", icon: "bus.fill", kind: .expense),
+        .init(id: "health", name: "Health", icon: "heart.fill", kind: .expense),
+        .init(id: "entertainment", name: "Entertainment", icon: "film.fill", kind: .expense),
+        .init(id: "restaurant", name: "Restaurant", icon: "fork.knife", kind: .expense),
+        .init(id: "cafe", name: "Cafe", icon: "cup.and.saucer.fill", kind: .expense),
+        .init(id: "travel", name: "Travel", icon: "airplane", kind: .expense),
+        .init(id: "kids", name: "Kids", icon: "figure.and.child.holdinghands", kind: .expense),
+        .init(id: "education", name: "Education", icon: "book.fill", kind: .expense),
+        .init(id: "salary", name: "Salary", icon: "briefcase.fill", kind: .income),
+        .init(id: "freelance", name: "Freelance", icon: "laptopcomputer", kind: .income),
+        .init(id: "bonus", name: "Bonus", icon: "trophy.fill", kind: .income),
+        .init(id: "savings", name: "Savings", icon: "banknote.fill", kind: .both),
+        .init(id: "subscription", name: "Subscription", icon: "creditcard.fill", kind: .expense),
+        .init(id: "rent", name: "Rent", icon: "building.2.fill", kind: .expense),
+        .init(id: "fuel", name: "Fuel", icon: "fuelpump.fill", kind: .expense),
+        .init(id: "pharmacy", name: "Pharmacy", icon: "pills.fill", kind: .expense),
+        .init(id: "pet", name: "Pet", icon: "pawprint.fill", kind: .expense),
+        .init(id: "loan", name: "Loan", icon: "building.columns.fill", kind: .expense),
+        .init(id: "other", name: "Other", icon: "tag.fill", kind: .both)
     ]
 
     /// Category used for money moved into a savings goal.
@@ -40,7 +43,7 @@ enum DefaultCategories {
     private static let fallback = TransactionCategory(
         id: "other",
         name: "Other",
-        icon: "\u{1F516}",
+        icon: "tag.fill",
         kind: .both
     )
 

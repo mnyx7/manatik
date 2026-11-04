@@ -66,8 +66,11 @@ struct ReminderEditorView: View {
                     Picker(selection: $categoryID) {
                         Text("None").tag(String?.none)
                         ForEach(DefaultCategories.all) { category in
-                            Text("\(category.icon) \(category.localizedName)")
-                                .tag(String?.some(category.id))
+                            Label(
+                                category.localizedName,
+                                systemImage: CategoryVisuals.symbolName(for: category)
+                            )
+                            .tag(String?.some(category.id))
                         }
                     } label: {
                         Text("Category")

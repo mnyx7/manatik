@@ -9,40 +9,39 @@ struct CategoryPieChartView: View {
     let currency: Currency
     let centerCaption: LocalizedStringKey
 
-    /// Cozy palette, cycled. Chart colours have to stay distinguishable, so
-    /// these are chosen for separation rather than taken from the theme pairs.
-    private static let palette: [Color] = [
-        Color(red: 0.78, green: 0.44, blue: 0.29),
-        Color(red: 0.36, green: 0.55, blue: 0.42),
-        Color(red: 0.29, green: 0.47, blue: 0.56),
-        Color(red: 0.60, green: 0.42, blue: 0.62),
-        Color(red: 0.85, green: 0.65, blue: 0.33),
-        Color(red: 0.45, green: 0.56, blue: 0.69),
-        Color(red: 0.69, green: 0.49, blue: 0.42),
-        Color(red: 0.40, green: 0.62, blue: 0.58)
-    ]
-
-    private func color(at index: Int) -> Color {
-        Self.palette[index % Self.palette.count]
+    /// A slice is drawn in its own category's colour, which is the same colour
+    /// that category's icon carries in every list and picker. A cycled palette
+    /// meant the chart said "blue" while the row above it said "green".
+    private func color(for category: TransactionCategory) -> Color {
+        guard category.id != Self.aggregateID else { return Color(hex: 0x8E8E96) }
+        return CategoryVisuals.tint(for: category)
     }
+
+    private static let aggregateID = "__other__"
 
     /// Long tails make an unreadable donut, so everything past the eighth
     /// category is folded into one slice.
     private var displaySlices: [(category: TransactionCategory, total: Decimal, share: Double)] {
         let limit = 8
-        guard slices.count > limit else {
+        // A slice under this share draws as a hairline the eye reads as a
+        // rendering artefact rather than a category.
+        let minimumShare = 0.02
+        let significant = slices.filter { $0.share >= minimumShare }
+        let keptCount = min(significant.count, limit - 1)
+
+        guard slices.count > keptCount else {
             return slices.map { ($0.category, $0.total, $0.share) }
         }
 
-        let head = slices.prefix(limit - 1).map { ($0.category, $0.total, $0.share) }
-        let tail = slices.dropFirst(limit - 1)
+        let head = slices.prefix(keptCount).map { ($0.category, $0.total, $0.share) }
+        let tail = slices.dropFirst(keptCount)
         let tailTotal = tail.reduce(Decimal.zero) { $0 + $1.total }
         let tailShare = tail.reduce(0.0) { $0 + $1.share }
 
         let other = TransactionCategory(
-            id: "__other__",
+            id: Self.aggregateID,
             name: NSLocalizedString("Other categories", comment: "Chart slice"),
-            icon: "\u{2026}",
+            icon: "ellipsis",
             kind: .both,
             isCustom: true
         )
@@ -70,7 +69,7 @@ struct CategoryPieChartView: View {
 
     private var chart: some View {
         Chart {
-            ForEach(Array(displaySlices.enumerated()), id: \.offset) { index, slice in
+            ForEach(Array(displaySlices.enumerated()), id: \.offset) { _, slice in
                 SectorMark(
                     angle: .value(
                         Text("Amount"),
@@ -79,8 +78,8 @@ struct CategoryPieChartView: View {
                     innerRadius: .ratio(0.58),
                     angularInset: 1.5
                 )
-                .cornerRadius(4)
-                .foregroundStyle(color(at: index))
+                .cornerRadius(5)
+                .foregroundStyle(color(for: slice.category))
             }
         }
         .chartLegend(.hidden)
@@ -100,18 +99,17 @@ struct CategoryPieChartView: View {
 
     private var legend: some View {
         VStack(spacing: 8) {
-            ForEach(Array(displaySlices.enumerated()), id: \.offset) { index, slice in
+            ForEach(Array(displaySlices.enumerated()), id: \.offset) { _, slice in
                 let amount = CurrencyFormatting.format(amount: slice.total, currency: currency)
                 let percent = Int((slice.share * 100).rounded())
 
                 HStack(spacing: 10) {
-                    Circle()
-                        .fill(color(at: index))
-                        .frame(width: 10, height: 10)
-                        .accessibilityHidden(true)
-
-                    Text(slice.category.icon)
-                        .font(.footnote)
+                    // The symbol is the swatch: it names the slice and carries
+                    // its colour, so a separate dot would say the same twice.
+                    Image(systemName: CategoryVisuals.symbolName(for: slice.category))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(color(for: slice.category))
+                        .frame(width: 20)
                         .accessibilityHidden(true)
 
                     Text(slice.category.localizedName)

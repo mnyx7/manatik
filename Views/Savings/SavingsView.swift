@@ -2,8 +2,8 @@ import SwiftUI
 
 /// All savings goals: the ones in flight, then the ones already reached.
 struct SavingsView: View {
-    @EnvironmentObject private var store: AppStore
-    @ObservedObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
     let onOpenGoal: (UUID) -> Void
 
     private var currency: Currency { store.state.settings.currency }
@@ -96,15 +96,15 @@ struct SavingsView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(AppTheme.incomeAccent)
         }
-        .cozyCard()
+        .glassCard()
         .accessibilityElement(children: .combine)
     }
 }
 
 /// One goal, its figures, and every time money went in.
 struct SavingsGoalDetailView: View {
-    @EnvironmentObject private var store: AppStore
-    @ObservedObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
 
     let goalID: UUID
 
@@ -150,7 +150,7 @@ struct SavingsGoalDetailView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .cozyCard()
+                        .glassCard()
                 }
 
                 HStack(spacing: 10) {
@@ -201,7 +201,7 @@ struct SavingsGoalDetailView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .cozyCard()
+                .glassCard()
 
                 Button(role: .destructive) {
                     store.deleteSavingsGoal(id: goal.id)

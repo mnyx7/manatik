@@ -4,57 +4,24 @@ struct TransactionRowView: View {
     let item: TransactionOccurrence
     let category: TransactionCategory
     let currency: Currency
+    /// Off when the surrounding list already groups rows under a day heading.
+    var showsDate = true
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(category.icon)
-                .font(.title3)
-                .frame(width: 36, height: 36)
-                .background(
-                    AppTheme.surface(for: item.type),
-                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                )
-                // VoiceOver would otherwise announce the emoji's own name right
-                // before the category it stands for.
-                .accessibilityHidden(true)
+            CategoryIconView(category: category, size: .medium)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 5) {
                     Text(category.localizedName)
-                        .font(.subheadline.weight(.medium))
+                        .font(.subheadline.weight(.semibold))
 
-                    if item.isFeatured {
-                        Image(systemName: "bookmark.fill")
+                    // Badges are capped at two. The old row could show five at
+                    // once, which read as noise rather than information.
+                    ForEach(badges.prefix(2), id: \.symbol) { badge in
+                        Image(systemName: badge.symbol)
                             .font(.caption2)
-                            .foregroundStyle(AppTheme.expenseAccent)
-                            .accessibilityHidden(true)
-                    }
-
-                    if item.isRecurring {
-                        Image(systemName: "repeat")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
-                    }
-
-                    if item.hasAttachments {
-                        Image(systemName: "paperclip")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
-                    }
-
-                    if item.isSavingsContribution {
-                        Image(systemName: "banknote")
-                            .font(.caption2)
-                            .foregroundStyle(AppTheme.savingsAccent)
-                            .accessibilityHidden(true)
-                    }
-
-                    if item.isLoanPayment {
-                        Image(systemName: "building.columns")
-                            .font(.caption2)
-                            .foregroundStyle(AppTheme.loanAccent)
+                            .foregroundStyle(badge.tint)
                             .accessibilityHidden(true)
                     }
                 }
@@ -62,18 +29,18 @@ struct TransactionRowView: View {
                 if item.isProjected {
                     Text("Forecast")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.tertiary)
                 } else if !item.note.isEmpty {
                     Text(item.note)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(1)
                 }
             }
 
             Spacer(minLength: 8)
 
-            VStack(alignment: .trailing, spacing: 3) {
+            VStack(alignment: .trailing, spacing: 2) {
                 Text(
                     CurrencyFormatting.formatSigned(
                         amount: item.amount,
@@ -81,20 +48,48 @@ struct TransactionRowView: View {
                         currency: currency
                     )
                 )
-                .font(.subheadline.weight(.semibold))
+                .font(.moneyMedium())
                 .foregroundStyle(AppTheme.accent(for: item.type))
-                // Amounts must wrap rather than shrink away at large text sizes.
+                .moneyDigits()
                 .multilineTextAlignment(.trailing)
 
-                Text(DateFormatting.shortDate(item.date))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                if showsDate {
+                    Text(DateFormatting.shortDate(item.date))
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
             }
             .opacity(item.isProjected ? 0.65 : 1)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
+    }
+
+    private struct Badge {
+        let symbol: String
+        let tint: Color
+    }
+
+    /// Ordered by how much the badge changes what the row means.
+    private var badges: [Badge] {
+        var result: [Badge] = []
+        if item.isSavingsContribution {
+            result.append(Badge(symbol: "target", tint: AppTheme.savingsAccent))
+        }
+        if item.isLoanPayment {
+            result.append(Badge(symbol: "building.columns.fill", tint: AppTheme.loanAccent))
+        }
+        if item.isRecurring {
+            result.append(Badge(symbol: "repeat", tint: .secondary))
+        }
+        if item.isFeatured {
+            result.append(Badge(symbol: "bookmark.fill", tint: AppTheme.expenseAccent))
+        }
+        if item.hasAttachments {
+            result.append(Badge(symbol: "paperclip", tint: .secondary))
+        }
+        return result
     }
 
     private var accessibilityLabel: String {

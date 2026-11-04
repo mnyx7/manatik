@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import Observation
 
 /// Schedules local notifications for payment reminders.
 ///
@@ -7,9 +8,10 @@ import UserNotifications
 /// disk is the source of truth: `sync` reconciles the pending notification set
 /// against it rather than trying to track individual adds and removals.
 @MainActor
-final class ReminderScheduler: ObservableObject {
-    @Published private(set) var authorizationStatus: UNAuthorizationStatus = .notDetermined
-    @Published private(set) var lastError: String?
+@Observable
+final class ReminderScheduler {
+    private(set) var authorizationStatus: UNAuthorizationStatus = .notDetermined
+    private(set) var lastError: String?
 
     private let center: UNUserNotificationCenter
     private let calendar: Calendar

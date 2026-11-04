@@ -1,36 +1,38 @@
 import Foundation
+import Observation
 
 /// UI state shared by the main page and the activities list.
 ///
 /// Holds no derived data and does not republish the store. Views observe the
 /// store directly through the environment.
 @MainActor
-final class HomeViewModel: ObservableObject {
-    @Published var filter: TransactionFilter = .empty
+@Observable
+final class HomeViewModel {
+    var filter: TransactionFilter = .empty
 
     /// Which slice of the ledger Activities is showing. Writes the type and
     /// bills flags into `filter`, leaving the user's own filters alone.
-    @Published var scope: ActivityScope = .all {
+    var scope: ActivityScope = .all {
         didSet { filter.applyScope(scope) }
     }
 
-    @Published var isShowingAddSheet = false
-    @Published var isShowingPeriodPicker = false
-    @Published var isShowingDateFilter = false
+    var isShowingAddSheet = false
+    var isShowingPeriodPicker = false
+    var isShowingDateFilter = false
 
     /// Pre-selected category when the add sheet was opened from a quick-add chip.
-    @Published var quickAddCategoryID: String?
+    var quickAddCategoryID: String?
 
-    @Published var editingOccurrence: TransactionOccurrence?
-    @Published var pendingDelete: TransactionOccurrence?
+    var editingOccurrence: TransactionOccurrence?
+    var pendingDelete: TransactionOccurrence?
 
     // Savings and loan flows
-    @Published var contributingGoal: SavingsGoal?
-    @Published var payingLoan: Loan?
-    @Published var isShowingGoalEditor = false
-    @Published var editingGoal: SavingsGoal?
-    @Published var isShowingLoanEditor = false
-    @Published var editingLoan: Loan?
+    var contributingGoal: SavingsGoal?
+    var payingLoan: Loan?
+    var isShowingGoalEditor = false
+    var editingGoal: SavingsGoal?
+    var isShowingLoanEditor = false
+    var editingLoan: Loan?
 
     var quickAddCategories: [TransactionCategory] {
         DefaultCategories.quickAddCategoryIDs.map { DefaultCategories.category(for: $0) }

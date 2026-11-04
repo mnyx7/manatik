@@ -7,14 +7,14 @@ struct TransactionFormView: View {
     }
 
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: TransactionFormViewModel
+    @State private var viewModel: TransactionFormViewModel
     @FocusState private var focusedField: Field?
 
     @State private var isShowingScopeChoice = false
     @State private var isShowingDeleteChoice = false
 
     init(store: AppStore, mode: TransactionFormViewModel.Mode) {
-        _viewModel = StateObject(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
+        _viewModel = State(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
     }
 
     private var currency: Currency { viewModel.store.state.settings.currency }
@@ -56,13 +56,13 @@ struct TransactionFormView: View {
                             Label("Delete entry", systemImage: "trash")
                                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.glass)
                     }
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 16)
             }
-            .background(AppTheme.pageBackground)
+            .background(AppBackgroundView())
             .navigationTitle(viewModel.title)
             .navigationBarTitleDisplayMode(.inline)
             .defaultFocus($focusedField, .amount)
@@ -168,8 +168,6 @@ struct TransactionFormView: View {
                 )
                 .labelsHidden()
                 .datePickerStyle(.compact)
-                .scaleEffect(0.9, anchor: .center)
-                .frame(height: 30)
 
                 if !Calendar.current.isDateInToday(viewModel.date) {
                     Button("Today") {
@@ -185,7 +183,7 @@ struct TransactionFormView: View {
             // The amount is the reason the screen exists, so it gets the size.
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(currency.symbol)
-                    .font(.title2.weight(.medium))
+                    .font(.title.weight(.medium))
                     .foregroundStyle(.secondary)
 
                 TextField(
@@ -195,7 +193,7 @@ struct TransactionFormView: View {
                         set: { viewModel.handleAmountChange($0) }
                     )
                 )
-                .font(.system(size: 42, weight: .semibold, design: .rounded))
+                .font(.system(size: 50, weight: .bold, design: .rounded))
                 .foregroundStyle(accent)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.leading)
@@ -221,7 +219,7 @@ struct TransactionFormView: View {
                 .layoutPriority(-1)
             }
         }
-        .cozyCard(AppTheme.surface(for: viewModel.type), padding: 14)
+        .glassCard(tint: accent, tintOpacity: 0.09, padding: 16)
     }
 
     // MARK: - Category
@@ -236,7 +234,6 @@ struct TransactionFormView: View {
                 recent: viewModel.recentCategories,
                 all: viewModel.availableCategories,
                 selectedID: $viewModel.selectedCategoryID,
-                accent: accent,
                 onAddNew: viewModel.isLinkedEntry
                     ? nil
                     : { viewModel.isShowingCategoryEditor = true }
@@ -244,7 +241,7 @@ struct TransactionFormView: View {
             .disabled(viewModel.isLinkedEntry)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard()
+        .glassCard()
     }
 
     // MARK: - Repeat
@@ -291,32 +288,20 @@ struct TransactionFormView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard()
+        .glassCard()
     }
 
     // MARK: - Save
 
     private var saveButtons: some View {
-        VStack(spacing: 10) {
-            Button {
-                attemptSave(thenDismiss: true)
-            } label: {
-                Text("Save")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(!viewModel.isFormValid)
-
-            Button {
-                attemptSave(thenDismiss: false)
-            } label: {
-                Text("Save and add another")
-                    .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
-            }
-            .buttonStyle(.bordered)
-            .disabled(!viewModel.isFormValid)
+        Button {
+            attemptSave(thenDismiss: false)
+        } label: {
+            Label("Save and add another", systemImage: "plus.circle")
+                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
         }
+        .buttonStyle(.glass)
+        .disabled(!viewModel.isFormValid)
         .padding(.top, 2)
     }
 
@@ -391,11 +376,10 @@ struct SavedToastView: View {
     var body: some View {
         Label(message, systemImage: "checkmark.circle.fill")
             .font(.footnote.weight(.semibold))
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(AppTheme.incomeSurface, in: Capsule())
             .foregroundStyle(AppTheme.incomeAccent)
-            .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 11)
+            .glassEffect(.regular.tint(AppTheme.incomeAccent.opacity(0.18)), in: .capsule)
             .accessibilityAddTraits(.isStaticText)
     }
 }

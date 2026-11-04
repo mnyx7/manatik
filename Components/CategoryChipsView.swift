@@ -1,20 +1,19 @@
 import SwiftUI
 
-/// Categories as tappable chips.
+/// Categories as tappable tiles.
 ///
-/// Collapsed, it shows the five you reach for most recently plus a chip that
+/// Collapsed, it shows the five you reach for most recently plus a tile that
 /// opens the rest, so the common case is one tap and the full list is never
 /// more than two.
 struct CategoryChipsView: View {
     let recent: [TransactionCategory]
     let all: [TransactionCategory]
     @Binding var selectedID: String
-    var accent: Color = .accentColor
     var onAddNew: (() -> Void)?
 
     @State private var isExpanded = false
 
-    private let columns = [GridItem(.adaptive(minimum: 76), spacing: 8)]
+    private let columns = [GridItem(.adaptive(minimum: 80), spacing: 10)]
 
     /// Always includes the current selection, even when it is not one of the
     /// recent five, so the chosen category is never hidden behind "more".
@@ -27,60 +26,61 @@ struct CategoryChipsView: View {
     private var visible: [TransactionCategory] {
         guard isExpanded else { return collapsed }
 
-        // Expanding keeps the collapsed chips exactly where they were and
-        // appends the rest. Showing `all` straight out meant every chip jumped
+        // Expanding keeps the collapsed tiles exactly where they were and
+        // appends the rest. Showing `all` straight out meant every tile jumped
         // to a new place the moment More was tapped.
         let shown = Set(collapsed.map(\.id))
         return collapsed + all.filter { !shown.contains($0.id) }
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
+        LazyVGrid(columns: columns, spacing: 10) {
             ForEach(visible) { category in
-                chip(for: category)
+                tile(for: category)
             }
 
             if isExpanded {
                 if let onAddNew {
-                    actionChip(systemImage: "plus", title: "New", dashed: true, action: onAddNew)
+                    actionTile(systemImage: "plus", title: "New", action: onAddNew)
                 }
-                actionChip(systemImage: "chevron.up", title: "Less", dashed: false) {
-                    withAnimation(.easeInOut(duration: 0.2)) { isExpanded = false }
+                actionTile(systemImage: "chevron.up", title: "Less") {
+                    withAnimation(.smooth(duration: 0.22)) { isExpanded = false }
                 }
             } else if all.count > collapsed.count {
-                actionChip(systemImage: "ellipsis", title: "More", dashed: false) {
-                    withAnimation(.easeInOut(duration: 0.2)) { isExpanded = true }
+                actionTile(systemImage: "ellipsis", title: "More") {
+                    withAnimation(.smooth(duration: 0.22)) { isExpanded = true }
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func chip(for category: TransactionCategory) -> some View {
+    private func tile(for category: TransactionCategory) -> some View {
         let isSelected = category.id == selectedID
+        let tint = CategoryVisuals.tint(for: category)
 
         Button {
             selectedID = category.id
         } label: {
-            VStack(spacing: 3) {
-                Text(category.icon)
-                    .font(.title3)
+            VStack(spacing: 6) {
+                CategoryIconView(category: category, size: .small, isProminent: isSelected)
                 Text(category.localizedName)
-                    .font(.caption2.weight(.medium))
+                    .font(.caption2.weight(isSelected ? .semibold : .medium))
+                    .foregroundStyle(isSelected ? tint : .secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 58)
+            .frame(height: 70)
             .background(
-                isSelected ? accent.opacity(0.18) : AppTheme.cardBackground,
-                in: RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
+                isSelected ? AnyShapeStyle(tint.opacity(0.14)) : AnyShapeStyle(.clear),
+                in: AppTheme.chipShape
             )
             .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
-                    .strokeBorder(isSelected ? accent : .clear, lineWidth: 2)
+                AppTheme.chipShape
+                    .strokeBorder(isSelected ? tint.opacity(0.55) : Color.primary.opacity(0.08))
             )
-            .foregroundStyle(isSelected ? accent : .primary)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(category.localizedName))
@@ -88,34 +88,30 @@ struct CategoryChipsView: View {
     }
 
     @ViewBuilder
-    private func actionChip(
+    private func actionTile(
         systemImage: String,
         title: LocalizedStringKey,
-        dashed: Bool,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            VStack(spacing: 3) {
+            VStack(spacing: 6) {
                 Image(systemName: systemImage)
-                    .font(.body)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 30, height: 30)
+                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 Text(title)
                     .font(.caption2.weight(.medium))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 58)
-            .background(
-                AppTheme.cardBackground,
-                in: RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
-            )
+            .frame(height: 70)
             .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
-                    .strokeBorder(
-                        accent.opacity(0.4),
-                        style: StrokeStyle(lineWidth: 1.5, dash: dashed ? [4, 3] : [])
-                    )
+                AppTheme.chipShape
+                    .strokeBorder(Color.primary.opacity(0.08))
             )
-            .foregroundStyle(accent)
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }

@@ -1,8 +1,10 @@
 import Foundation
+import Observation
 
 @MainActor
-final class YearlyOverviewViewModel: ObservableObject {
-    @Published var year: Int
+@Observable
+final class YearlyOverviewViewModel {
+    var year: Int
 
     let store: AppStore
 

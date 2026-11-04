@@ -5,8 +5,8 @@ import SwiftUI
 /// This is a `List`, not a `ScrollView` of stacked rows. `swipeActions` only
 /// works on `List` rows, which is why swipe-to-delete did nothing before.
 struct ActivitiesView: View {
-    @EnvironmentObject private var store: AppStore
-    @ObservedObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
 
     private var browsedInterval: DateInterval {
         viewModel.browsedInterval(defaultPeriod: store.selectedPeriod)
@@ -107,7 +107,8 @@ struct ActivitiesView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Activities")
+        .navigationTitle("Activity")
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(
             text: $viewModel.filter.searchText,
             placement: .navigationBarDrawer(displayMode: .always),
@@ -130,15 +131,6 @@ struct ActivitiesView: View {
                 }
                 .accessibilityLabel(Text("Filters"))
             }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    viewModel.beginAdd()
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .accessibilityLabel(Text("Add income or expense"))
-            }
         }
     }
 
@@ -150,7 +142,9 @@ struct ActivitiesView: View {
             TransactionRowView(
                 item: item,
                 category: store.category(for: item.categoryID),
-                currency: currency
+                currency: currency,
+                // Rows sit under a day heading already.
+                showsDate: false
             )
         }
         .buttonStyle(.plain)

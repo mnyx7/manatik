@@ -5,7 +5,7 @@ import SwiftUI
 /// The pie is the headline because "which category eats my month" is the
 /// question a list of totals never answered at a glance.
 struct OverviewView: View {
-    @EnvironmentObject private var store: AppStore
+    @Environment(AppStore.self) private var store
 
     /// The filter: which side of the ledger the chart is showing.
     @State private var side: TransactionType = .expense
@@ -25,8 +25,6 @@ struct OverviewView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
-                periodStrip
-
                 Picker(selection: $side) {
                     ForEach(TransactionType.allCases) { type in
                         Text(type.localizedTitle).tag(type)
@@ -43,7 +41,7 @@ struct OverviewView: View {
                     currency: currency,
                     centerCaption: side == .expense ? "Spent" : "Earned"
                 )
-                .cozyCard()
+                .glassCard()
 
                 LazyVGrid(
                     columns: [GridItem(.flexible()), GridItem(.flexible())],
@@ -94,49 +92,42 @@ struct OverviewView: View {
                             .foregroundStyle(.secondary)
                     }
                     .frame(minHeight: AppTheme.minimumTapTarget)
-                    .cozyCard()
+                    .glassCard()
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal)
-            .padding(.bottom, 10)
+            .padding(.horizontal, AppTheme.pageHorizontalPadding)
         }
-        .background(AppTheme.pageBackground)
-        .navigationTitle("Overview")
-    }
-
-    private var periodStrip: some View {
-        HStack(spacing: 4) {
-            Button {
-                store.movePeriod(byMonths: -1)
-            } label: {
-                Image(systemName: "chevron.left")
-                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-            }
-            .accessibilityLabel(Text("Previous period"))
-
-            Text(DateRangeCalculator.periodDisplayText(for: period))
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.85)
-                .frame(maxWidth: .infinity)
-
-            Button {
-                store.movePeriod(byMonths: 1)
-            } label: {
-                Image(systemName: "chevron.right")
-                    .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-            }
-            .accessibilityLabel(Text("Next period"))
-
-            if !store.isViewingCurrentPeriod {
+        .scrollIndicators(.hidden)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
+        .navigationTitle(DateRangeCalculator.periodDisplayText(for: period))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    store.resetPeriodToToday()
+                    store.movePeriod(byMonths: -1)
                 } label: {
-                    Image(systemName: "arrow.uturn.backward")
-                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                    Image(systemName: "chevron.left")
                 }
-                .accessibilityLabel(Text("Back to today"))
+                .accessibilityLabel(Text("Previous period"))
+            }
+
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if !store.isViewingCurrentPeriod {
+                    Button {
+                        store.resetPeriodToToday()
+                    } label: {
+                        Image(systemName: "arrow.uturn.backward")
+                    }
+                    .accessibilityLabel(Text("Back to today"))
+                }
+
+                Button {
+                    store.movePeriod(byMonths: 1)
+                } label: {
+                    Image(systemName: "chevron.right")
+                }
+                .accessibilityLabel(Text("Next period"))
             }
         }
     }
@@ -145,6 +136,6 @@ struct OverviewView: View {
 #Preview {
     NavigationStack {
         OverviewView()
-            .environmentObject(MockData.previewStore())
+            .environment(MockData.previewStore())
     }
 }
