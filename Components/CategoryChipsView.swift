@@ -1,46 +1,50 @@
 import SwiftUI
 
-/// Categories as tappable chips laid out in place.
+/// Categories as tappable chips.
 ///
-/// A `Picker` pushed a separate list just to choose a category, which is two
-/// extra taps for the most common choice on the screen.
+/// Collapsed, it shows the five you reach for most recently plus a chip that
+/// opens the rest, so the common case is one tap and the full list is never
+/// more than two.
 struct CategoryChipsView: View {
-    let categories: [TransactionCategory]
+    let recent: [TransactionCategory]
+    let all: [TransactionCategory]
     @Binding var selectedID: String
     var accent: Color = .accentColor
     var onAddNew: (() -> Void)?
 
-    private let columns = [GridItem(.adaptive(minimum: 88), spacing: 8)]
+    @State private var isExpanded = false
+
+    private let columns = [GridItem(.adaptive(minimum: 76), spacing: 8)]
+
+    /// Always includes the current selection, even when it is not one of the
+    /// recent five, so the chosen category is never hidden behind "more".
+    private var collapsed: [TransactionCategory] {
+        guard !recent.contains(where: { $0.id == selectedID }) else { return recent }
+        guard let selected = all.first(where: { $0.id == selectedID }) else { return recent }
+        return [selected] + recent.dropLast()
+    }
+
+    private var visible: [TransactionCategory] {
+        isExpanded ? all : collapsed
+    }
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(categories) { category in
+            ForEach(visible) { category in
                 chip(for: category)
             }
 
-            if let onAddNew {
-                Button(action: onAddNew) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "plus")
-                            .font(.title3)
-                        Text("New")
-                            .font(.caption2.weight(.medium))
-                            .lineLimit(1)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 64)
-                    .background(
-                        AppTheme.cardBackground,
-                        in: RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
-                            .strokeBorder(accent.opacity(0.4), style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                    )
-                    .foregroundStyle(accent)
+            if isExpanded {
+                if let onAddNew {
+                    actionChip(systemImage: "plus", title: "New", dashed: true, action: onAddNew)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text("Add a new category"))
+                actionChip(systemImage: "chevron.up", title: "Less", dashed: false) {
+                    withAnimation(.easeInOut(duration: 0.2)) { isExpanded = false }
+                }
+            } else if all.count > collapsed.count {
+                actionChip(systemImage: "ellipsis", title: "More", dashed: false) {
+                    withAnimation(.easeInOut(duration: 0.2)) { isExpanded = true }
+                }
             }
         }
     }
@@ -52,16 +56,16 @@ struct CategoryChipsView: View {
         Button {
             selectedID = category.id
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 Text(category.icon)
                     .font(.title3)
                 Text(category.localizedName)
                     .font(.caption2.weight(.medium))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.75)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 64)
+            .frame(height: 58)
             .background(
                 isSelected ? accent.opacity(0.18) : AppTheme.cardBackground,
                 in: RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
@@ -76,14 +80,37 @@ struct CategoryChipsView: View {
         .accessibilityLabel(Text(category.localizedName))
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
-}
 
-#Preview {
-    CategoryChipsView(
-        categories: Array(DefaultCategories.all.prefix(8)),
-        selectedID: .constant("cafe"),
-        onAddNew: {}
-    )
-    .padding()
-    .background(AppTheme.pageBackground)
+    @ViewBuilder
+    private func actionChip(
+        systemImage: String,
+        title: LocalizedStringKey,
+        dashed: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            VStack(spacing: 3) {
+                Image(systemName: systemImage)
+                    .font(.body)
+                Text(title)
+                    .font(.caption2.weight(.medium))
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 58)
+            .background(
+                AppTheme.cardBackground,
+                in: RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.innerCornerRadius, style: .continuous)
+                    .strokeBorder(
+                        accent.opacity(0.4),
+                        style: StrokeStyle(lineWidth: 1.5, dash: dashed ? [4, 3] : [])
+                    )
+            )
+            .foregroundStyle(accent)
+        }
+        .buttonStyle(.plain)
+    }
 }

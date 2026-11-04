@@ -10,7 +10,6 @@ struct HomeView: View {
     let onOpenActivities: () -> Void
     let onOpenSavings: () -> Void
     let onOpenLoans: () -> Void
-    let onOpenInsights: () -> Void
 
     private let recentLimit = 4
 
@@ -40,7 +39,6 @@ struct HomeView: View {
                 savingsSection
                 loansSection
                 recentActivity
-                insightsLink
             }
             .padding(.horizontal)
             .padding(.bottom, 10)
@@ -150,15 +148,25 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
             } else {
-                // Only the two most pressing goals, so the page stays short.
-                ForEach(goals.prefix(2)) { progress in
-                    SavingsGoalCardView(
-                        progress: progress,
-                        currency: currency,
-                        onAddMoney: { viewModel.contributingGoal = progress.goal },
-                        onOpen: onOpenSavings
-                    )
+                // Scrolls sideways like Quick Add, so several goals fit without
+                // pushing the rest of the page down.
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(goals) { progress in
+                            SavingsGoalCardView(
+                                progress: progress,
+                                currency: currency,
+                                onAddMoney: { viewModel.contributingGoal = progress.goal },
+                                onOpen: onOpenSavings
+                            )
+                            .frame(width: 290)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.viewAligned)
+                .scrollClipDisabled()
             }
         }
     }
@@ -200,14 +208,23 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
             } else {
-                ForEach(loans.prefix(2)) { progress in
-                    LoanCardView(
-                        progress: progress,
-                        currency: currency,
-                        onRecordPayment: { viewModel.payingLoan = progress.loan },
-                        onOpen: onOpenLoans
-                    )
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(loans) { progress in
+                            LoanCardView(
+                                progress: progress,
+                                currency: currency,
+                                onRecordPayment: { viewModel.payingLoan = progress.loan },
+                                onOpen: onOpenLoans
+                            )
+                            .frame(width: 290)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.viewAligned)
+                .scrollClipDisabled()
             }
         }
     }
@@ -255,22 +272,6 @@ struct HomeView: View {
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
             }
         }
-    }
-
-    private var insightsLink: some View {
-        Button(action: onOpenInsights) {
-            HStack {
-                Label("Insights", systemImage: "chart.bar.xaxis")
-                    .font(.subheadline.weight(.medium))
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .frame(minHeight: AppTheme.minimumTapTarget)
-            .cozyCard()
-        }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder

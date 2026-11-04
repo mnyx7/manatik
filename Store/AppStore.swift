@@ -68,8 +68,13 @@ final class AppStore: ObservableObject {
     private var mergedCategories: [TransactionCategory] = []
     private var occurrenceCache: [DateInterval: [TransactionOccurrence]] = [:]
     private var summaryCache: [DateInterval: TransactionSummary] = [:]
-    private var categorySpendCache: [DateInterval: [CategorySpending]] = [:]
+    private var categorySpendCache: [CategoryCacheKey: [CategorySpending]] = [:]
     private var yearCache: [Int: [MonthOverviewItem]] = [:]
+
+    private struct CategoryCacheKey: Hashable {
+        let interval: DateInterval
+        let type: TransactionType
+    }
 
     init(
         persistence: AppStatePersisting = AppStatePersistence(),
@@ -138,6 +143,35 @@ final class AppStore: ObservableObject {
 
     func category(for id: String) -> TransactionCategory {
         DefaultCategories.category(for: id, custom: state.customCategories)
+    }
+
+    /// The categories this person actually reaches for, most recent first.
+    ///
+    /// `state.transactions` is kept sorted newest-first, so the first unique
+    /// ids encountered are the recent ones. Padded with the standard list when
+    /// there is not enough history yet.
+    func recentCategories(for type: TransactionType, limit: Int = 5) -> [TransactionCategory] {
+        let allowed = categories(for: type)
+        let allowedIDs = Set(allowed.map(\.id))
+
+        var seen = Set<String>()
+        var result: [TransactionCategory] = []
+
+        for transaction in state.transactions where transaction.type == type {
+            let id = transaction.categoryID
+            guard allowedIDs.contains(id), !seen.contains(id) else { continue }
+            seen.insert(id)
+            result.append(category(for: id))
+            if result.count >= limit { return result }
+        }
+
+        for candidate in allowed where !seen.contains(candidate.id) {
+            seen.insert(candidate.id)
+            result.append(candidate)
+            if result.count >= limit { break }
+        }
+
+        return result
     }
 
     @discardableResult
@@ -261,14 +295,19 @@ final class AppStore: ObservableObject {
         return value
     }
 
-    func categorySpending(in interval: DateInterval) -> [CategorySpending] {
-        if let cached = categorySpendCache[interval] { return cached }
+    func categorySpending(
+        in interval: DateInterval,
+        type: TransactionType = .expense
+    ) -> [CategorySpending] {
+        let key = CategoryCacheKey(interval: interval, type: type)
+        if let cached = categorySpendCache[key] { return cached }
 
         let value = TransactionAnalytics.categorySpending(
             from: occurrences(in: interval),
-            categories: categories
+            categories: categories,
+            type: type
         )
-        categorySpendCache[interval] = value
+        categorySpendCache[key] = value
         return value
     }
 

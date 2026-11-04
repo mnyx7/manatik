@@ -8,6 +8,8 @@ import SwiftUI
 struct AttachmentStripView: View {
     @Binding var attachments: [Attachment]
     var isEditable: Bool = true
+    /// Off when a neighbouring field already explains what the paperclip does.
+    var showsPlaceholder: Bool = true
 
     @State private var photoSelection: [PhotosPickerItem] = []
     @State private var isShowingPhotoPicker = false
@@ -24,7 +26,7 @@ struct AttachmentStripView: View {
                 }
 
                 if attachments.isEmpty {
-                    if isEditable {
+                    if isEditable && showsPlaceholder {
                         Text("Attach a bill")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
@@ -41,7 +43,9 @@ struct AttachmentStripView: View {
                     .scrollClipDisabled()
                 }
 
-                Spacer(minLength: 0)
+                if showsPlaceholder {
+                    Spacer(minLength: 0)
+                }
             }
 
             if let errorMessage {
@@ -95,10 +99,7 @@ struct AttachmentStripView: View {
                 }
             }
             .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-            .background(
-                AppTheme.cardBackground,
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-            )
+            .contentShape(Rectangle())
         }
         .accessibilityLabel(Text("Attach a bill"))
         .accessibilityValue(

@@ -10,6 +10,9 @@
     "%1$@ spent over %2$d days, averaging %3$@ a day": {
       "extractionState": "manual"
     },
+    "%1$@, %2$d percent": {
+      "extractionState": "manual"
+    },
     "%1$@, %2$d percent of spending": {
       "extractionState": "manual"
     },
@@ -19,19 +22,10 @@
     "%1$d entries, %2$d repeating": {
       "extractionState": "manual"
     },
-    "%@ %@": {
-      "extractionState": "manual"
-    },
     "%@ expense": {
       "extractionState": "manual"
     },
     "%@ income": {
-      "extractionState": "manual"
-    },
-    "%@ — %@": {
-      "extractionState": "manual"
-    },
-    "%@, %@": {
       "extractionState": "manual"
     },
     "%d attached": {
@@ -275,6 +269,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Добавить деньги"
+          }
+        }
+      }
+    },
+    "Add note or attachment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd və ya əlavə yazın"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заметка или вложение"
           }
         }
       }
@@ -778,6 +789,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Категория"
+          }
+        }
+      }
+    },
+    "Category breakdown chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kateqoriyalar üzrə bölgü qrafiki"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Диаграмма по категориям"
           }
         }
       }
@@ -1457,6 +1485,23 @@
         }
       }
     },
+    "Earned": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qazanılmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заработано"
+          }
+        }
+      }
+    },
     "Edit": {
       "extractionState": "manual",
       "localizations": {
@@ -2062,13 +2107,13 @@
         "az": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ev"
+            "value": "Əsas"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Дом"
+            "value": "Главная"
           }
         }
       }
@@ -2289,6 +2334,23 @@
         }
       }
     },
+    "Less": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daha az"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Свернуть"
+          }
+        }
+      }
+    },
     "Loan": {
       "extractionState": "manual",
       "localizations": {
@@ -2419,6 +2481,23 @@
     },
     "Monthly reminder added. Manage it in Settings.": {
       "extractionState": "manual"
+    },
+    "More": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daha çox"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ещё"
+          }
+        }
+      }
     },
     "My Categories": {
       "extractionState": "manual",
@@ -2916,6 +2995,23 @@
         }
       }
     },
+    "Nothing to chart for this period yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövr üçün hələ qrafik üçün məlumat yoxdur."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "За этот период пока нечего показать."
+          }
+        }
+      }
+    },
     "Notifications are turned off for manatik in iOS Settings.": {
       "extractionState": "manual",
       "localizations": {
@@ -3027,6 +3123,23 @@
         }
       }
     },
+    "Other categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Digər kateqoriyalar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Другие категории"
+          }
+        }
+      }
+    },
     "Over budget": {
       "extractionState": "manual",
       "localizations": {
@@ -3057,6 +3170,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Перерасход за период"
+          }
+        }
+      }
+    },
+    "Overview": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İcmal"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обзор"
           }
         }
       }

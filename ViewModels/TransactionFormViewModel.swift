@@ -64,6 +64,11 @@ final class TransactionFormViewModel: ObservableObject {
         store.categories(for: type)
     }
 
+    /// The five the user reached for most recently, shown before the rest.
+    var recentCategories: [TransactionCategory] {
+        store.recentCategories(for: type, limit: 5)
+    }
+
     var editingOccurrence: TransactionOccurrence? {
         switch mode {
         case .add: return nil

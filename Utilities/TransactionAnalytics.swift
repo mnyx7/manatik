@@ -85,11 +85,13 @@ enum TransactionAnalytics {
         )
     }
 
+    /// Totals per category for one side of the ledger, with each one's share.
     static func categorySpending(
         from occurrences: [TransactionOccurrence],
-        categories: [TransactionCategory]
+        categories: [TransactionCategory],
+        type: TransactionType = .expense
     ) -> [CategorySpending] {
-        let expenses = occurrences.filter { $0.type == .expense }
+        let expenses = occurrences.filter { $0.type == type }
         guard !expenses.isEmpty else { return [] }
 
         let lookup = Dictionary(uniqueKeysWithValues: categories.map { ($0.id, $0) })

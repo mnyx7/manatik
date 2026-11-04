@@ -33,7 +33,6 @@ struct TransactionFormView: View {
 
                     amountCard
                     categoryCard
-                    detailCard
 
                     if viewModel.canEditRecurrence {
                         repeatCard
@@ -142,7 +141,7 @@ struct TransactionFormView: View {
     // MARK: - Amount
 
     private var amountCard: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 10) {
             Picker(selection: $viewModel.type) {
                 ForEach(TransactionType.allCases) { type in
                     Text(type.localizedTitle).tag(type)
@@ -153,6 +152,35 @@ struct TransactionFormView: View {
             .pickerStyle(.segmented)
             .labelsHidden()
             .disabled(viewModel.isLinkedEntry)
+
+            // A small pill rather than a full labelled row: the date matters,
+            // but not as much as the amount under it.
+            HStack(spacing: 6) {
+                Image(systemName: "calendar")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+
+                DatePicker(
+                    "Date",
+                    selection: $viewModel.date,
+                    displayedComponents: [.date]
+                )
+                .labelsHidden()
+                .datePickerStyle(.compact)
+                .scaleEffect(0.9, anchor: .center)
+                .frame(height: 30)
+
+                if !Calendar.current.isDateInToday(viewModel.date) {
+                    Button("Today") {
+                        viewModel.date = Date()
+                    }
+                    .font(.caption.weight(.semibold))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tint)
+                }
+            }
+            .frame(maxWidth: .infinity)
 
             // The amount is the reason the screen exists, so it gets the size.
             HStack(alignment: .firstTextBaseline, spacing: 6) {
@@ -176,7 +204,22 @@ struct TransactionFormView: View {
                 .accessibilityLabel(Text("Amount"))
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
+
+            Divider()
+
+            // Note and paperclip share one caption-sized line.
+            HStack(spacing: 6) {
+                TextField("Add note or attachment", text: $viewModel.note, axis: .vertical)
+                    .font(.footnote)
+                    .lineLimit(1...2)
+                    .focused($focusedField, equals: .note)
+
+                AttachmentStripView(
+                    attachments: $viewModel.attachments,
+                    showsPlaceholder: false
+                )
+                .layoutPriority(-1)
+            }
         }
         .cozyCard(AppTheme.surface(for: viewModel.type), padding: 14)
     }
@@ -190,7 +233,8 @@ struct TransactionFormView: View {
                 .foregroundStyle(.secondary)
 
             CategoryChipsView(
-                categories: viewModel.availableCategories,
+                recent: viewModel.recentCategories,
+                all: viewModel.availableCategories,
                 selectedID: $viewModel.selectedCategoryID,
                 accent: accent,
                 onAddNew: viewModel.isLinkedEntry
@@ -198,47 +242,6 @@ struct TransactionFormView: View {
                     : { viewModel.isShowingCategoryEditor = true }
             )
             .disabled(viewModel.isLinkedEntry)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard()
-    }
-
-    // MARK: - Date, note, bill
-
-    private var detailCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                Image(systemName: "calendar")
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-
-                DatePicker(
-                    "Date",
-                    selection: $viewModel.date,
-                    displayedComponents: [.date]
-                )
-                .labelsHidden()
-
-                Spacer(minLength: 0)
-
-                if !Calendar.current.isDateInToday(viewModel.date) {
-                    Button("Today") {
-                        viewModel.date = Date()
-                    }
-                    .font(.footnote.weight(.semibold))
-                }
-            }
-            .frame(minHeight: AppTheme.minimumTapTarget)
-
-            Divider()
-
-            TextField("Note", text: $viewModel.note, axis: .vertical)
-                .lineLimit(1...3)
-                .focused($focusedField, equals: .note)
-
-            Divider()
-
-            AttachmentStripView(attachments: $viewModel.attachments)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .cozyCard()

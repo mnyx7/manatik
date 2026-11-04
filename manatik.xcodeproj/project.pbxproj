@@ -58,9 +58,10 @@
 		AA0000000000000000000355 /* CategoryEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000145 /* CategoryEditorView.swift */; };
 		AA0000000000000000000356 /* SavingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000146 /* SavingsView.swift */; };
 		AA0000000000000000000357 /* LoansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000147 /* LoansView.swift */; };
-		AA0000000000000000000358 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000148 /* InsightsView.swift */; };
+		AA0000000000000000000358 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000148 /* OverviewView.swift */; };
 		AA0000000000000000000360 /* CategoryChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000150 /* CategoryChipsView.swift */; };
 		AA0000000000000000000361 /* DayStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000151 /* DayStripView.swift */; };
+		AA0000000000000000000362 /* CategoryPieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000152 /* CategoryPieChartView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -117,9 +118,10 @@
 		AA0000000000000000000145 /* CategoryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryEditorView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000146 /* SavingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavingsView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000147 /* LoansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoansView.swift; sourceTree = "<group>"; };
-		AA0000000000000000000148 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000148 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000150 /* CategoryChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryChipsView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000151 /* DayStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayStripView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000152 /* CategoryPieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPieChartView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +214,7 @@
 			children = (
 				AA0000000000000000000221 /* Activities */,
 				AA0000000000000000000206 /* Home */,
-				AA0000000000000000000224 /* Insights */,
+				AA0000000000000000000224 /* Overview */,
 				AA0000000000000000000223 /* Loans */,
 				AA0000000000000000000222 /* Savings */,
 				AA0000000000000000000220 /* Root */,
@@ -262,6 +264,7 @@
 		AA000000000000000000020A /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000000000152 /* CategoryPieChartView.swift */,
 				AA0000000000000000000150 /* CategoryChipsView.swift */,
 				AA0000000000000000000151 /* DayStripView.swift */,
 				AA0000000000000000000142 /* HeroBalanceCardView.swift */,
@@ -363,12 +366,12 @@
 			path = Loans;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000224 /* Insights */ = {
+		AA0000000000000000000224 /* Overview */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000148 /* InsightsView.swift */,
+				AA0000000000000000000148 /* OverviewView.swift */,
 			);
-			path = Insights;
+			path = Overview;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -477,6 +480,7 @@
 				AA000000000000000000031F /* DecimalAmountValidator.swift in Sources */,
 				AA0000000000000000000320 /* TransactionAnalytics.swift in Sources */,
 				AA0000000000000000000321 /* MockData.swift in Sources */,
+				AA0000000000000000000362 /* CategoryPieChartView.swift in Sources */,
 				AA0000000000000000000360 /* CategoryChipsView.swift in Sources */,
 				AA0000000000000000000361 /* DayStripView.swift in Sources */,
 				AA0000000000000000000350 /* MoneyGoals.swift in Sources */,
@@ -487,7 +491,7 @@
 				AA0000000000000000000355 /* CategoryEditorView.swift in Sources */,
 				AA0000000000000000000356 /* SavingsView.swift in Sources */,
 				AA0000000000000000000357 /* LoansView.swift in Sources */,
-				AA0000000000000000000358 /* InsightsView.swift in Sources */,
+				AA0000000000000000000358 /* OverviewView.swift in Sources */,
 				AA0000000000000000000340 /* PaymentReminder.swift in Sources */,
 				AA0000000000000000000341 /* ReminderScheduler.swift in Sources */,
 				AA0000000000000000000342 /* PeriodHeaderView.swift in Sources */,

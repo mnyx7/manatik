@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 enum RootDestination: Hashable {
@@ -5,20 +6,49 @@ enum RootDestination: Hashable {
     case settings
     case savings
     case loans
-    case insights
+    case overview
     case yearOverview
 }
 
-/// The app shell: the main page, plus one bottom bar with Settings on the left,
-/// add in the middle and Activities on the right.
+/// Tells the shell when a keyboard is on screen.
 ///
-/// Every sheet and destructive confirmation is presented from here, so two
-/// competing presentations can never fight over the same hierarchy.
+/// The bar is a bottom safe-area inset, and SwiftUI insets for the keyboard
+/// too. Both at once pushed focused fields up over the keyboard, so the bar
+/// steps out of the way while typing.
+@MainActor
+final class KeyboardObserver: ObservableObject {
+    @Published private(set) var isVisible = false
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        let center = NotificationCenter.default
+
+        center.publisher(for: UIResponder.keyboardWillShowNotification)
+            .sink { [weak self] _ in self?.isVisible = true }
+            .store(in: &cancellables)
+
+        center.publisher(for: UIResponder.keyboardWillHideNotification)
+            .sink { [weak self] _ in self?.isVisible = false }
+            .store(in: &cancellables)
+    }
+}
+
+/// The app shell: a five-slot bottom bar carrying Home, Activities, add,
+/// Settings and Overview, visible on every screen.
 struct RootView: View {
+    private enum Tab: Hashable {
+        case home
+        case activities
+        case settings
+        case overview
+    }
+
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var reminderScheduler: ReminderScheduler
 
     @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var keyboard = KeyboardObserver()
     @State private var path: [RootDestination] = []
     @Environment(\.scenePhase) private var scenePhase
 
@@ -26,16 +56,19 @@ struct RootView: View {
         NavigationStack(path: $path) {
             HomeView(
                 viewModel: viewModel,
-                onOpenActivities: { path.append(.activities) },
-                onOpenSavings: { path.append(.savings) },
-                onOpenLoans: { path.append(.loans) },
-                onOpenInsights: { path.append(.insights) }
+                onOpenActivities: { select(.activities) },
+                onOpenSavings: { push(.savings) },
+                onOpenLoans: { push(.loans) }
             )
             .navigationDestination(for: RootDestination.self, destination: destination)
         }
         // Inset the whole stack, not just the root, so the bar stays put when
-        // Settings or Activities is pushed.
-        .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
+        // another screen is pushed.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !keyboard.isVisible {
+                bottomBar
+            }
+        }
         .tint(.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
@@ -186,75 +219,95 @@ struct RootView: View {
 
     // MARK: - Bottom bar
 
-    private var bottomBar: some View {
-        HStack(alignment: .center) {
-            barButton(
-                systemImage: "gearshape",
-                title: "Settings",
-                isActive: path.last == .settings
-            ) {
-                select(.settings)
-            }
-
-            Spacer(minLength: 12)
-
-            Button {
-                viewModel.beginAdd()
-            } label: {
-                Image(systemName: "plus")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 58, height: 58)
-                    .background(Circle().fill(Color.accentColor))
-                    .shadow(color: .black.opacity(0.18), radius: 8, y: 3)
-            }
-            .accessibilityLabel(Text("Add income or expense"))
-
-            Spacer(minLength: 12)
-
-            barButton(
-                systemImage: "list.bullet.rectangle",
-                title: "Activities",
-                isActive: path.last == .activities
-            ) {
-                select(.activities)
-            }
+    private var activeTab: Tab? {
+        switch path.last {
+        case .none: return .home
+        case .activities: return .activities
+        case .settings: return .settings
+        case .overview: return .overview
+        default: return nil
         }
-        .padding(.horizontal, 32)
-        .padding(.top, 6)
-        .padding(.bottom, 2)
-        .background(.bar)
     }
 
-    /// Behaves like a tab: tapping the slot you are already on returns home.
-    private func select(_ destination: RootDestination) {
-        if path.last == destination {
-            path.removeAll()
-        } else {
-            path = [destination]
+    private var bottomBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+
+            HStack(spacing: 0) {
+                tabButton(.home, systemImage: "house", title: "Home")
+                tabButton(.activities, systemImage: "list.bullet.rectangle", title: "Activities")
+
+                Button {
+                    viewModel.beginAdd()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 54, height: 54)
+                        .background(Circle().fill(Color.accentColor))
+                        .shadow(color: .black.opacity(0.18), radius: 7, y: 2)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityLabel(Text("Add income or expense"))
+
+                tabButton(.settings, systemImage: "gearshape", title: "Settings")
+                tabButton(.overview, systemImage: "chart.pie", title: "Overview")
+            }
+            .padding(.top, 6)
+            .padding(.bottom, 2)
         }
+        // Extends the material through the home-indicator area, which was
+        // showing the page background as a strip under the bar.
+        .background(.bar, ignoresSafeAreaEdges: .bottom)
     }
 
     @ViewBuilder
-    private func barButton(
+    private func tabButton(
+        _ tab: Tab,
         systemImage: String,
-        title: LocalizedStringKey,
-        isActive: Bool,
-        action: @escaping () -> Void
+        title: LocalizedStringKey
     ) -> some View {
-        Button(action: action) {
+        let isActive = activeTab == tab
+
+        Button {
+            switch tab {
+            case .home: select(nil)
+            case .activities: select(.activities)
+            case .settings: select(.settings)
+            case .overview: select(.overview)
+            }
+        } label: {
             VStack(spacing: 3) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: isActive ? .semibold : .medium))
+                    .font(.system(size: 19, weight: isActive ? .semibold : .regular))
                 Text(title)
                     .font(.caption2.weight(isActive ? .semibold : .regular))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            .frame(minWidth: 64, minHeight: AppTheme.minimumTapTarget)
+            .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
             .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(title))
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
+    }
+
+    /// Switches slot. Tapping the slot already shown does nothing, rather than
+    /// bouncing back to the main page.
+    private func select(_ destination: RootDestination?) {
+        guard let destination else {
+            if !path.isEmpty { path.removeAll() }
+            return
+        }
+        guard path.last != destination else { return }
+        path = [destination]
+    }
+
+    /// Pushes on top of wherever the user is, for screens reached from content.
+    private func push(_ destination: RootDestination) {
+        path.append(destination)
     }
 
     // MARK: - Destinations
@@ -270,8 +323,8 @@ struct RootView: View {
             SavingsView(viewModel: viewModel)
         case .loans:
             LoansView(viewModel: viewModel)
-        case .insights:
-            InsightsView()
+        case .overview:
+            OverviewView()
         case .yearOverview:
             YearlyOverviewView(
                 viewModel: YearlyOverviewViewModel(store: store, year: store.selectedYear)
