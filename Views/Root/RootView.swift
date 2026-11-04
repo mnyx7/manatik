@@ -7,6 +7,8 @@ import SwiftUI
 enum RootDestination: Hashable {
     case savings
     case loans
+    case savingsGoal(UUID)
+    case loanDetail(UUID)
     case yearOverview
 }
 
@@ -62,7 +64,9 @@ struct RootView: View {
                         viewModel: viewModel,
                         onOpenActivities: { select(.activities) },
                         onOpenSavings: { push(.savings) },
-                        onOpenLoans: { push(.loans) }
+                        onOpenLoans: { push(.loans) },
+                        onOpenGoal: { push(.savingsGoal($0)) },
+                        onOpenLoan: { push(.loanDetail($0)) }
                     )
                 case .activities:
                     ActivitiesView(viewModel: viewModel)
@@ -311,9 +315,19 @@ struct RootView: View {
     private func destination(_ destination: RootDestination) -> some View {
         switch destination {
         case .savings:
-            SavingsView(viewModel: viewModel)
+            SavingsView(
+                viewModel: viewModel,
+                onOpenGoal: { push(.savingsGoal($0)) }
+            )
         case .loans:
-            LoansView(viewModel: viewModel)
+            LoansView(
+                viewModel: viewModel,
+                onOpenLoan: { push(.loanDetail($0)) }
+            )
+        case .savingsGoal(let id):
+            SavingsGoalDetailView(goalID: id, viewModel: viewModel)
+        case .loanDetail(let id):
+            LoanDetailView(loanID: id, viewModel: viewModel)
         case .yearOverview:
             YearlyOverviewView(
                 viewModel: YearlyOverviewViewModel(store: store, year: store.selectedYear)

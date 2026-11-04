@@ -1,9 +1,10 @@
 import SwiftUI
 
-/// One savings goal: saved, left, optional due date, and a way to put more in.
+/// One savings goal: saved, left, deadline, and a way to put more in.
 ///
-/// Rows are fixed in number and names are single-line, so cards in a
-/// side-scrolling row come out the same height whatever their content.
+/// The card body is the link to the goal, so there is no Details label. Rows
+/// are fixed in number and names are single-line, so cards in a side-scrolling
+/// row come out the same height whatever their content.
 struct SavingsGoalCardView: View {
     let progress: SavingsGoalProgress
     let currency: Currency
@@ -23,6 +24,40 @@ struct SavingsGoalCardView: View {
     }
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // The action button is a sibling of the tappable body, never nested
+            // inside it: a button within a button's label loses its taps.
+            if let onOpen {
+                Button(action: onOpen) { summary }
+                    .buttonStyle(.plain)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(progress.goal.name))
+                    .accessibilityValue(accessibilitySummary)
+                    .accessibilityHint(Text("Opens this goal"))
+                    .accessibilityAddTraits(.isButton)
+            } else {
+                summary
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(progress.goal.name))
+                    .accessibilityValue(accessibilitySummary)
+            }
+
+            if let onAddMoney {
+                Button(action: onAddMoney) {
+                    Label("Add money", systemImage: "plus")
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .tint(AppTheme.savingsAccent)
+                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cozyCard(AppTheme.savingsSurface)
+    }
+
+    private var summary: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
                 Text(progress.goal.name)
@@ -54,52 +89,25 @@ struct SavingsGoalCardView: View {
                 text: metaText,
                 tint: isOverdue ? AppTheme.expenseAccent : .secondary
             )
-
-            if onAddMoney != nil || onOpen != nil {
-                HStack(spacing: 8) {
-                    if let onAddMoney {
-                        Button(action: onAddMoney) {
-                            Label("Add money", systemImage: "plus")
-                                .font(.caption.weight(.semibold))
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                        .tint(AppTheme.savingsAccent)
-                    }
-
-                    if let onOpen {
-                        Button(action: onOpen) {
-                            Text("Details")
-                                .font(.caption.weight(.semibold))
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-
-                    Spacer(minLength: 0)
-                }
-                .frame(minHeight: AppTheme.minimumTapTarget)
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard(AppTheme.savingsSurface)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text(progress.goal.name))
-        .accessibilityValue(
-            String(
-                format: NSLocalizedString("%1$@ saved of %2$@, %3$@ to go", comment: "Accessibility"),
-                savedText, targetText, remainingText
-            )
+        .contentShape(Rectangle())
+    }
+
+    private var accessibilitySummary: String {
+        String(
+            format: NSLocalizedString("%1$@ saved of %2$@, %3$@ to go", comment: "Accessibility"),
+            savedText, targetText, remainingText
         )
     }
 
     private var isOverdue: Bool {
-        (progress.daysRemaining ?? 0) < 0 && progress.goal.dueDate != nil
+        progress.goal.dueDate != nil && (progress.daysRemaining ?? 0) < 0
     }
 
     private var metaIcon: String {
-        guard progress.goal.dueDate != nil else { return "infinity" }
-        return isOverdue ? "exclamationmark.circle" : "calendar"
+        if isOverdue { return "exclamationmark.circle" }
+        return progress.goal.dueDate == nil ? "infinity" : "calendar"
     }
 
     private var metaText: String {
@@ -141,6 +149,38 @@ struct LoanCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
+            if let onOpen {
+                Button(action: onOpen) { summary }
+                    .buttonStyle(.plain)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(progress.loan.name))
+                    .accessibilityValue(accessibilitySummary)
+                    .accessibilityHint(Text("Opens this loan"))
+                    .accessibilityAddTraits(.isButton)
+            } else {
+                summary
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(progress.loan.name))
+                    .accessibilityValue(accessibilitySummary)
+            }
+
+            if let onRecordPayment {
+                Button(action: onRecordPayment) {
+                    Label("Record payment", systemImage: "arrow.up")
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .tint(AppTheme.loanAccent)
+                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cozyCard(AppTheme.loanSurface)
+    }
+
+    private var summary: some View {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
                 Label(progress.loan.name, systemImage: "building.columns")
                     .font(.subheadline.weight(.semibold))
@@ -170,42 +210,15 @@ struct LoanCardView: View {
                 text: metaText,
                 tint: isOverdue ? AppTheme.expenseAccent : .secondary
             )
-
-            if onRecordPayment != nil || onOpen != nil {
-                HStack(spacing: 8) {
-                    if let onRecordPayment {
-                        Button(action: onRecordPayment) {
-                            Label("Record payment", systemImage: "arrow.up")
-                                .font(.caption.weight(.semibold))
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                        .tint(AppTheme.loanAccent)
-                    }
-
-                    if let onOpen {
-                        Button(action: onOpen) {
-                            Text("Details")
-                                .font(.caption.weight(.semibold))
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                    }
-
-                    Spacer(minLength: 0)
-                }
-                .frame(minHeight: AppTheme.minimumTapTarget)
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .cozyCard(AppTheme.loanSurface)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text(progress.loan.name))
-        .accessibilityValue(
-            String(
-                format: NSLocalizedString("%1$@ paid of %2$@, %3$@ left", comment: "Accessibility"),
-                paidText, initialText, remainingText
-            )
+        .contentShape(Rectangle())
+    }
+
+    private var accessibilitySummary: String {
+        String(
+            format: NSLocalizedString("%1$@ paid of %2$@, %3$@ left", comment: "Accessibility"),
+            paidText, initialText, remainingText
         )
     }
 
@@ -220,13 +233,17 @@ struct LoanCardView: View {
     }
 
     private var isOverdue: Bool {
-        (daysUntilDue ?? 0) < 0 && progress.loan.dueDate != nil
+        progress.loan.dueDate != nil && (daysUntilDue ?? 0) < 0
     }
 
     private var metaIcon: String {
         if isOverdue { return "exclamationmark.circle" }
-        if progress.estimatedPaymentsRemaining != nil { return "number" }
-        return progress.loan.dueDate == nil ? "infinity" : "calendar"
+        // Anything date-related keeps the calendar. The instalment estimate
+        // briefly used "number", which renders as a bare #.
+        if progress.loan.dueDate != nil || progress.estimatedPaymentsRemaining != nil {
+            return "calendar"
+        }
+        return "infinity"
     }
 
     private var metaText: String {

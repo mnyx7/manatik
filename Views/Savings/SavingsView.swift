@@ -4,6 +4,7 @@ import SwiftUI
 struct SavingsView: View {
     @EnvironmentObject private var store: AppStore
     @ObservedObject var viewModel: HomeViewModel
+    let onOpenGoal: (UUID) -> Void
 
     private var currency: Currency { store.state.settings.currency }
 
@@ -22,24 +23,20 @@ struct SavingsView: View {
                     if !store.activeSavingsGoals.isEmpty {
                         sectionHeader("In progress")
                         ForEach(store.activeSavingsGoals) { progress in
-                            NavigationLink {
-                                SavingsGoalDetailView(goalID: progress.goal.id, viewModel: viewModel)
-                            } label: {
-                                SavingsGoalCardView(
-                                    progress: progress,
-                                    currency: currency,
-                                    onAddMoney: { viewModel.contributingGoal = progress.goal }
-                                )
-                            }
-                            .buttonStyle(.plain)
+                            SavingsGoalCardView(
+                                progress: progress,
+                                currency: currency,
+                                onAddMoney: { viewModel.contributingGoal = progress.goal },
+                                onOpen: { onOpenGoal(progress.goal.id) }
+                            )
                         }
                     }
 
                     if !store.completedSavingsGoals.isEmpty {
                         sectionHeader("Completed")
                         ForEach(store.completedSavingsGoals) { progress in
-                            NavigationLink {
-                                SavingsGoalDetailView(goalID: progress.goal.id, viewModel: viewModel)
+                            Button {
+                                onOpenGoal(progress.goal.id)
                             } label: {
                                 completedRow(progress)
                             }

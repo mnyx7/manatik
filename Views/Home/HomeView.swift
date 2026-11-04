@@ -10,6 +10,8 @@ struct HomeView: View {
     let onOpenActivities: () -> Void
     let onOpenSavings: () -> Void
     let onOpenLoans: () -> Void
+    let onOpenGoal: (UUID) -> Void
+    let onOpenLoan: (UUID) -> Void
 
     private let recentLimit = 4
 
@@ -157,7 +159,7 @@ struct HomeView: View {
                                 progress: progress,
                                 currency: currency,
                                 onAddMoney: { viewModel.contributingGoal = progress.goal },
-                                onOpen: onOpenSavings
+                                onOpen: { onOpenGoal(progress.goal.id) }
                             )
                             .frame(width: 290)
                         }
@@ -215,7 +217,7 @@ struct HomeView: View {
                                 progress: progress,
                                 currency: currency,
                                 onRecordPayment: { viewModel.payingLoan = progress.loan },
-                                onOpen: onOpenLoans
+                                onOpen: { onOpenLoan(progress.loan.id) }
                             )
                             .frame(width: 290)
                         }

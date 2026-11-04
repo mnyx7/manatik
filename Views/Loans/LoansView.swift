@@ -4,6 +4,7 @@ import SwiftUI
 struct LoansView: View {
     @EnvironmentObject private var store: AppStore
     @ObservedObject var viewModel: HomeViewModel
+    let onOpenLoan: (UUID) -> Void
 
     private var currency: Currency { store.state.settings.currency }
 
@@ -25,16 +26,12 @@ struct LoansView: View {
                             .padding(.top, 4)
 
                         ForEach(store.activeLoans) { progress in
-                            NavigationLink {
-                                LoanDetailView(loanID: progress.loan.id, viewModel: viewModel)
-                            } label: {
-                                LoanCardView(
-                                    progress: progress,
-                                    currency: currency,
-                                    onRecordPayment: { viewModel.payingLoan = progress.loan }
-                                )
-                            }
-                            .buttonStyle(.plain)
+                            LoanCardView(
+                                progress: progress,
+                                currency: currency,
+                                onRecordPayment: { viewModel.payingLoan = progress.loan },
+                                onOpen: { onOpenLoan(progress.loan.id) }
+                            )
                         }
                     }
 
@@ -44,8 +41,8 @@ struct LoansView: View {
                             .padding(.top, 4)
 
                         ForEach(store.closedLoans) { progress in
-                            NavigationLink {
-                                LoanDetailView(loanID: progress.loan.id, viewModel: viewModel)
+                            Button {
+                                onOpenLoan(progress.loan.id)
                             } label: {
                                 settledRow(progress)
                             }
