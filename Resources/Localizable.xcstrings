@@ -1,0 +1,3253 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%1$@ of %2$@, %3$@ complete": {
+      "extractionState": "manual"
+    },
+    "%1$@ spent over %2$d days, averaging %3$@ a day": {
+      "extractionState": "manual"
+    },
+    "%1$@, %2$d percent of spending": {
+      "extractionState": "manual"
+    },
+    "%1$d entries, %2$d repeating": {
+      "extractionState": "manual"
+    },
+    "%@ expense": {
+      "extractionState": "manual"
+    },
+    "%@ income": {
+      "extractionState": "manual"
+    },
+    "%d entries": {
+      "extractionState": "manual"
+    },
+    "%d matching entries": {
+      "extractionState": "manual"
+    },
+    "A copy of the unreadable file was kept as %@.": {
+      "extractionState": "manual"
+    },
+    "A date range replaces the period shown on the main page, so you can search across months.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarix aralığı əsas səhifədəki dövrü əvəz edir, belə ki, aylar arasında axtarış edə bilərsiniz."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Диапазон дат заменяет период с главной страницы, позволяя искать по месяцам."
+          }
+        }
+      }
+    },
+    "About": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haqqında"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О программе"
+          }
+        }
+      }
+    },
+    "Activities": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əməliyyatlar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Операции"
+          }
+        }
+      }
+    },
+    "Add %@ entry": {
+      "extractionState": "manual"
+    },
+    "Add a payment reminder": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödəniş xatırlatması əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить напоминание"
+          }
+        }
+      }
+    },
+    "Add an entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить запись"
+          }
+        }
+      }
+    },
+    "Add income or expense": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gəlir və ya xərc əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить доход или расход"
+          }
+        }
+      }
+    },
+    "Add your first income or expense to start tracking.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzləməyə başlamaq üçün ilk gəlir və ya xərcinizi əlavə edin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавьте первый доход или расход, чтобы начать учёт."
+          }
+        }
+      }
+    },
+    "All categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bütün kateqoriyalar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все категории"
+          }
+        }
+      }
+    },
+    "All types": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bütün növlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все типы"
+          }
+        }
+      }
+    },
+    "Allow notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirişlərə icazə ver"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешить уведомления"
+          }
+        }
+      }
+    },
+    "Amount": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məbləğ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сумма"
+          }
+        }
+      }
+    },
+    "Amount cannot exceed %@.": {
+      "extractionState": "manual"
+    },
+    "Amount must be greater than zero.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məbləğ sıfırdan böyük olmalıdır."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сумма должна быть больше нуля."
+          }
+        }
+      }
+    },
+    "Amounts are not converted. All %1$d existing entries will simply be shown in %2$@.": {
+      "extractionState": "manual"
+    },
+    "Apply range": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aralığı tətbiq et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Применить диапазон"
+          }
+        }
+      }
+    },
+    "Average": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orta"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Среднее"
+          }
+        }
+      }
+    },
+    "Azerbaijani manat": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Azərbaycan manatı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Азербайджанский манат"
+          }
+        }
+      }
+    },
+    "Back to today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günə qaytar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вернуться к сегодня"
+          }
+        }
+      }
+    },
+    "Backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ehtiyat nüsxə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Резервная копия"
+          }
+        }
+      }
+    },
+    "Backup imported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ehtiyat nüsxə yükləndi."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Копия импортирована."
+          }
+        }
+      }
+    },
+    "Backup imported. Your previous data was saved as %@ in the app's Documents folder.": {
+      "extractionState": "manual"
+    },
+    "Backup saved to %@": {
+      "extractionState": "manual"
+    },
+    "Bonus": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonus"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бонус"
+          }
+        }
+      }
+    },
+    "Cafe": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kafe"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кафе"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ləğv et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отмена"
+          }
+        }
+      }
+    },
+    "Category": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kateqoriya"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Категория"
+          }
+        }
+      }
+    },
+    "Change currency": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valyutanı dəyiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сменить валюту"
+          }
+        }
+      }
+    },
+    "Change currency?": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valyuta dəyişdirilsin?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сменить валюту?"
+          }
+        }
+      }
+    },
+    "Change only this one": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnız bunu dəyiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить только эту"
+          }
+        }
+      }
+    },
+    "Change period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dövrü dəyiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить период"
+          }
+        }
+      }
+    },
+    "Change this and all future": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bunu və bütün gələcəkləri dəyiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить эту и все будущие"
+          }
+        }
+      }
+    },
+    "Changes may not be saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dəyişikliklər saxlanmaya bilər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменения могут не сохраниться"
+          }
+        }
+      }
+    },
+    "Choose how much of the series to remove. Past entries you keep stay in your history.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seriyanın nə qədərini silmək istədiyinizi seçin. Saxladığınız keçmiş qeydlər tarixçədə qalır."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите, какую часть серии удалить. Оставленные прошлые записи сохранятся в истории."
+          }
+        }
+      }
+    },
+    "Clear": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təmizlə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбросить"
+          }
+        }
+      }
+    },
+    "Clear date range": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarix aralığını təmizlə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбросить диапазон"
+          }
+        }
+      }
+    },
+    "Clear filters": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtrləri təmizlə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбросить фильтры"
+          }
+        }
+      }
+    },
+    "Close": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağla"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Could not prepare the export: %@": {
+      "extractionState": "manual"
+    },
+    "Could not read your data": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məlumatlarınız oxunmadı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать данные"
+          }
+        }
+      }
+    },
+    "Currency": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valyuta"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Валюта"
+          }
+        }
+      }
+    },
+    "Daily": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər gün"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ежедневно"
+          }
+        }
+      }
+    },
+    "Daily Spending": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük xərclər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Расходы по дням"
+          }
+        }
+      }
+    },
+    "Daily spending chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük xərc qrafiki"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "График расходов по дням"
+          }
+        }
+      }
+    },
+    "Data upgraded": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məlumatlar yeniləndi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Данные обновлены"
+          }
+        }
+      }
+    },
+    "Date": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarix"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата"
+          }
+        }
+      }
+    },
+    "Date Range": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarix aralığı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Диапазон дат"
+          }
+        }
+      }
+    },
+    "Date range: %@": {
+      "extractionState": "manual"
+    },
+    "Date range…": {
+      "extractionState": "manual"
+    },
+    "Dates up to today are recorded as real entries. Later dates are shown as forecasts until they arrive.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günə qədərki tarixlər real qeyd kimi yazılır. Sonrakı tarixlər gələnə qədər proqnoz kimi göstərilir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Даты до сегодняшнего дня записываются как реальные. Более поздние показываются как прогноз."
+          }
+        }
+      }
+    },
+    "Day": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gün"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить"
+          }
+        }
+      }
+    },
+    "Delete entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeydi sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить запись"
+          }
+        }
+      }
+    },
+    "Delete entry?": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd silinsin?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить запись?"
+          }
+        }
+      }
+    },
+    "Delete only this one": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnız bunu sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить только эту"
+          }
+        }
+      }
+    },
+    "Delete the whole series, including history": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bütün seriyanı, tarixçə ilə birlikdə sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить всю серию, включая историю"
+          }
+        }
+      }
+    },
+    "Delete this and all future": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bunu və bütün gələcəkləri sil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить эту и все будущие"
+          }
+        }
+      }
+    },
+    "Delete this entry?": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu qeyd silinsin?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить эту запись?"
+          }
+        }
+      }
+    },
+    "Details": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təfərrüatlar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Детали"
+          }
+        }
+      }
+    },
+    "Done": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazır"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Готово"
+          }
+        }
+      }
+    },
+    "Earlier entries keep the amounts they were recorded with.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əvvəlki qeydlər yazıldıqları məbləğləri saxlayır."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прежние записи сохраняют суммы, с которыми были внесены."
+          }
+        }
+      }
+    },
+    "Edit": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redaktə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить"
+          }
+        }
+      }
+    },
+    "Edit Entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeydi redaktə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить запись"
+          }
+        }
+      }
+    },
+    "Edit Reminder": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xatırlatmanı redaktə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменить напоминание"
+          }
+        }
+      }
+    },
+    "Education": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təhsil"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Образование"
+          }
+        }
+      }
+    },
+    "Enabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiv"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включено"
+          }
+        }
+      }
+    },
+    "End today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gün bitir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершить сегодня"
+          }
+        }
+      }
+    },
+    "Ends": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Окончание"
+          }
+        }
+      }
+    },
+    "Enter a day number.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gün nömrəsi daxil edin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Введите номер дня."
+          }
+        }
+      }
+    },
+    "Enter an amount.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məbləğ daxil edin."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Введите сумму."
+          }
+        }
+      }
+    },
+    "Entertainment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əyləncə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Развлечения"
+          }
+        }
+      }
+    },
+    "Entries you add will appear here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əlavə etdiyiniz qeydlər burada görünəcək."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавленные записи появятся здесь."
+          }
+        }
+      }
+    },
+    "Error": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xəta"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ошибка"
+          }
+        }
+      }
+    },
+    "Euro": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avro"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Евро"
+          }
+        }
+      }
+    },
+    "Expense": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xərc"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Расход"
+          }
+        }
+      }
+    },
+    "Export a backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ehtiyat nüsxə çıxar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспортировать копию"
+          }
+        }
+      }
+    },
+    "Export failed: %@": {
+      "extractionState": "manual"
+    },
+    "Filters": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtrlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фильтры"
+          }
+        }
+      }
+    },
+    "For example: Home loan instalment": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Məsələn: Mənzil krediti ödənişi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Например: платёж по ипотеке"
+          }
+        }
+      }
+    },
+    "Forecast": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proqnoz"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноз"
+          }
+        }
+      }
+    },
+    "Forecast, not yet recorded": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proqnoz, hələ qeyd olunmayıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноз, ещё не записано"
+          }
+        }
+      }
+    },
+    "Freelance": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frilans"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фриланс"
+          }
+        }
+      }
+    },
+    "From": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlanğıc"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "С"
+          }
+        }
+      }
+    },
+    "Fuel": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yanacaq"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Топливо"
+          }
+        }
+      }
+    },
+    "General": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ümumi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Общие"
+          }
+        }
+      }
+    },
+    "Get a notification before a loan instalment, a utility bill or a subscription is due. Reminders are local to this device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kredit ödənişi, kommunal haqq və ya abunə vaxtı çatmadan bildiriş alın. Xatırlatmalar yalnız bu cihazda saxlanılır."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Получайте уведомление до срока платежа по кредиту, коммунальных услуг или подписки. Напоминания хранятся только на этом устройстве."
+          }
+        }
+      }
+    },
+    "Gift": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədiyyə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подарок"
+          }
+        }
+      }
+    },
+    "Go to today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günə keç"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перейти к сегодня"
+          }
+        }
+      }
+    },
+    "Groceries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ərzaq"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продукты"
+          }
+        }
+      }
+    },
+    "Has an end date": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitmə tarixi var"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Есть дата окончания"
+          }
+        }
+      }
+    },
+    "Health": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sağlamlıq"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Здоровье"
+          }
+        }
+      }
+    },
+    "Home": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ev"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дом"
+          }
+        }
+      }
+    },
+    "Import a backup": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ehtiyat nüsxə yüklə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импортировать копию"
+          }
+        }
+      }
+    },
+    "Import failed: %@": {
+      "extractionState": "manual"
+    },
+    "Includes forecast rows from repeating entries.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrarlanan qeydlərdən gələn proqnozları da əhatə edir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включает прогнозы из повторяющихся записей."
+          }
+        }
+      }
+    },
+    "Income": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gəlir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доход"
+          }
+        }
+      }
+    },
+    "Jump to today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günə keç"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перейти к сегодня"
+          }
+        }
+      }
+    },
+    "Keep waiting": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gözləməyə davam et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подождать"
+          }
+        }
+      }
+    },
+    "Kids": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uşaqlar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дети"
+          }
+        }
+      }
+    },
+    "Monthly": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər ay"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ежемесячно"
+          }
+        }
+      }
+    },
+    "Never": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heç vaxt"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Никогда"
+          }
+        }
+      }
+    },
+    "New Entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni qeyd"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новая запись"
+          }
+        }
+      }
+    },
+    "New Reminder": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni xatırlatma"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новое напоминание"
+          }
+        }
+      }
+    },
+    "Next period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Növbəti dövr"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Следующий период"
+          }
+        }
+      }
+    },
+    "Next year": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Növbəti il"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Следующий год"
+          }
+        }
+      }
+    },
+    "No entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет записей"
+          }
+        }
+      }
+    },
+    "No entries yet": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ qeyd yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записей пока нет"
+          }
+        }
+      }
+    },
+    "No expenses in this period yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə hələ xərc yoxdur."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом периоде пока нет расходов."
+          }
+        }
+      }
+    },
+    "No expenses in this period.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə xərc yoxdur."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом периоде нет расходов."
+          }
+        }
+      }
+    },
+    "No matching entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyğun qeyd yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет подходящих записей"
+          }
+        }
+      }
+    },
+    "No repeating entries yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ təkrarlanan qeyd yoxdur."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторяющихся записей пока нет."
+          }
+        }
+      }
+    },
+    "None": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет"
+          }
+        }
+      }
+    },
+    "Note": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заметка"
+          }
+        }
+      }
+    },
+    "Nothing in this period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə heç nə yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом периоде ничего нет"
+          }
+        }
+      }
+    },
+    "Nothing in this range matches your filters.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu aralıqda filtrlərinizə uyğun heç nə yoxdur."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом диапазоне ничего не соответствует фильтрам."
+          }
+        }
+      }
+    },
+    "Nothing recorded this period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə qeyd yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "За этот период записей нет"
+          }
+        }
+      }
+    },
+    "Notifications are turned off for manatik in iOS Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "manatik üçün bildirişlər iOS Tənzimləmələrində söndürülüb."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уведомления для manatik отключены в настройках iOS."
+          }
+        }
+      }
+    },
+    "OK": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ОК"
+          }
+        }
+      }
+    },
+    "Optional": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstəyə bağlı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Необязательно"
+          }
+        }
+      }
+    },
+    "Other": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Digər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочее"
+          }
+        }
+      }
+    },
+    "Overspent this period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə artıq xərc"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перерасход за период"
+          }
+        }
+      }
+    },
+    "Part of a repeating entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrarlanan qeydin hissəsi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Часть повторяющейся записи"
+          }
+        }
+      }
+    },
+    "Payment Reminders": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödəniş xatırlatmaları"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминания о платежах"
+          }
+        }
+      }
+    },
+    "Payment due": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödəniş vaxtı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срок платежа"
+          }
+        }
+      }
+    },
+    "Period Stats": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dövr statistikası"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Статистика периода"
+          }
+        }
+      }
+    },
+    "Period containing this day": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günü əhatə edən dövr"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Период, включающий этот день"
+          }
+        }
+      }
+    },
+    "Period starts on day": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dövrün başlandığı gün"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Период начинается с дня"
+          }
+        }
+      }
+    },
+    "Period starts on day of month": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dövrün ayın hansı günü başladığı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День месяца, с которого начинается период"
+          }
+        }
+      }
+    },
+    "Pet": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ev heyvanı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Питомец"
+          }
+        }
+      }
+    },
+    "Pharmacy": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aptek"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аптека"
+          }
+        }
+      }
+    },
+    "Pick a day": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gün seç"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите день"
+          }
+        }
+      }
+    },
+    "Pick a day between %1$d and %2$d. Later days do not exist in every month.": {
+      "extractionState": "manual"
+    },
+    "Previous period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əvvəlki dövr"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предыдущий период"
+          }
+        }
+      }
+    },
+    "Previous year": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əvvəlki il"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предыдущий год"
+          }
+        }
+      }
+    },
+    "Quick Add": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tez əlavə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Быстрое добавление"
+          }
+        }
+      }
+    },
+    "Recent Activity": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son əməliyyatlar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Последние операции"
+          }
+        }
+      }
+    },
+    "Recorded": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd olunmuş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записано"
+          }
+        }
+      }
+    },
+    "Remind me": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mənə xatırlat"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напомнить"
+          }
+        }
+      }
+    },
+    "Reminder enabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xatırlatma aktivdir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминание включено"
+          }
+        }
+      }
+    },
+    "Rent": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirayə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Аренда"
+          }
+        }
+      }
+    },
+    "Repeat": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повтор"
+          }
+        }
+      }
+    },
+    "Repeating": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrarlanan"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторяющиеся"
+          }
+        }
+      }
+    },
+    "Repeating Entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrarlanan qeydlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторяющиеся записи"
+          }
+        }
+      }
+    },
+    "Repeating entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Təkrarlanan qeydlər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторяющиеся записи"
+          }
+        }
+      }
+    },
+    "Replace all data?": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bütün məlumatlar əvəz olunsun?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заменить все данные?"
+          }
+        }
+      }
+    },
+    "Replace everything": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hamısını əvəz et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заменить всё"
+          }
+        }
+      }
+    },
+    "Restaurant": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoran"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ресторан"
+          }
+        }
+      }
+    },
+    "Salary": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Əmək haqqı"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зарплата"
+          }
+        }
+      }
+    },
+    "Save": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yadda saxla"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить"
+          }
+        }
+      }
+    },
+    "Saved so far": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazırda yığılmış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Накоплено"
+          }
+        }
+      }
+    },
+    "Savings": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığım"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Накопления"
+          }
+        }
+      }
+    },
+    "Savings Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığım hədəfi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цель накоплений"
+          }
+        }
+      }
+    },
+    "Savings goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yığım hədəfi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цель накоплений"
+          }
+        }
+      }
+    },
+    "Search notes and categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qeyd və kateqoriyalarda axtar"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск по заметкам и категориям"
+          }
+        }
+      }
+    },
+    "See all": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hamısına bax"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать все"
+          }
+        }
+      }
+    },
+    "Select Period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dövr seç"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбор периода"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tənzimləmələr"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройки"
+          }
+        }
+      }
+    },
+    "Shopping": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alış-veriş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Покупки"
+          }
+        }
+      }
+    },
+    "Show %d more": {
+      "extractionState": "manual"
+    },
+    "Show less": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daha az göstər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать меньше"
+          }
+        }
+      }
+    },
+    "Show this period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrü göstər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать этот период"
+          }
+        }
+      }
+    },
+    "Shows this month on the main page": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu ayı əsas səhifədə göstərir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показывает этот месяц на главной"
+          }
+        }
+      }
+    },
+    "Spending by Category": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kateqoriyalar üzrə xərclər"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Расходы по категориям"
+          }
+        }
+      }
+    },
+    "Spent": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xərclənmiş"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потрачено"
+          }
+        }
+      }
+    },
+    "Start fresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sıfırdan başla"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Начать заново"
+          }
+        }
+      }
+    },
+    "Subscription": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abunəlik"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подписка"
+          }
+        }
+      }
+    },
+    "Target amount": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hədəf məbləğ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Целевая сумма"
+          }
+        }
+      }
+    },
+    "That is not a valid number.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu düzgün rəqəm deyil."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это не корректное число."
+          }
+        }
+      }
+    },
+    "This backup was made by a newer version of manatik (format %d). Update the app and try again.": {
+      "extractionState": "manual"
+    },
+    "This cannot be undone.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bunu geri qaytarmaq olmaz."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это действие нельзя отменить."
+          }
+        }
+      }
+    },
+    "This is a repeating entry": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu təkrarlanan qeyddir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это повторяющаяся запись"
+          }
+        }
+      }
+    },
+    "This is not a valid manatik backup file.": {
+      "extractionState": "manual"
+    },
+    "This replaces everything on this device: %1$d entries and %2$d repeating entries will be removed and replaced with %3$d entries and %4$d repeating entries.": {
+      "extractionState": "manual"
+    },
+    "To": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "По"
+          }
+        }
+      }
+    },
+    "Today": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gün"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня"
+          }
+        }
+      }
+    },
+    "Tomorrow": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sabah"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завтра"
+          }
+        }
+      }
+    },
+    "Track what is left this period": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə qalanı izlə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отслеживать остаток за период"
+          }
+        }
+      }
+    },
+    "Tracking the saved amount you entered in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tənzimləmələrdə daxil etdiyiniz yığım məbləği izlənilir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отслеживается сумма накоплений из настроек."
+          }
+        }
+      }
+    },
+    "Tracking what is left this period.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə qalan izlənilir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отслеживается остаток за период."
+          }
+        }
+      }
+    },
+    "Transport": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nəqliyyat"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Транспорт"
+          }
+        }
+      }
+    },
+    "Travel": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Səyahət"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Путешествия"
+          }
+        }
+      }
+    },
+    "Type": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Növ"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тип"
+          }
+        }
+      }
+    },
+    "Type the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Büdcə ayınızın başladığı günü 1-dən 28-ə qədər yazın. 28-dən sonrakı günlər fevralda olmadığı üçün qəbul edilmir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Укажите день начала бюджетного месяца, от 1 до 28. Дни после 28 не допускаются, так как их нет в феврале."
+          }
+        }
+      }
+    },
+    "US dollar": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ABŞ dolları"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доллар США"
+          }
+        }
+      }
+    },
+    "Update": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yenilə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обновить"
+          }
+        }
+      }
+    },
+    "Utility": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kommunal"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коммунальные"
+          }
+        }
+      }
+    },
+    "Weekly": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər həftə"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Еженедельно"
+          }
+        }
+      }
+    },
+    "What is due": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nə ödənilməlidir"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что нужно оплатить"
+          }
+        }
+      }
+    },
+    "When": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nə vaxt"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Когда"
+          }
+        }
+      }
+    },
+    "Year Overview": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İllik baxış"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обзор года"
+          }
+        }
+      }
+    },
+    "Yearly": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər il"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ежегодно"
+          }
+        }
+      }
+    },
+    "Yesterday": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dünən"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вчера"
+          }
+        }
+      }
+    },
+    "You have entries in other periods.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Digər dövrlərdə qeydləriniz var."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В других периодах есть записи."
+          }
+        }
+      }
+    },
+    "You spent more than you earned this period.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu dövrdə qazandığınızdan çox xərclədiniz."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "За этот период вы потратили больше, чем заработали."
+          }
+        }
+      }
+    },
+    "You will be reminded at this time on every matching date.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hər uyğun tarixdə bu vaxtda xatırladılacaq."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминание придёт в это время в каждую подходящую дату."
+          }
+        }
+      }
+    },
+    "You will be reminded once, at this date and time.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnız bir dəfə, bu tarix və vaxtda xatırladılacaq."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Напоминание придёт один раз, в эту дату и время."
+          }
+        }
+      }
+    },
+    "Your data file could not be opened: %@": {
+      "extractionState": "manual"
+    },
+    "Your data file could not be read: %@": {
+      "extractionState": "manual"
+    },
+    "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history.": {
+      "extractionState": "manual"
+    },
+    "avg %@": {
+      "extractionState": "manual"
+    },
+    "from %@": {
+      "extractionState": "manual"
+    },
+    "income %1$@, expense %2$@": {
+      "extractionState": "manual"
+    },
+    "manatik": {
+      "extractionState": "manual"
+    },
+    "manatik could not write to storage: %@\n\nExport a backup from Settings before closing the app.": {
+      "extractionState": "manual"
+    },
+    "manatik keeps your budget on this device only. Nothing is uploaded, so export a backup regularly.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "manatik büdcənizi yalnız bu cihazda saxlayır. Heç nə yüklənmir, buna görə müntəzəm ehtiyat nüsxə çıxarın."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "manatik хранит бюджет только на этом устройстве. Ничего не загружается, поэтому регулярно делайте резервную копию."
+          }
+        }
+      }
+    },
+    "not yet recorded": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hələ qeyd olunmayıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ещё не записано"
+          }
+        }
+      }
+    },
+    "over %d of %d days": {
+      "extractionState": "manual"
+    },
+    "passed": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "keçdi"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "прошло"
+          }
+        }
+      }
+    },
+    "paused": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dayandırılıb"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "приостановлено"
+          }
+        }
+      }
+    },
+    "until %@": {
+      "extractionState": "manual"
+    }
+  },
+  "version": "1.0"
+}
