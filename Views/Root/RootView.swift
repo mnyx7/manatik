@@ -32,8 +32,10 @@ struct RootView: View {
                 onOpenInsights: { path.append(.insights) }
             )
             .navigationDestination(for: RootDestination.self, destination: destination)
-            .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         }
+        // Inset the whole stack, not just the root, so the bar stays put when
+        // Settings or Activities is pushed.
+        .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         .tint(.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
@@ -186,8 +188,12 @@ struct RootView: View {
 
     private var bottomBar: some View {
         HStack(alignment: .center) {
-            barButton(systemImage: "gearshape", title: "Settings") {
-                path.append(.settings)
+            barButton(
+                systemImage: "gearshape",
+                title: "Settings",
+                isActive: path.last == .settings
+            ) {
+                select(.settings)
             }
 
             Spacer(minLength: 12)
@@ -206,8 +212,12 @@ struct RootView: View {
 
             Spacer(minLength: 12)
 
-            barButton(systemImage: "list.bullet.rectangle", title: "Activities") {
-                path.append(.activities)
+            barButton(
+                systemImage: "list.bullet.rectangle",
+                title: "Activities",
+                isActive: path.last == .activities
+            ) {
+                select(.activities)
             }
         }
         .padding(.horizontal, 32)
@@ -216,24 +226,35 @@ struct RootView: View {
         .background(.bar)
     }
 
+    /// Behaves like a tab: tapping the slot you are already on returns home.
+    private func select(_ destination: RootDestination) {
+        if path.last == destination {
+            path.removeAll()
+        } else {
+            path = [destination]
+        }
+    }
+
     @ViewBuilder
     private func barButton(
         systemImage: String,
         title: LocalizedStringKey,
+        isActive: Bool,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             VStack(spacing: 3) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: .medium))
+                    .font(.system(size: 20, weight: isActive ? .semibold : .medium))
                 Text(title)
-                    .font(.caption2)
+                    .font(.caption2.weight(isActive ? .semibold : .regular))
             }
             .frame(minWidth: 64, minHeight: AppTheme.minimumTapTarget)
+            .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(.tint)
         .accessibilityLabel(Text(title))
+        .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }
 
     // MARK: - Destinations

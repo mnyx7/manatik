@@ -17,59 +17,53 @@ struct TransactionFormView: View {
         _viewModel = StateObject(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
     }
 
+    private var currency: Currency { viewModel.store.state.settings.currency }
+    private var accent: Color { AppTheme.accent(for: viewModel.type) }
+
     var body: some View {
         NavigationStack {
-            Form {
-                if let context = viewModel.linkedContextDescription {
-                    Section {
+            ScrollView {
+                VStack(spacing: 14) {
+                    if let context = viewModel.linkedContextDescription {
                         Label(context, systemImage: "link")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                }
 
-                Section {
-                    Picker(selection: $viewModel.type) {
-                        ForEach(TransactionType.allCases) { type in
-                            Text(type.localizedTitle).tag(type)
-                        }
-                    } label: {
-                        Text("Type")
+                    amountCard
+                    categoryCard
+                    detailCard
+
+                    if viewModel.canEditRecurrence {
+                        repeatCard
                     }
-                    .pickerStyle(.segmented)
-                    .disabled(viewModel.isLinkedEntry)
-                }
 
-                amountAndCategorySection
-                billSection
-
-                if viewModel.canEditRecurrence {
-                    recurrenceSection
-                }
-
-                if let error = viewModel.errorMessage {
-                    Section {
+                    if let error = viewModel.errorMessage {
                         Label(error, systemImage: "exclamationmark.triangle.fill")
                             .font(.footnote)
                             .foregroundStyle(AppTheme.expenseAccent)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                }
 
-                if viewModel.isAdding {
-                    saveActionsSection
-                }
+                    if viewModel.isAdding {
+                        saveButtons
+                    }
 
-                if viewModel.editingOccurrence != nil {
-                    Section {
+                    if viewModel.editingOccurrence != nil {
                         Button(role: .destructive) {
                             isShowingDeleteChoice = true
                         } label: {
                             Label("Delete entry", systemImage: "trash")
-                                .frame(minHeight: AppTheme.minimumTapTarget)
+                                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
                         }
+                        .buttonStyle(.bordered)
                     }
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 16)
             }
+            .background(AppTheme.pageBackground)
             .navigationTitle(viewModel.title)
             .navigationBarTitleDisplayMode(.inline)
             .defaultFocus($focusedField, .amount)
@@ -79,14 +73,25 @@ struct TransactionFormView: View {
                     Button("Cancel") { dismiss() }
                 }
 
+                // The bill marker is a small icon beside Save, not a row of
+                // its own.
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.isFeatured.toggle()
+                    } label: {
+                        Image(systemName: viewModel.isFeatured ? "bookmark.fill" : "bookmark")
+                    }
+                    .foregroundStyle(viewModel.isFeatured ? AppTheme.expenseAccent : .secondary)
+                    .accessibilityLabel(Text("Save as a bill"))
+                    .accessibilityAddTraits(viewModel.isFeatured ? [.isSelected] : [])
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(viewModel.saveButtonTitle) { attemptSave(thenDismiss: true) }
                         .disabled(!viewModel.isFormValid)
                         .fontWeight(.semibold)
                 }
 
-                // The decimal pad has no return key, so without this the
-                // keyboard covered the lower rows with no way to dismiss it.
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") { focusedField = nil }
@@ -134,13 +139,27 @@ struct TransactionFormView: View {
         }
     }
 
-    // MARK: - Sections
+    // MARK: - Amount
 
-    private var amountAndCategorySection: some View {
-        Section("Details") {
-            HStack {
-                Text("Amount")
-                Spacer()
+    private var amountCard: some View {
+        VStack(spacing: 12) {
+            Picker(selection: $viewModel.type) {
+                ForEach(TransactionType.allCases) { type in
+                    Text(type.localizedTitle).tag(type)
+                }
+            } label: {
+                Text("Type")
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .disabled(viewModel.isLinkedEntry)
+
+            // The amount is the reason the screen exists, so it gets the size.
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(currency.symbol)
+                    .font(.title2.weight(.medium))
+                    .foregroundStyle(.secondary)
+
                 TextField(
                     "0",
                     text: Binding(
@@ -148,72 +167,110 @@ struct TransactionFormView: View {
                         set: { viewModel.handleAmountChange($0) }
                     )
                 )
+                .font(.system(size: 42, weight: .semibold, design: .rounded))
+                .foregroundStyle(accent)
                 .keyboardType(.decimalPad)
-                .multilineTextAlignment(.trailing)
-                .font(.title3.weight(.semibold))
+                .multilineTextAlignment(.leading)
+                .fixedSize()
                 .focused($focusedField, equals: .amount)
                 .accessibilityLabel(Text("Amount"))
             }
-
-            // The picker and "add new" sit together, so making a category is
-            // part of choosing one rather than a trip to Settings.
-            HStack {
-                Picker(selection: $viewModel.selectedCategoryID) {
-                    ForEach(viewModel.availableCategories) { category in
-                        Text("\(category.icon) \(category.localizedName)").tag(category.id)
-                    }
-                } label: {
-                    Text("Category")
-                }
-                .disabled(viewModel.isLinkedEntry)
-
-                Button {
-                    viewModel.isShowingCategoryEditor = true
-                } label: {
-                    Image(systemName: "plus.circle")
-                        .font(.body)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.tint)
-                .accessibilityLabel(Text("Add a new category"))
-            }
-
-            DatePicker("Date", selection: $viewModel.date, displayedComponents: [.date])
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
         }
+        .cozyCard(AppTheme.surface(for: viewModel.type), padding: 14)
     }
 
-    private var billSection: some View {
-        Section {
+    // MARK: - Category
+
+    private var categoryCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Category")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            CategoryChipsView(
+                categories: viewModel.availableCategories,
+                selectedID: $viewModel.selectedCategoryID,
+                accent: accent,
+                onAddNew: viewModel.isLinkedEntry
+                    ? nil
+                    : { viewModel.isShowingCategoryEditor = true }
+            )
+            .disabled(viewModel.isLinkedEntry)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cozyCard()
+    }
+
+    // MARK: - Date, note, bill
+
+    private var detailCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "calendar")
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+
+                DatePicker(
+                    "Date",
+                    selection: $viewModel.date,
+                    displayedComponents: [.date]
+                )
+                .labelsHidden()
+
+                Spacer(minLength: 0)
+
+                if !Calendar.current.isDateInToday(viewModel.date) {
+                    Button("Today") {
+                        viewModel.date = Date()
+                    }
+                    .font(.footnote.weight(.semibold))
+                }
+            }
+            .frame(minHeight: AppTheme.minimumTapTarget)
+
+            Divider()
+
             TextField("Note", text: $viewModel.note, axis: .vertical)
                 .lineLimit(1...3)
                 .focused($focusedField, equals: .note)
 
-            Toggle(isOn: $viewModel.isFeatured) {
-                Label("Save as a bill", systemImage: "bookmark")
-            }
+            Divider()
 
             AttachmentStripView(attachments: $viewModel.attachments)
-        } header: {
-            Text("Note and bill")
-        } footer: {
-            Text(viewModel.isFeatured
-                 ? "Bills are collected under Activities so you can find them again."
-                 : "Attach a photo or PDF of the bill, and mark it to find it later.")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cozyCard()
     }
 
-    private var recurrenceSection: some View {
-        Section {
-            Picker(selection: $viewModel.recurrenceRule) {
-                ForEach(RecurrenceRule.allCases) { rule in
-                    Text(rule.localizedTitle).tag(rule)
+    // MARK: - Repeat
+
+    private var repeatCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Repeat", systemImage: "repeat")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Picker(selection: $viewModel.recurrenceRule) {
+                    ForEach(RecurrenceRule.allCases) { rule in
+                        Text(rule.localizedTitle).tag(rule)
+                    }
+                } label: {
+                    Text("Repeat")
                 }
-            } label: {
-                Text("Repeat")
+                .labelsHidden()
             }
+            .frame(minHeight: AppTheme.minimumTapTarget)
 
             if viewModel.recurrenceRule.repeats {
+                Divider()
+
                 Toggle("Has an end date", isOn: $viewModel.hasEndDate)
+                    .font(.subheadline)
 
                 if viewModel.hasEndDate {
                     DatePicker(
@@ -222,19 +279,22 @@ struct TransactionFormView: View {
                         in: viewModel.date...,
                         displayedComponents: [.date]
                     )
+                    .font(.subheadline)
                 }
-            }
-        } header: {
-            Text("Repeat")
-        } footer: {
-            if viewModel.recurrenceRule.repeats {
-                Text("Dates up to today are recorded as real entries. Later dates are shown as forecasts until they arrive.")
+
+                Text("Dates up to today are recorded as real entries. Later dates show as forecasts.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cozyCard()
     }
 
-    private var saveActionsSection: some View {
-        Section {
+    // MARK: - Save
+
+    private var saveButtons: some View {
+        VStack(spacing: 10) {
             Button {
                 attemptSave(thenDismiss: true)
             } label: {
@@ -251,10 +311,10 @@ struct TransactionFormView: View {
                 Text("Save and add another")
                     .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
             }
+            .buttonStyle(.bordered)
             .disabled(!viewModel.isFormValid)
-        } footer: {
-            Text("Save and add another keeps the type, category and date so a stack of receipts goes in quickly.")
         }
+        .padding(.top, 2)
     }
 
     // MARK: - Delete

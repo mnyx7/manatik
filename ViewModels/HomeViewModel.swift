@@ -43,6 +43,31 @@ final class HomeViewModel: ObservableObject {
         filter.dateInterval ?? defaultPeriod
     }
 
+    /// The day the calendar strip has picked, expressed as a one-day date
+    /// filter so it reuses the same filtering path as a manual range.
+    var selectedDay: Date? {
+        get {
+            guard let interval = filter.dateInterval else { return nil }
+            let calendar = Calendar.current
+            let days = calendar.dateComponents(
+                [.day],
+                from: interval.start,
+                to: interval.end
+            ).day ?? 0
+            return days == 1 ? calendar.startOfDay(for: interval.start) : nil
+        }
+        set {
+            let calendar = Calendar.current
+            guard let day = newValue else {
+                filter.dateInterval = nil
+                return
+            }
+            let start = calendar.startOfDay(for: day)
+            let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start
+            filter.dateInterval = DateInterval(start: start, end: end)
+        }
+    }
+
     func beginAdd() {
         quickAddCategoryID = nil
         editingOccurrence = nil

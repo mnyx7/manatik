@@ -19,10 +19,22 @@
     "%1$d entries, %2$d repeating": {
       "extractionState": "manual"
     },
+    "%@ %@": {
+      "extractionState": "manual"
+    },
     "%@ expense": {
       "extractionState": "manual"
     },
     "%@ income": {
+      "extractionState": "manual"
+    },
+    "%@ — %@": {
+      "extractionState": "manual"
+    },
+    "%@, %@": {
+      "extractionState": "manual"
+    },
+    "%d attached": {
       "extractionState": "manual"
     },
     "%d attachments": {
@@ -113,6 +125,23 @@
     },
     "Add %@ entry": {
       "extractionState": "manual"
+    },
+    "Add a category": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kateqoriya əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавить категорию"
+          }
+        }
+      }
     },
     "Add a loan": {
       "extractionState": "manual",
@@ -246,6 +275,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Добавить деньги"
+          }
+        }
+      }
+    },
+    "Add or remove your own categories here, or from the New chip while entering an amount.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öz kateqoriyalarınızı burada, ya da məbləğ daxil edərkən Yeni düyməsindən əlavə edib silə bilərsiniz."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавляйте и удаляйте свои категории здесь или кнопкой Новая при вводе суммы."
           }
         }
       }
@@ -426,9 +472,6 @@
         }
       }
     },
-    "Amounts are not converted. All %1$d existing entries will simply be shown in %2$@.": {
-      "extractionState": "manual"
-    },
     "Apply range": {
       "extractionState": "manual",
       "localizations": {
@@ -442,6 +485,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Применить диапазон"
+          }
+        }
+      }
+    },
+    "Attach a bill": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hesab əlavə et"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прикрепить счёт"
           }
         }
       }
@@ -824,6 +884,23 @@
         }
       }
     },
+    "Changing the currency relabels existing amounts; it does not convert them.\n\nType the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valyutanın dəyişdirilməsi mövcud məbləğlərin adını dəyişir, onları çevirmir.\n\nBüdcə ayınızın başladığı günü 1-dən 28-ə qədər yazın. 28-dən sonrakı günlər fevralda olmadığı üçün qəbul edilmir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Смена валюты меняет обозначение сумм, но не конвертирует их.\n\nУкажите день начала бюджетного месяца, от 1 до 28. Дни после 28 не допускаются, так как их нет в феврале."
+          }
+        }
+      }
+    },
     "Choose how much of the series to remove. Past entries you keep stay in your history.": {
       "extractionState": "manual",
       "localizations": {
@@ -1081,6 +1158,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bu günə qədərki tarixlər real qeyd kimi yazılır. Sonrakı tarixlər gələnə qədər proqnoz kimi göstərilir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Даты до сегодняшнего дня записываются как реальные. Более поздние показываются как прогноз."
+          }
+        }
+      }
+    },
+    "Dates up to today are recorded as real entries. Later dates show as forecasts.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu günə qədərki tarixlər real qeyd kimi yazılır. Sonrakı tarixlər proqnoz kimi göstərilir."
           }
         },
         "ru": {
@@ -2397,6 +2491,23 @@
         }
       }
     },
+    "New": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новая"
+          }
+        }
+      }
+    },
     "New Category": {
       "extractionState": "manual",
       "localizations": {
@@ -2481,9 +2592,6 @@
           }
         }
       }
-    },
-    "New categories are added while entering an amount, from the plus beside the category picker.": {
-      "extractionState": "manual"
     },
     "Next period": {
       "extractionState": "manual",
@@ -3631,9 +3739,6 @@
         }
       }
     },
-    "Save and add another keeps the type, category and date so a stack of receipts goes in quickly.": {
-      "extractionState": "manual"
-    },
     "Save as a bill": {
       "extractionState": "manual",
       "localizations": {
@@ -4665,8 +4770,22 @@
         }
       }
     },
-    "You have not added any categories yet. Use the plus beside the category picker when entering an amount.": {
-      "extractionState": "manual"
+    "You have not added any categories yet.": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hələ kateqoriya əlavə etməmisiniz."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы ещё не добавили категорий."
+          }
+        }
+      }
     },
     "You spent more than you earned this period.": {
       "extractionState": "manual",
@@ -4734,6 +4853,9 @@
     "\\(Int((progress.fraction * 100).rounded()))%": {
       "extractionState": "manual"
     },
+    "\\(calendar.component(.day, from: day))": {
+      "extractionState": "manual"
+    },
     "\\(category.icon) \\(category.localizedName)": {
       "extractionState": "manual"
     },
@@ -4754,6 +4876,23 @@
     },
     "from %@": {
       "extractionState": "manual"
+    },
+    "has entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "qeydlər var"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "есть записи"
+          }
+        }
+      }
     },
     "income %1$@, expense %2$@": {
       "extractionState": "manual"
@@ -4777,6 +4916,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "manatik хранит бюджет только на этом устройстве. Ничего не загружается, поэтому регулярно делайте резервную копию."
+          }
+        }
+      }
+    },
+    "no entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "qeyd yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "нет записей"
+          }
+        }
+      }
+    },
+    "none attached": {
+      "extractionState": "manual",
+      "localizations": {
+        "az": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "əlavə yoxdur"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "нет вложений"
           }
         }
       }
@@ -4839,5 +5012,5 @@
       "extractionState": "manual"
     }
   },
-  "version": "1.0"
+  "version": "1.1"
 }

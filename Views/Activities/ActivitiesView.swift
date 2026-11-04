@@ -22,6 +22,15 @@ struct ActivitiesView: View {
 
     private var currency: Currency { store.state.settings.currency }
 
+    /// Days of the period that have something on them, for the strip's dots.
+    private var daysWithActivity: Set<Date> {
+        let calendar = Calendar.current
+        return Set(
+            store.occurrences(in: store.selectedPeriod)
+                .map { calendar.startOfDay(for: $0.date) }
+        )
+    }
+
     var body: some View {
         List {
             Section {
@@ -32,6 +41,21 @@ struct ActivitiesView: View {
                 }
                 .pickerStyle(.segmented)
                 .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+            }
+
+            // A plain day picker for the period, which is quicker than opening
+            // a range sheet for the common "what did I spend on Tuesday".
+            Section {
+                DayStripView(
+                    interval: store.selectedPeriod,
+                    daysWithActivity: daysWithActivity,
+                    selectedDay: Binding(
+                        get: { viewModel.selectedDay },
+                        set: { viewModel.selectedDay = $0 }
+                    )
+                )
+                .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                .listRowBackground(Color.clear)
             }
 
             if viewModel.filter.hasUserChosenFilters {

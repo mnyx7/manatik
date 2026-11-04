@@ -1,59 +1,47 @@
 import PhotosUI
 import SwiftUI
 
-/// Shows the bills attached to an entry and lets the user add or remove them.
+/// One paperclip and the thumbnails beside it.
 ///
-/// Files are written to disk as soon as they are picked, so a cancelled form
-/// can leave orphans; the store prunes those at launch.
+/// The choice between a photo and a document lives in the paperclip's menu, so
+/// the form carries a single icon rather than two labelled buttons.
 struct AttachmentStripView: View {
     @Binding var attachments: [Attachment]
     var isEditable: Bool = true
 
     @State private var photoSelection: [PhotosPickerItem] = []
+    @State private var isShowingPhotoPicker = false
     @State private var isShowingFileImporter = false
     @State private var isWorking = false
     @State private var errorMessage: String?
     @State private var previewAttachment: Attachment?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if !attachments.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(attachments) { attachment in
-                            thumbnail(attachment)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 10) {
+                if isEditable {
+                    attachButton
+                }
+
+                if attachments.isEmpty {
+                    if isEditable {
+                        Text("Attach a bill")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(attachments) { attachment in
+                                thumbnail(attachment)
+                            }
                         }
+                        .padding(.vertical, 2)
                     }
-                    .padding(.vertical, 2)
+                    .scrollClipDisabled()
                 }
-                .scrollClipDisabled()
-            }
 
-            if isEditable {
-                HStack(spacing: 10) {
-                    PhotosPicker(
-                        selection: $photoSelection,
-                        maxSelectionCount: 5,
-                        matching: .images,
-                        photoLibrary: .shared()
-                    ) {
-                        Label("Photo", systemImage: "photo.on.rectangle")
-                            .font(.footnote.weight(.medium))
-                            .frame(minHeight: AppTheme.minimumTapTarget)
-                    }
-
-                    Button {
-                        isShowingFileImporter = true
-                    } label: {
-                        Label("Document", systemImage: "doc.badge.plus")
-                            .font(.footnote.weight(.medium))
-                            .frame(minHeight: AppTheme.minimumTapTarget)
-                    }
-
-                    if isWorking {
-                        ProgressView().controlSize(.small)
-                    }
-                }
+                Spacer(minLength: 0)
             }
 
             if let errorMessage {
@@ -66,6 +54,13 @@ struct AttachmentStripView: View {
             guard !items.isEmpty else { return }
             Task { await importPhotos(items) }
         }
+        .photosPicker(
+            isPresented: $isShowingPhotoPicker,
+            selection: $photoSelection,
+            maxSelectionCount: 5,
+            matching: .images,
+            photoLibrary: .shared()
+        )
         .fileImporter(
             isPresented: $isShowingFileImporter,
             allowedContentTypes: [.pdf, .image],
@@ -76,6 +71,44 @@ struct AttachmentStripView: View {
         .sheet(item: $previewAttachment) { attachment in
             AttachmentPreviewView(attachment: attachment)
         }
+    }
+
+    private var attachButton: some View {
+        Menu {
+            Button {
+                isShowingPhotoPicker = true
+            } label: {
+                Label("Photo", systemImage: "photo.on.rectangle")
+            }
+            Button {
+                isShowingFileImporter = true
+            } label: {
+                Label("Document", systemImage: "doc")
+            }
+        } label: {
+            ZStack {
+                if isWorking {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Image(systemName: "paperclip")
+                        .font(.body.weight(.medium))
+                }
+            }
+            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+            .background(
+                AppTheme.cardBackground,
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+        }
+        .accessibilityLabel(Text("Attach a bill"))
+        .accessibilityValue(
+            attachments.isEmpty
+                ? NSLocalizedString("none attached", comment: "Accessibility")
+                : String(
+                    format: NSLocalizedString("%d attached", comment: "Accessibility"),
+                    attachments.count
+                )
+        )
     }
 
     @ViewBuilder
@@ -92,20 +125,16 @@ struct AttachmentStripView: View {
                             .resizable()
                             .scaledToFill()
                     } else {
-                        VStack(spacing: 4) {
-                            Image(systemName: attachment.kind.systemImage)
-                                .font(.title3)
-                            Text(attachment.kind == .pdf ? "PDF" : "File")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(.secondary)
+                        Image(systemName: attachment.kind.systemImage)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .frame(width: 44, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .background(
                     AppTheme.cardBackground,
-                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                 )
 
                 if isEditable {
@@ -113,11 +142,11 @@ struct AttachmentStripView: View {
                         remove(attachment)
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.body)
+                            .font(.caption)
                             .symbolRenderingMode(.palette)
-                            .foregroundStyle(.white, .black.opacity(0.6))
+                            .foregroundStyle(.white, .black.opacity(0.65))
                     }
-                    .padding(3)
+                    .offset(x: 4, y: -4)
                     .accessibilityLabel(Text("Remove attachment"))
                 }
             }
@@ -145,11 +174,12 @@ struct AttachmentStripView: View {
                       let image = UIImage(data: data) else {
                     continue
                 }
-                let stored = try AttachmentStore.store(
-                    image: image,
-                    displayName: NSLocalizedString("Bill photo", comment: "Attachment name")
+                attachments.append(
+                    try AttachmentStore.store(
+                        image: image,
+                        displayName: NSLocalizedString("Bill photo", comment: "Attachment name")
+                    )
                 )
-                attachments.append(stored)
             } catch {
                 errorMessage = error.localizedDescription
             }

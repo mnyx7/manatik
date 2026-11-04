@@ -46,20 +46,6 @@ struct SettingsView: View {
             viewModel.handleImportResult(result)
         }
         .confirmationDialog(
-            "Change currency?",
-            isPresented: currencyDialogBinding,
-            titleVisibility: .visible
-        ) {
-            Button("Change currency", role: .destructive) {
-                viewModel.confirmCurrencyChange()
-            }
-            Button("Cancel", role: .cancel) {
-                viewModel.cancelCurrencyChange()
-            }
-        } message: {
-            Text(viewModel.currencyChangeWarning)
-        }
-        .confirmationDialog(
             "Replace all data?",
             isPresented: importDialogBinding,
             titleVisibility: .visible
@@ -93,36 +79,19 @@ struct SettingsView: View {
 
     private var generalSection: some View {
         Section {
-            Menu {
+            // Applied on selection; no confirmation step.
+            Picker(selection: Binding(
+                get: { viewModel.currency },
+                set: { viewModel.currency = $0 }
+            )) {
                 ForEach(Currency.allCases) { currency in
-                    Button {
-                        viewModel.requestCurrencyChange(to: currency)
-                    } label: {
-                        if currency == viewModel.currentCurrency {
-                            Label(
-                                "\(currency.rawValue) \u{2014} \(currency.localizedName)",
-                                systemImage: "checkmark"
-                            )
-                        } else {
-                            Text("\(currency.rawValue) \u{2014} \(currency.localizedName)")
-                        }
-                    }
+                    Text("\(currency.rawValue) \u{2014} \(currency.localizedName)")
+                        .tag(currency)
                 }
             } label: {
-                HStack {
-                    Text("Currency")
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Text(viewModel.currentCurrency.rawValue)
-                        .foregroundStyle(.secondary)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
-                .frame(minHeight: AppTheme.minimumTapTarget)
+                Text("Currency")
             }
-            .accessibilityLabel(Text("Currency"))
-            .accessibilityValue(viewModel.currentCurrency.rawValue)
+            .frame(minHeight: AppTheme.minimumTapTarget)
 
             HStack {
                 Text("Start date of the month")
@@ -147,7 +116,7 @@ struct SettingsView: View {
         } header: {
             Text("General")
         } footer: {
-            Text("Type the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.")
+            Text("Changing the currency relabels existing amounts; it does not convert them.\n\nType the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.")
         }
     }
 
@@ -278,7 +247,7 @@ struct SettingsView: View {
         } header: {
             Text("Organise")
         } footer: {
-            Text("New categories are added while entering an amount, from the plus beside the category picker.")
+            Text("Add or remove your own categories here, or from the New chip while entering an amount.")
         }
     }
 
@@ -348,13 +317,6 @@ struct SettingsView: View {
         )
     }
 
-    private var currencyDialogBinding: Binding<Bool> {
-        Binding(
-            get: { viewModel.pendingCurrency != nil },
-            set: { if !$0 { viewModel.cancelCurrencyChange() } }
-        )
-    }
-
     private var importDialogBinding: Binding<Bool> {
         Binding(
             get: { viewModel.pendingImport != nil },
@@ -383,8 +345,17 @@ struct CustomCategoriesListView: View {
 
     var body: some View {
         List {
+            Section {
+                Button {
+                    viewModel.isShowingCategoryEditor = true
+                } label: {
+                    Label("Add a category", systemImage: "plus.circle")
+                        .frame(minHeight: AppTheme.minimumTapTarget)
+                }
+            }
+
             if viewModel.customCategories.isEmpty {
-                Text("You have not added any categories yet. Use the plus beside the category picker when entering an amount.")
+                Text("You have not added any categories yet.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -411,6 +382,20 @@ struct CustomCategoriesListView: View {
                     }
                     .frame(minHeight: AppTheme.minimumTapTarget)
                     .accessibilityElement(children: .combine)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            viewModel.deleteCustomCategory(category)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            viewModel.deleteCustomCategory(category)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
                 .onDelete { offsets in
                     for index in offsets {
@@ -422,6 +407,21 @@ struct CustomCategoriesListView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle("My Categories")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    viewModel.isShowingCategoryEditor = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel(Text("Add a category"))
+            }
+        }
+        .sheet(isPresented: $viewModel.isShowingCategoryEditor) {
+            CategoryEditorView(suggestedKind: .expense) { name, icon, kind in
+                viewModel.createCategory(name: name, icon: icon, kind: kind)
+            }
+        }
     }
 }
 

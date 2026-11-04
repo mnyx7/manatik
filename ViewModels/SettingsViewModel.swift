@@ -7,10 +7,6 @@ final class SettingsViewModel: ObservableObject {
     /// write no longer happens on every keystroke.
     @Published var monthStartDayInput: String
 
-    /// Set when the user picks a different currency; the view confirms first,
-    /// because switching relabels every existing amount without converting it.
-    @Published var pendingCurrency: Currency?
-
     @Published var isShowingExporter = false
     @Published var isShowingImporter = false
     @Published var exportDocument: AppBackupDocument?
@@ -25,6 +21,7 @@ final class SettingsViewModel: ObservableObject {
     // Reminder editing
     @Published var editingReminder: PaymentReminder?
     @Published var isShowingReminderEditor = false
+    @Published var isShowingCategoryEditor = false
 
     let store: AppStore
 
@@ -55,30 +52,11 @@ final class SettingsViewModel: ObservableObject {
 
     // MARK: - Currency
 
-    func requestCurrencyChange(to currency: Currency) {
-        guard currency != currentCurrency else { return }
-        pendingCurrency = currency
-    }
-
-    func confirmCurrencyChange() {
-        guard let pendingCurrency else { return }
-        store.updateSettings(currency: pendingCurrency)
-        self.pendingCurrency = nil
-    }
-
-    func cancelCurrencyChange() {
-        pendingCurrency = nil
-    }
-
-    var currencyChangeWarning: String {
-        String(
-            format: NSLocalizedString(
-                "Amounts are not converted. All %1$d existing entries will simply be shown in %2$@.",
-                comment: "Currency warning"
-            ),
-            store.state.transactions.count,
-            pendingCurrency?.rawValue ?? ""
-        )
+    /// Applied straight away. Switching only relabels amounts, which the note
+    /// under the picker says, so a confirmation step was just friction.
+    var currency: Currency {
+        get { store.state.settings.currency }
+        set { store.updateSettings(currency: newValue) }
     }
 
     // MARK: - Period start day
@@ -115,6 +93,10 @@ final class SettingsViewModel: ObservableObject {
 
     func usageCount(for category: TransactionCategory) -> Int {
         store.transactionCount(usingCategory: category.id)
+    }
+
+    func createCategory(name: String, icon: String, kind: CategoryKind) {
+        store.addCustomCategory(name: name, icon: icon, kind: kind)
     }
 
     func deleteCustomCategory(_ category: TransactionCategory) {
