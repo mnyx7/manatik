@@ -56,35 +56,40 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        NavigationStack(path: $path) {
-            Group {
-                switch tab {
-                case .home:
-                    HomeView(
-                        viewModel: viewModel,
-                        onOpenActivities: { select(.activities) },
-                        onOpenSavings: { push(.savings) },
-                        onOpenLoans: { push(.loans) },
-                        onOpenGoal: { push(.savingsGoal($0)) },
-                        onOpenLoan: { push(.loanDetail($0)) }
-                    )
-                case .activities:
-                    ActivitiesView(viewModel: viewModel)
-                case .settings:
-                    SettingsView(viewModel: SettingsViewModel(store: store))
-                case .overview:
-                    OverviewView()
+        VStack(spacing: 0) {
+            NavigationStack(path: $path) {
+                Group {
+                    switch tab {
+                    case .home:
+                        HomeView(
+                            viewModel: viewModel,
+                            onOpenActivities: { select(.activities) },
+                            onOpenSavings: { push(.savings) },
+                            onOpenLoans: { push(.loans) },
+                            onOpenGoal: { push(.savingsGoal($0)) },
+                            onOpenLoan: { push(.loanDetail($0)) }
+                        )
+                    case .activities:
+                        ActivitiesView(viewModel: viewModel)
+                    case .settings:
+                        SettingsView(viewModel: SettingsViewModel(store: store))
+                    case .overview:
+                        OverviewView()
+                    }
                 }
+                .navigationDestination(for: RootDestination.self, destination: destination)
             }
-            .navigationDestination(for: RootDestination.self, destination: destination)
-        }
-        // Inset the whole stack, not just the root, so the bar stays put when
-        // another screen is pushed.
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+
+            // A plain sibling of the stack rather than a safe-area inset. The
+            // stack gets the remaining height, so no screen can end up under
+            // the bar, and the buttons are ordinary views for hit-testing.
             if !keyboard.isVisible {
                 bottomBar
             }
         }
+        // Paints behind the bar and the home-indicator strip. Without it the
+        // window's own white shows through under a translucent material.
+        .background(AppTheme.pageBackground.ignoresSafeArea())
         .tint(.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
@@ -262,32 +267,29 @@ struct RootView: View {
             .padding(.top, 6)
             .padding(.bottom, 2)
         }
-        // The bar pads itself down over the home-indicator strip and keeps a
-        // plain background. Using ignoresSafeAreaEdges instead made the bar
-        // taller than the inset SwiftUI reserved for it, which left the bottom
-        // of the page sitting underneath the bar.
-        .padding(.bottom, bottomSafeAreaInset)
-        .background(.bar)
-    }
-
-    private var bottomSafeAreaInset: CGFloat {
-        UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows)
-            .first { $0.isKeyWindow }?
-            .safeAreaInsets.bottom ?? 0
+        // Only the material reaches past the safe area. The bar's own layout
+        // height stays the height of its buttons, so nothing is double-counted
+        // the way a manual safe-area padding was.
+        .background(
+            Rectangle()
+                .fill(.bar)
+                .ignoresSafeArea(edges: .bottom)
+        )
     }
 
     @ViewBuilder
     private func tabButton(
-        _ tab: Tab,
+        _ slot: Tab,
         systemImage: String,
         title: LocalizedStringKey
     ) -> some View {
-        let isActive = self.tab == tab && path.isEmpty
+        // `slot` rather than `tab`: the old parameter name shadowed the state
+        // property of the same name, which made the active check and the tap
+        // action read ambiguously.
+        let isActive = tab == slot && path.isEmpty
 
         Button {
-            select(tab)
+            select(slot)
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: systemImage)
@@ -297,11 +299,11 @@ struct RootView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
-            .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
+            .frame(maxWidth: .infinity, minHeight: 48)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
         .accessibilityLabel(Text(title))
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }
