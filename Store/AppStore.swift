@@ -1120,6 +1120,53 @@ final class AppStore {
         )
     }
 
+    // MARK: - CSV import
+
+    /// Adds entries read from another app, alongside what is already here.
+    /// Each tag becomes the matching category, or a new one of the same name.
+    /// A snapshot is written first so the import can be rolled back.
+    @discardableResult
+    func addImported(_ rows: [CSVImportRow]) -> Int {
+        _ = try? persistence.writeSnapshot(state, tag: "before-csv-import")
+
+        var byName: [String: String] = [:]
+        for category in allCategoriesInOrder {
+            byName[category.localizedName.lowercased()] = category.id
+            byName[category.name.lowercased()] = category.id
+            byName[category.id.lowercased()] = category.id
+        }
+
+        var created: [Transaction] = []
+        for row in rows {
+            let key = row.tag.lowercased()
+            let categoryID: String
+            if key.isEmpty {
+                categoryID = "other"
+            } else if let existing = byName[key] {
+                categoryID = existing
+            } else if let new = addCustomCategory(name: row.tag, icon: "", kind: .both) {
+                byName[key] = new.id
+                categoryID = new.id
+            } else {
+                categoryID = "other"
+            }
+
+            created.append(
+                Transaction(
+                    amount: row.amount,
+                    note: row.note,
+                    categoryID: categoryID,
+                    type: row.type,
+                    date: row.date
+                )
+            )
+        }
+
+        state.transactions.append(contentsOf: created)
+        mutated()
+        return created.count
+    }
+
     /// Replaces everything. Writes a snapshot of the current data first and
     /// returns where it went, so the user has a way back.
     @discardableResult

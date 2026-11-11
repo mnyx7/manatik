@@ -13,6 +13,13 @@ final class SettingsViewModel {
     var isShowingImporter = false
     var exportDocument: AppBackupDocument?
 
+    /// The one file importer serves both kinds; SwiftUI drops a second one.
+    enum ImportKind { case backup, csv }
+    var importKind: ImportKind = .backup
+
+    /// Read from another app's CSV but not yet added.
+    var pendingCSV: CSVImportPreview?
+
     /// Decoded but not yet applied, so the view can state what will be replaced.
     var pendingImport: PendingImport?
 
@@ -192,6 +199,79 @@ final class SettingsViewModel {
 
     // MARK: - Backup
 
+    func beginBackupImport() {
+        importKind = .backup
+        isShowingImporter = true
+    }
+
+    func beginCSVImport() {
+        importKind = .csv
+        isShowingImporter = true
+    }
+
+    private func handleCSVResult(_ result: Result<URL, Error>) {
+        do {
+            let url = try result.get()
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess { url.stopAccessingSecurityScopedResource() }
+            }
+            pendingCSV = try CSVImporter.preview(data: try Data(contentsOf: url))
+        } catch {
+            errorMessage = String(
+                format: NSLocalizedString("Import failed: %@", comment: "Error"),
+                error.localizedDescription
+            )
+        }
+    }
+
+    /// The question shown before adding: how many, which dates, what is new.
+    var csvSummary: String {
+        guard let preview = pendingCSV else { return "" }
+        var parts: [String] = []
+        if let first = preview.firstDate, let last = preview.lastDate {
+            parts.append(String(
+                format: NSLocalizedString("%1$d entries from %2$@ to %3$@.", comment: "CSV import summary"),
+                preview.rows.count,
+                DateFormatting.dayMonthYear(first),
+                DateFormatting.dayMonthYear(last)
+            ))
+        }
+        let known = Set(store.allCategoriesInOrder.flatMap { [$0.localizedName.lowercased(), $0.name.lowercased()] })
+        let newTags = preview.tags.filter { !known.contains($0.lowercased()) }.sorted()
+        if !newTags.isEmpty {
+            parts.append(String(
+                format: NSLocalizedString("New categories: %@.", comment: "CSV import summary"),
+                newTags.prefix(6).joined(separator: ", ") + (newTags.count > 6 ? "…" : "")
+            ))
+        }
+        let others = preview.currencies.subtracting([currentCurrency.rawValue])
+        if !others.isEmpty {
+            parts.append(String(
+                format: NSLocalizedString("Amounts in %@ are added as they are, not converted.", comment: "CSV import summary"),
+                others.sorted().joined(separator: ", ")
+            ))
+        }
+        if !preview.skippedLines.isEmpty {
+            parts.append(String(
+                format: NSLocalizedString("%d rows could not be read and will be skipped.", comment: "CSV import summary"),
+                preview.skippedLines.count
+            ))
+        }
+        parts.append(NSLocalizedString("Your current entries stay as they are.", comment: "CSV import summary"))
+        return parts.joined(separator: "\n\n")
+    }
+
+    func confirmCSVImport() {
+        guard let preview = pendingCSV else { return }
+        let added = store.addImported(preview.rows)
+        pendingCSV = nil
+        infoMessage = String(
+            format: NSLocalizedString("Added %d entries.", comment: "Confirmation"),
+            added
+        )
+    }
+
     func prepareExport() {
         do {
             exportDocument = AppBackupDocument(data: try store.exportStateData())
@@ -223,6 +303,10 @@ final class SettingsViewModel {
     /// Decodes the file and stores it as pending. Nothing is replaced until the
     /// user confirms, because an import wipes everything already on the device.
     func handleImportResult(_ result: Result<URL, Error>) {
+        if importKind == .csv {
+            handleCSVResult(result)
+            return
+        }
         switch result {
         case .success(let url):
             do {

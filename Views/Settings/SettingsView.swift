@@ -35,7 +35,9 @@ struct SettingsView: View {
         }
         .fileImporter(
             isPresented: $viewModel.isShowingImporter,
-            allowedContentTypes: [.json]
+            allowedContentTypes: viewModel.importKind == .csv
+                ? [.commaSeparatedText, .tabSeparatedText, .plainText]
+                : [.json]
         ) { result in
             viewModel.handleImportResult(result)
         }
@@ -53,6 +55,18 @@ struct SettingsView: View {
             }
         } message: {
             Text(viewModel.importWarning)
+        }
+        .alert(
+            "Add these entries?",
+            isPresented: Binding(
+                get: { viewModel.pendingCSV != nil },
+                set: { if !$0 { viewModel.pendingCSV = nil } }
+            )
+        ) {
+            Button("Add") { viewModel.confirmCSVImport() }
+            Button("Cancel", role: .cancel) { viewModel.pendingCSV = nil }
+        } message: {
+            Text(viewModel.csvSummary)
         }
         .alert("Error", isPresented: errorBinding) {
             Button("OK", role: .cancel) { viewModel.errorMessage = nil }
@@ -191,9 +205,16 @@ struct SettingsView: View {
             }
 
             Button {
-                viewModel.isShowingImporter = true
+                viewModel.beginBackupImport()
             } label: {
                 Label("Import a backup", systemImage: "square.and.arrow.down")
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+            }
+
+            Button {
+                viewModel.beginCSVImport()
+            } label: {
+                Label("Import from another app (CSV)", systemImage: "tablecells")
                     .frame(minHeight: AppTheme.minimumTapTarget)
             }
         } header: {
