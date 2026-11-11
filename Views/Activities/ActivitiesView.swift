@@ -163,11 +163,15 @@ struct ActivitiesView: View {
         }
         .buttonStyle(.plain)
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) {
+            // Not role: .destructive. That role makes the List animate the row
+            // away at once, but this only asks first; the row is still in the
+            // data, the counts disagree and UIKit throws "Invalid update".
+            Button {
                 viewModel.pendingDelete = item
             } label: {
                 Label("Delete", systemImage: "trash")
             }
+            .tint(.red)
         }
         .swipeActions(edge: .leading) {
             if item.hasAttachments {
