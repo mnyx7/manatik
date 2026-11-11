@@ -642,6 +642,9 @@ private struct BookObject: View {
         .foregroundStyle(onFill)
         .padding(.horizontal, 14 * s)
         .padding(.vertical, 40 * s)
+        // Fill the book, so the column centres instead of following the
+        // top-trailing alignment the badge needs.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
