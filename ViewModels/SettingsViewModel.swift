@@ -140,6 +140,17 @@ final class SettingsViewModel {
         store.moveCategories(from: source, to: destination)
     }
 
+    /// Which list My Categories is showing.
+    var managedType: TransactionType = .expense
+
+    var managedCategories: [TransactionCategory] {
+        store.categoriesForManaging(managedType)
+    }
+
+    func moveManagedCategories(from source: IndexSet, to destination: Int) {
+        store.moveCategories(for: managedType, from: source, to: destination)
+    }
+
     func resetCategoryOrder() {
         store.resetCategoryOrder()
     }

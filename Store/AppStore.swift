@@ -281,6 +281,32 @@ final class AppStore {
         mutated()
     }
 
+    /// Reorders one type's list (as Settings shows it) without disturbing
+    /// where the other type's categories sit: the moved list is written back
+    /// into the slots its own categories already held.
+    func moveCategories(for type: TransactionType, from source: IndexSet, to destination: Int) {
+        let all = allCategoriesInOrder.map(\.id)
+        var subset = categoriesForManaging(type).map(\.id)
+        subset.move(fromOffsets: source, toOffset: destination)
+
+        let members = Set(subset)
+        var replacement = subset.makeIterator()
+        state.categoryOrder = all.map { members.contains($0) ? (replacement.next() ?? $0) : $0 }
+        mutated()
+    }
+
+    /// One type's categories in the user's order, hidden ones included so
+    /// they can be shown again.
+    func categoriesForManaging(_ type: TransactionType) -> [TransactionCategory] {
+        allCategoriesInOrder.filter { category in
+            switch category.kind {
+            case .both: return true
+            case .income: return type == .income
+            case .expense: return type == .expense
+            }
+        }
+    }
+
     func resetCategoryOrder() {
         state.categoryOrder = []
         mutated()

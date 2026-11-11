@@ -314,6 +314,19 @@ struct CategoryManagerView: View {
     var body: some View {
         List {
             Section {
+                Picker("Type", selection: $viewModel.managedType) {
+                    Text("Expense").tag(TransactionType.expense)
+                    Text("Income").tag(TransactionType.income)
+                }
+                .pickerStyle(.segmented)
+                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+            } footer: {
+                Text(viewModel.managedType == .expense
+                     ? "These are the categories you can pick when adding an expense."
+                     : "These are the categories you can pick when adding income.")
+            }
+
+            Section {
                 Toggle(isOn: Binding(
                     get: { viewModel.showsRecentsFirst },
                     set: { viewModel.showsRecentsFirst = $0 }
@@ -322,23 +335,23 @@ struct CategoryManagerView: View {
                 }
             } footer: {
                 Text(viewModel.showsRecentsFirst
-                     ? "The entry form leads with the categories you used most recently."
-                     : "The entry form follows the order below.")
+                     ? "The entry form starts with the five you used most recently, then follows the order below. Turn this off to use only your order."
+                     : "The entry form shows categories exactly in the order below.")
             }
 
             Section {
                 // Offsets line up with this list, which is why it shows hidden
                 // categories too rather than filtering them out.
-                ForEach(viewModel.allCategories) { category in
+                ForEach(viewModel.managedCategories) { category in
                     row(category)
                 }
                 .onMove { source, destination in
-                    viewModel.moveCategories(from: source, to: destination)
+                    viewModel.moveManagedCategories(from: source, to: destination)
                 }
             } header: {
-                Text("Order")
+                Text(viewModel.managedType == .expense ? "Expense order" : "Income order")
             } footer: {
-                Text("Drag to reorder. Hidden categories stay out of the pickers but keep the entries already filed under them.")
+                Text("Tap Edit, then drag to reorder. Categories marked “both” appear in Expense and Income. Hidden categories stay out of the pickers but keep the entries already filed under them.")
             }
 
             Section {
@@ -404,6 +417,15 @@ struct CategoryManagerView: View {
                             .foregroundStyle(AppTheme.savingsAccent)
                     }
 
+                    if category.kind == .both {
+                        Text("both")
+                            .font(.caption2.weight(.semibold))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(.quaternary, in: Capsule())
+                            .foregroundStyle(.secondary)
+                    }
+
                     if hidden {
                         Image(systemName: "eye.slash")
                             .font(.caption2)
@@ -412,7 +434,9 @@ struct CategoryManagerView: View {
                     }
                 }
 
-                Text(String(format: NSLocalizedString("%d entries", comment: "Count"), uses))
+                Text(uses == 1
+                     ? NSLocalizedString("1 entry", comment: "Count")
+                     : String(format: NSLocalizedString("%d entries", comment: "Count"), uses))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

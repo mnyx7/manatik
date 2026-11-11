@@ -500,6 +500,7 @@ struct RootView: View {
         case "loan": path = [.loanDetail(QALaunch.loanID)]
         case "add": viewModel.isShowingAddSheet = true
         case "reminders": path = [.reminders]
+        case "categories": tab = .settings; path = [.categoryManager]
         case "bill":
             viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
                 .first { $0.transactionID == QALaunch.billTransactionID }
