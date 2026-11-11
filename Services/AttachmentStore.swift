@@ -31,20 +31,19 @@ enum AttachmentStoreError: LocalizedError {
 /// Settings says out loud rather than letting the user discover it on restore.
 enum AttachmentStore {
     static let maximumSizeMB = 25
-    private static let folderName = "Attachments"
 
-    static var directory: URL {
+    nonisolated static var directory: URL {
         let documents = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)
             .first ?? URL(fileURLWithPath: NSTemporaryDirectory())
-        return documents.appendingPathComponent(folderName, isDirectory: true)
+        return documents.appendingPathComponent("Attachments", isDirectory: true)
     }
 
-    static func url(for attachment: Attachment) -> URL {
+    nonisolated static func url(for attachment: Attachment) -> URL {
         directory.appendingPathComponent(attachment.fileName)
     }
 
-    static func exists(_ attachment: Attachment) -> Bool {
+    nonisolated static func exists(_ attachment: Attachment) -> Bool {
         FileManager.default.fileExists(atPath: url(for: attachment).path)
     }
 

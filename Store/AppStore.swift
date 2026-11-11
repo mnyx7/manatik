@@ -503,6 +503,7 @@ final class AppStore {
             state.recurringSeries.append(series)
             mutated()
             materializeDueOccurrences()
+            attach(draft, toFirstOccurrenceOf: series)
             return series.id
         }
 
@@ -609,6 +610,38 @@ final class AppStore {
     func transaction(id: UUID?) -> Transaction? {
         guard let id else { return nil }
         return state.transactions.first { $0.id == id }
+    }
+
+    /// A bill belongs to the payment it was attached to, not to every future
+    /// repeat, so it goes on the series' first entry. A series has nowhere to
+    /// keep files, which is how a repeating entry used to lose its bill.
+    private func attach(_ draft: TransactionDraft, toFirstOccurrenceOf series: RecurringSeries) {
+        guard !draft.attachments.isEmpty || draft.isFeatured else { return }
+        let day = calendar.startOfDay(for: series.startDate)
+
+        if let index = state.transactions.firstIndex(where: {
+            $0.seriesID == series.id && calendar.startOfDay(for: $0.date) == day
+        }) {
+            state.transactions[index].attachments = draft.attachments
+            state.transactions[index].isFeatured = draft.isFeatured
+        } else {
+            // A future start has no stored row yet. Store this one now, the same
+            // way editing a single forecast entry does; materialization skips
+            // a day that already has a row.
+            state.transactions.append(
+                Transaction(
+                    amount: series.amount,
+                    note: series.note,
+                    categoryID: series.categoryID,
+                    type: series.type,
+                    date: series.startDate,
+                    seriesID: series.id,
+                    isFeatured: draft.isFeatured,
+                    attachments: draft.attachments
+                )
+            )
+        }
+        mutated()
     }
 
     private func updatePlainTransaction(

@@ -205,20 +205,24 @@ struct TransactionFormView: View {
 
             Divider()
 
-            // Note and paperclip share one caption-sized line.
+            // Note and paperclip share one caption-sized line; what is attached
+            // gets its own row, big enough to see and to reopen.
             HStack(spacing: 6) {
                 TextField("Add note or attachment", text: $viewModel.note, axis: .vertical)
                     .font(.footnote)
                     .lineLimit(1...2)
                     .focused($focusedField, equals: .note)
 
-                AttachmentStripView(
-                    attachments: $viewModel.attachments,
-                    showsPlaceholder: false
-                )
-                .layoutPriority(-1)
+                AttachmentButton(attachments: $viewModel.attachments)
+            }
+
+            if !viewModel.attachments.isEmpty {
+                AttachmentGalleryView(attachments: $viewModel.attachments)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
+        .animation(.snappy, value: viewModel.attachments.count)
         .glassCard(tint: accent, tintOpacity: 0.09, padding: 16)
     }
 

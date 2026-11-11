@@ -455,6 +455,9 @@ struct RootView: View {
         case "goal": path = [.savingsGoal(QALaunch.goalID)]
         case "loan": path = [.loanDetail(QALaunch.loanID)]
         case "add": viewModel.isShowingAddSheet = true
+        case "bill":
+            viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
+                .first { $0.transactionID == QALaunch.billTransactionID }
         default: break
         }
     }

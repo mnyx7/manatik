@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+import UIKit
 
 /// Launch-argument hooks used to drive the app for screenshot QA, so every
 /// screen can be opened and captured without tapping through the simulator.
@@ -35,6 +36,33 @@ enum QALaunch {
     static let secondGoalID = UUID(uuidString: "00000000-0000-0000-0000-00000000A002")!
     static let loanID = UUID(uuidString: "00000000-0000-0000-0000-00000000B001")!
     static let secondLoanID = UUID(uuidString: "00000000-0000-0000-0000-00000000B002")!
+    static let billTransactionID = UUID(uuidString: "00000000-0000-0000-0000-00000000C001")!
+
+    /// Draws a receipt-looking image and stores it like a picked photo.
+    private static func demoBillAttachment() -> Attachment? {
+        let size = CGSize(width: 600, height: 840)
+        let image = UIGraphicsImageRenderer(size: size).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            let title: [NSAttributedString.Key: Any] = [
+                .font: UIFont.boldSystemFont(ofSize: 44),
+                .foregroundColor: UIColor.black
+            ]
+            let line: [NSAttributedString.Key: Any] = [
+                .font: UIFont.monospacedSystemFont(ofSize: 26, weight: .regular),
+                .foregroundColor: UIColor.darkGray
+            ]
+            ("Azərişıq" as NSString).draw(at: CGPoint(x: 40, y: 50), withAttributes: title)
+            let rows = ["Account  0012 4471", "Period   October", "Usage    412 kWh", "", "TOTAL    60.00 ₼"]
+            for (offset, text) in rows.enumerated() {
+                (text as NSString).draw(
+                    at: CGPoint(x: 40, y: 160 + CGFloat(offset) * 48),
+                    withAttributes: line
+                )
+            }
+        }
+        return try? AttachmentStore.store(image: image, displayName: "Electricity bill")
+    }
 
     /// A believable month: salary and rent as series, a spread of everyday
     /// spending, two goals, two loans and a reminder.
@@ -97,6 +125,7 @@ enum QALaunch {
 
         var transactions = spending.map { amount, note, category, days, featured in
             Transaction(
+                id: note == "Electricity" ? billTransactionID : UUID(),
                 amount: money(amount),
                 note: note,
                 categoryID: category,
@@ -104,6 +133,13 @@ enum QALaunch {
                 date: daysAgo(days),
                 isFeatured: featured
             )
+        }
+
+        // A real file on the Electricity bill, so `-qa-route bill` has
+        // something to show.
+        if let index = transactions.firstIndex(where: { $0.id == billTransactionID }),
+           let bill = demoBillAttachment() {
+            transactions[index].attachments = [bill]
         }
 
         transactions.append(

@@ -80,14 +80,16 @@ struct TransactionRowView: View {
         if item.isLoanPayment {
             result.append(Badge(symbol: "building.columns.fill", tint: AppTheme.loanAccent))
         }
+        // Ahead of the repeat and bookmark marks: with the two-badge cap, a
+        // repeating bookmarked bill used to hide that it had a file at all.
+        if item.hasAttachments {
+            result.append(Badge(symbol: "paperclip", tint: .secondary))
+        }
         if item.isRecurring {
             result.append(Badge(symbol: "repeat", tint: .secondary))
         }
         if item.isFeatured {
             result.append(Badge(symbol: "bookmark.fill", tint: AppTheme.expenseAccent))
-        }
-        if item.hasAttachments {
-            result.append(Badge(symbol: "paperclip", tint: .secondary))
         }
         return result
     }

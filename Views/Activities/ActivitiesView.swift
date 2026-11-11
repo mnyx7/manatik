@@ -1,3 +1,4 @@
+import QuickLook
 import SwiftUI
 
 /// The full ledger, split into All, Income, Expense and Bills.
@@ -21,6 +22,18 @@ struct ActivitiesView: View {
     }
 
     private var currency: Currency { store.state.settings.currency }
+
+    @State private var billPreviewURL: URL?
+    @State private var billPreviewURLs: [URL] = []
+
+    /// Opens an entry's files in the system viewer, straight from its row.
+    private func openAttachments(of item: TransactionOccurrence) {
+        let urls = (store.transaction(id: item.transactionID)?.attachments ?? [])
+            .filter(AttachmentStore.exists)
+            .map(AttachmentStore.url(for:))
+        billPreviewURLs = urls
+        billPreviewURL = urls.first
+    }
 
     /// Days of the period that have something on them, for the strip's dots.
     private var daysWithActivity: Set<Date> {
@@ -107,6 +120,7 @@ struct ActivitiesView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .quickLookPreview($billPreviewURL, in: billPreviewURLs)
         .navigationTitle("Activity")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(
@@ -156,6 +170,15 @@ struct ActivitiesView: View {
             }
         }
         .swipeActions(edge: .leading) {
+            if item.hasAttachments {
+                Button {
+                    openAttachments(of: item)
+                } label: {
+                    Label("Open bill", systemImage: "paperclip")
+                }
+                .tint(AppTheme.savingsAccent)
+            }
+
             // Bookmarking from the list as well as the form, so a bill can be
             // flagged after the fact.
             if item.transactionID != nil {
@@ -178,6 +201,13 @@ struct ActivitiesView: View {
             .tint(.accentColor)
         }
         .contextMenu {
+            if item.hasAttachments {
+                Button {
+                    openAttachments(of: item)
+                } label: {
+                    Label("Open bill", systemImage: "paperclip")
+                }
+            }
             if item.transactionID != nil {
                 Button {
                     store.toggleFeatured(item)
