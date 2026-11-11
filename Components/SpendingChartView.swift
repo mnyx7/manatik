@@ -91,8 +91,12 @@ struct SpendingChartView: View {
         .chartYAxis {
             AxisMarks(position: .leading) { _ in
                 AxisGridLine()
-                AxisValueLabel()
-                    .font(.caption2)
+                // The bar heights still show the shape of the month; the
+                // scale is what would give the figures away.
+                if !AmountPrivacy.shared.isHidden {
+                    AxisValueLabel()
+                        .font(.caption2)
+                }
             }
         }
     }

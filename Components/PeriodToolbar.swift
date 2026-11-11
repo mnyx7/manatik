@@ -7,13 +7,24 @@ struct PeriodToolbar: ToolbarContent {
     let viewModel: HomeViewModel
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItemGroup(placement: .topBarLeading) {
             Button {
                 store.movePeriod(byMonths: -1)
             } label: {
                 Image(systemName: "chevron.left")
             }
             .accessibilityLabel(Text("Previous period"))
+
+            Button {
+                withAnimation(.snappy) {
+                    store.updateSettings(hidesAmounts: !store.state.settings.hidesAmounts)
+                }
+            } label: {
+                Image(systemName: store.state.settings.hidesAmounts ? "eye.slash" : "eye")
+                    .contentTransition(.symbolEffect(.replace))
+            }
+            .sensoryFeedback(.selection, trigger: store.state.settings.hidesAmounts)
+            .accessibilityLabel(Text(store.state.settings.hidesAmounts ? "Show amounts" : "Hide amounts"))
         }
 
         ToolbarItemGroup(placement: .topBarTrailing) {

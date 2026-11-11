@@ -1085,7 +1085,8 @@ final class AppStore {
         currency: Currency? = nil,
         monthStartDay: Int? = nil,
         showsRecentCategoriesFirst: Bool? = nil,
-        homeStyle: HomeStyle? = nil
+        homeStyle: HomeStyle? = nil,
+        hidesAmounts: Bool? = nil
     ) {
         var settings = state.settings
         if let currency { settings.currency = currency }
@@ -1094,6 +1095,7 @@ final class AppStore {
             settings.showsRecentCategoriesFirst = showsRecentCategoriesFirst
         }
         if let homeStyle { settings.homeStyle = homeStyle }
+        if let hidesAmounts { settings.hidesAmounts = hidesAmounts }
         settings.normalize()
 
         guard settings != state.settings else { return }

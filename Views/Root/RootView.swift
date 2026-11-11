@@ -227,6 +227,11 @@ struct RootView: View {
         #if DEBUG
         .task { applyQALaunchRouteIfNeeded() }
         #endif
+        // Mirror the saved choice into the formatter's switch, at launch, on
+        // a toggle and after a backup is restored.
+        .onChange(of: store.state.settings.hidesAmounts, initial: true) { _, hidden in
+            AmountPrivacy.shared.isHidden = hidden
+        }
     }
 
     @ViewBuilder
@@ -464,6 +469,9 @@ struct RootView: View {
     private func applyQALaunchRouteIfNeeded() {
         if let style = QALaunch.homeStyle {
             store.updateSettings(homeStyle: style)
+        }
+        if CommandLine.arguments.contains("-qa-hide-amounts") {
+            store.updateSettings(hidesAmounts: true)
         }
         if let name = QALaunch.tab, let slot = Tab(rawValue: name) {
             tab = slot

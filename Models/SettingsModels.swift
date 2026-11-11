@@ -36,6 +36,8 @@ struct AppSettings: Codable, Hashable {
     var showsRecentCategoriesFirst: Bool
     /// Which home page to show. Classic is the default and stays available.
     var homeStyle: HomeStyle
+    /// Masks every amount, for using the app where others can see the screen.
+    var hidesAmounts: Bool
 
     static let `default` = AppSettings(
         currency: .azn,
@@ -44,19 +46,21 @@ struct AppSettings: Codable, Hashable {
     )
 
     enum CodingKeys: String, CodingKey {
-        case currency, monthStartDay, showsRecentCategoriesFirst, homeStyle
+        case currency, monthStartDay, showsRecentCategoriesFirst, homeStyle, hidesAmounts
     }
 
     init(
         currency: Currency,
         monthStartDay: Int,
         showsRecentCategoriesFirst: Bool = true,
-        homeStyle: HomeStyle = .classic
+        homeStyle: HomeStyle = .classic,
+        hidesAmounts: Bool = false
     ) {
         self.currency = currency
         self.monthStartDay = monthStartDay
         self.showsRecentCategoriesFirst = showsRecentCategoriesFirst
         self.homeStyle = homeStyle
+        self.hidesAmounts = hidesAmounts
     }
 
     init(from decoder: Decoder) throws {
@@ -70,6 +74,7 @@ struct AppSettings: Codable, Hashable {
         // An unknown value (a style a later version removed) falls back to
         // Classic instead of failing the whole settings decode.
         homeStyle = (try? container.decodeIfPresent(HomeStyle.self, forKey: .homeStyle)) ?? .classic
+        hidesAmounts = try container.decodeIfPresent(Bool.self, forKey: .hidesAmounts) ?? false
     }
 
     mutating func normalize() {

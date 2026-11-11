@@ -31,13 +31,20 @@ enum CurrencyFormatting {
     }
 
     static func format(amount: Decimal, currency: Currency) -> String {
+        if AmountPrivacy.shared.isHidden { return masked(currency) }
         let number = NSDecimalNumber(decimal: amount)
         return formatter(for: currency).string(from: number)
             ?? "\(currency.symbol)\(amount)"
     }
 
+    /// Keeps the currency so the layout reads the same, minus the figure.
+    private static func masked(_ currency: Currency) -> String {
+        "\(currency.symbol)\(AmountPrivacy.mask)"
+    }
+
     /// Whole units only, e.g. "₼1 960", for labels too small for cents.
     static func formatWhole(amount: Decimal, currency: Currency) -> String {
+        if AmountPrivacy.shared.isHidden { return masked(currency) }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = Locale.current
@@ -56,6 +63,9 @@ enum CurrencyFormatting {
 
     /// Spelled-out value for VoiceOver, avoiding a bare "-" being read as a dash.
     static func accessibleDescription(amount: Decimal, type: TransactionType, currency: Currency) -> String {
+        if AmountPrivacy.shared.isHidden {
+            return NSLocalizedString("amount hidden", comment: "Accessibility amount")
+        }
         let magnitude = format(amount: amount, currency: currency)
         switch type {
         case .income:
