@@ -12,6 +12,7 @@ struct TransactionFormView: View {
 
     @State private var isShowingScopeChoice = false
     @State private var isShowingDeleteChoice = false
+    @State private var isSearchingCategories = false
 
     init(store: AppStore, mode: TransactionFormViewModel.Mode) {
         _viewModel = State(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
@@ -245,9 +246,26 @@ struct TransactionFormView: View {
 
     private var categoryCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Category")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+            HStack {
+                Text("Category")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if !viewModel.isLinkedEntry {
+                    Button {
+                        withAnimation(.smooth(duration: 0.22)) { isSearchingCategories.toggle() }
+                    } label: {
+                        Image(systemName: isSearchingCategories ? "xmark" : "magnifyingglass")
+                            .font(.subheadline.weight(.semibold))
+                            .contentTransition(.symbolEffect(.replace))
+                            .frame(width: AppTheme.minimumTapTarget, height: 32)
+                            .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel(Text(isSearchingCategories ? "Close search" : "Search categories"))
+                }
+            }
 
             CategoryChipsView(
                 recent: viewModel.recentCategories,
@@ -255,7 +273,8 @@ struct TransactionFormView: View {
                 selectedID: $viewModel.selectedCategoryID,
                 onAddNew: viewModel.isLinkedEntry
                     ? nil
-                    : { viewModel.isShowingCategoryEditor = true }
+                    : { viewModel.isShowingCategoryEditor = true },
+                isSearching: $isSearchingCategories
             )
             .disabled(viewModel.isLinkedEntry)
         }

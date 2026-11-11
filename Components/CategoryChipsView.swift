@@ -10,10 +10,22 @@ struct CategoryChipsView: View {
     let all: [TransactionCategory]
     @Binding var selectedID: String
     var onAddNew: (() -> Void)?
+    /// Driven by the magnifier beside the card's heading.
+    @Binding var isSearching: Bool
 
     @State private var isExpanded = false
+    @State private var query = ""
+    @FocusState private var isQueryFocused: Bool
 
     private let columns = [GridItem(.adaptive(minimum: 80), spacing: 10)]
+
+    private var matches: [TransactionCategory] {
+        let term = query.trimmingCharacters(in: .whitespaces)
+        guard !term.isEmpty else { return all }
+        return all.filter {
+            $0.localizedName.localizedStandardContains(term) || $0.name.localizedStandardContains(term)
+        }
+    }
 
     /// Always includes the current selection, even when it is not one of the
     /// recent five, so the chosen category is never hidden behind "more".
@@ -34,6 +46,60 @@ struct CategoryChipsView: View {
     }
 
     var body: some View {
+        if isSearching {
+            searchBody
+        } else {
+            gridBody
+        }
+    }
+
+    private var searchBody: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Find a category", text: $query)
+                    .focused($isQueryFocused)
+                    .submitLabel(.done)
+                    .autocorrectionDisabled()
+                if !query.isEmpty {
+                    Button {
+                        query = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.tertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("Clear search"))
+                }
+            }
+            .padding(.horizontal, 12)
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .background(.quaternary.opacity(0.6), in: AppTheme.chipShape)
+
+            if matches.isEmpty {
+                VStack(spacing: 8) {
+                    Text("No category called “\(query)”")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    if let onAddNew {
+                        Button("Create one", action: onAddNew)
+                            .font(.footnote.weight(.semibold))
+                    }
+                }
+                .frame(maxWidth: .infinity, minHeight: 70)
+            } else {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(matches) { category in
+                        tile(for: category)
+                    }
+                }
+            }
+        }
+        .onAppear { isQueryFocused = true }
+        .onDisappear { query = "" }
+    }
+
+    private var gridBody: some View {
         LazyVGrid(columns: columns, spacing: 10) {
             ForEach(visible) { category in
                 tile(for: category)
@@ -61,6 +127,10 @@ struct CategoryChipsView: View {
 
         Button {
             selectedID = category.id
+            // A pick from the search is the answer; go back to the tiles.
+            if isSearching {
+                withAnimation(.smooth(duration: 0.22)) { isSearching = false }
+            }
         } label: {
             VStack(spacing: 6) {
                 CategoryIconView(category: category, size: .small, isProminent: isSelected)
