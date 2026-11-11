@@ -10,7 +10,7 @@ struct HomeView: View {
     @Environment(AppStore.self) private var store
     @Bindable var viewModel: HomeViewModel
 
-    let onOpenActivities: () -> Void
+    let onOpenActivities: (ActivityScope) -> Void
     let onOpenSavings: () -> Void
     let onOpenLoans: () -> Void
     let onOpenGoal: (UUID) -> Void
@@ -46,7 +46,8 @@ struct HomeView: View {
                         expense: summary.expense,
                         netBalance: summary.netBalance,
                         currency: currency,
-                        hasProjections: summary.hasProjections
+                        hasProjections: summary.hasProjections,
+                        onOpen: onOpenActivities
                     )
 
                     quickAdd
@@ -190,7 +191,7 @@ struct HomeView: View {
 
     private var recentActivity: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionHeader(title: "Recent", actionTitle: "See all", action: onOpenActivities)
+            sectionHeader(title: "Recent", actionTitle: "See all", action: { onOpenActivities(.all) })
 
             if recentOccurrences.isEmpty {
                 EmptyStateView.emptyPeriod(

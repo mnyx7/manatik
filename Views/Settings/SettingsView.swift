@@ -163,9 +163,7 @@ struct SettingsView: View {
 
     private var organiseSection: some View {
         Section {
-            NavigationLink {
-                CategoryManagerView(viewModel: viewModel)
-            } label: {
+            NavigationLink(value: RootDestination.categoryManager) {
                 HStack {
                     Label("My categories", systemImage: "tag")
                     Spacer()
@@ -176,9 +174,7 @@ struct SettingsView: View {
             }
 
             if !viewModel.store.state.recurringSeries.isEmpty {
-                NavigationLink {
-                    RecurringSeriesListView(store: viewModel.store)
-                } label: {
+                NavigationLink(value: RootDestination.recurringSeries) {
                     HStack {
                         Label("Repeating entries", systemImage: "repeat")
                         Spacer()
@@ -246,9 +242,7 @@ struct SettingsView: View {
 
     private var feedbackSection: some View {
         Section {
-            NavigationLink {
-                FeedbackView(viewModel: viewModel)
-            } label: {
+            NavigationLink(value: RootDestination.feedback) {
                 HStack {
                     Label("Feedback and ideas", systemImage: "bubble.left.and.text.bubble.right")
                     Spacer()

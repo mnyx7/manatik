@@ -10,6 +10,9 @@ enum RootDestination: Hashable {
     case loanDetail(UUID)
     case yearOverview
     case reminders
+    case categoryManager
+    case recurringSeries
+    case feedback
 }
 
 /// The app shell: content under a floating Liquid Glass bar carrying Home,
@@ -241,7 +244,10 @@ struct RootView: View {
             if store.state.settings.homeStyle == .classic {
                 HomeView(
                     viewModel: viewModel,
-                    onOpenActivities: { select(.activities) },
+                    onOpenActivities: { scope in
+                        viewModel.scope = scope
+                        select(.activities)
+                    },
                     onOpenSavings: { push(.savings) },
                     onOpenLoans: { push(.loans) },
                     onOpenGoal: { push(.savingsGoal($0)) },
@@ -382,6 +388,15 @@ struct RootView: View {
             )
         case .reminders:
             RemindersView(viewModel: SettingsViewModel(store: store))
+        // Settings pages go through the path too. A view-based NavigationLink
+        // is not recorded in `path`, so the tab bar thought nothing was open
+        // and swapped the screen underneath while the page stayed on top.
+        case .categoryManager:
+            CategoryManagerView(viewModel: SettingsViewModel(store: store))
+        case .recurringSeries:
+            RecurringSeriesListView(store: store)
+        case .feedback:
+            FeedbackView(viewModel: SettingsViewModel(store: store))
         }
     }
 

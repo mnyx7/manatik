@@ -11,6 +11,9 @@ struct HeroBalanceCardView: View {
     let netBalance: Decimal
     let currency: Currency
     let hasProjections: Bool
+    /// Each part opens Activity on its slice: the balance on everything,
+    /// In on income, Out on expenses.
+    var onOpen: ((ActivityScope) -> Void)?
 
     private var isNegative: Bool { netBalance < 0 }
 
@@ -45,9 +48,14 @@ struct HeroBalanceCardView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.55)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(.rect)
+            .onTapGesture { onOpen?(.all) }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(isNegative ? Text("Over budget") : Text("Left to spend"))
             .accessibilityValue(netText)
+            .accessibilityAddTraits(onOpen == nil ? [] : .isButton)
+            .accessibilityAction { onOpen?(.all) }
 
             ratioBar
 
@@ -56,13 +64,15 @@ struct HeroBalanceCardView: View {
                     title: "In",
                     amount: income,
                     accent: AppTheme.incomeAccent,
-                    systemImage: "arrow.down"
+                    systemImage: "arrow.down",
+                    scope: .income
                 )
                 figure(
                     title: "Out",
                     amount: expense,
                     accent: AppTheme.expenseAccent,
-                    systemImage: "arrow.up"
+                    systemImage: "arrow.up",
+                    scope: .expense
                 )
             }
 
@@ -105,7 +115,8 @@ struct HeroBalanceCardView: View {
         title: LocalizedStringKey,
         amount: Decimal,
         accent: Color,
-        systemImage: String
+        systemImage: String,
+        scope: ActivityScope
     ) -> some View {
         let text = CurrencyFormatting.format(amount: amount, currency: currency)
 
@@ -129,10 +140,14 @@ struct HeroBalanceCardView: View {
                     .minimumScaleFactor(0.7)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
+        .contentShape(.rect)
+        .onTapGesture { onOpen?(scope) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue(text)
+        .accessibilityAddTraits(onOpen == nil ? [] : .isButton)
+        .accessibilityAction { onOpen?(scope) }
     }
 }
 
