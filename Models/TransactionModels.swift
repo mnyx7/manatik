@@ -323,10 +323,6 @@ struct DailyTransactionSection: Identifiable, Hashable {
     var net: Decimal {
         items.reduce(Decimal.zero) { $0 + $1.signedAmount }
     }
-
-    var containsProjection: Bool {
-        items.contains(where: \.isProjected)
-    }
 }
 
 /// Which rows a change to a recurring entry should affect.

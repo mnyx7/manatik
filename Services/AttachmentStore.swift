@@ -137,14 +137,6 @@ enum AttachmentStore {
     }
 
     #if canImport(UIKit)
-    static func image(for attachment: Attachment) -> UIImage? {
-        guard attachment.kind == .image,
-              let data = try? Data(contentsOf: url(for: attachment)) else {
-            return nil
-        }
-        return UIImage(data: data)
-    }
-
     static func store(image: UIImage, displayName: String) throws -> Attachment {
         try store(data: compressed(image), kind: .image, displayName: displayName)
     }

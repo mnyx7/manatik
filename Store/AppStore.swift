@@ -481,10 +481,6 @@ final class AppStore {
     var hasAnyData: Bool { !state.isEmpty }
     var hasAnythingAtAll: Bool { state.hasAnythingAtAll }
 
-    var featuredTransactionCount: Int {
-        state.transactions.filter(\.isFeatured).count
-    }
-
     // MARK: - Transactions
 
     @discardableResult

@@ -28,7 +28,6 @@ enum AppTheme {
     static let incomeSurface = Color("IncomeSurface")
     static let expenseSurface = Color("ExpenseSurface")
     static let savingsSurface = Color("SavingsSurface")
-    static let loanSurface = Color("LoanSurface")
 
     // MARK: - Metrics
 
@@ -49,10 +48,6 @@ enum AppTheme {
     static let tabBarClearance: CGFloat = 96
 
     // MARK: - Shapes
-
-    static var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-    }
 
     static var innerShape: RoundedRectangle {
         RoundedRectangle(cornerRadius: innerCornerRadius, style: .continuous)
@@ -171,10 +166,6 @@ extension Font {
     /// are monospaced-width so a changing total does not jitter.
     static func moneyHero() -> Font {
         .system(size: 44, weight: .bold, design: .rounded)
-    }
-
-    static func moneyLarge() -> Font {
-        .system(size: 28, weight: .semibold, design: .rounded)
     }
 
     static func moneyMedium() -> Font {

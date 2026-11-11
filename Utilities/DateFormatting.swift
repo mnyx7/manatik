@@ -77,18 +77,6 @@ enum DateFormatting {
         return symbols[index]
     }
 
-    /// Short month name for chart axes.
-    static func shortMonthName(_ month: Int, calendar: Calendar = .current) -> String {
-        let symbols = formatter("shortMonthSymbols", calendar: calendar) {
-            $0.dateFormat = "LLL"
-        }
-        .shortStandaloneMonthSymbols ?? []
-
-        let index = max(0, min(month - 1, symbols.count - 1))
-        guard symbols.indices.contains(index) else { return "\(month)" }
-        return symbols[index]
-    }
-
     static func invalidateCache() {
         lock.lock()
         formatters.removeAll()
