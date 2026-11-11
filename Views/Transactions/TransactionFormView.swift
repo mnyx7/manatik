@@ -66,6 +66,14 @@ struct TransactionFormView: View {
             .navigationTitle(viewModel.title)
             .navigationBarTitleDisplayMode(.inline)
             .defaultFocus($focusedField, .amount)
+            .task {
+                // defaultFocus alone does not raise the keyboard in a sheet.
+                // A new entry starts with the amount, so open it straight away;
+                // the short wait lets the sheet finish presenting first.
+                guard viewModel.isAdding else { return }
+                try? await Task.sleep(for: .milliseconds(350))
+                focusedField = .amount
+            }
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
