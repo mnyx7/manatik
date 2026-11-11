@@ -57,6 +57,13 @@ final class SettingsViewModel {
 
     // MARK: - Currency
 
+    var homeStyle: HomeStyle {
+        get { store.state.settings.homeStyle }
+        set { store.updateSettings(homeStyle: newValue) }
+    }
+
+    // MARK: - Currency
+
     /// Applied straight away. Switching only relabels amounts, which the note
     /// under the picker says, so a confirmation step was just friction.
     var currency: Currency {

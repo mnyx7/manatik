@@ -63,46 +63,7 @@ struct HomeView: View {
         .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle(DateRangeCalculator.periodDisplayText(for: period))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { periodToolbar }
-    }
-
-    // MARK: - Period controls
-
-    @ToolbarContentBuilder
-    private var periodToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                store.movePeriod(byMonths: -1)
-            } label: {
-                Image(systemName: "chevron.left")
-            }
-            .accessibilityLabel(Text("Previous period"))
-        }
-
-        ToolbarItemGroup(placement: .topBarTrailing) {
-            if !store.isViewingCurrentPeriod {
-                Button {
-                    store.resetPeriodToToday()
-                } label: {
-                    Image(systemName: "arrow.uturn.backward")
-                }
-                .accessibilityLabel(Text("Back to today"))
-            }
-
-            Button {
-                viewModel.isShowingPeriodPicker = true
-            } label: {
-                Image(systemName: "calendar")
-            }
-            .accessibilityLabel(Text("Change period"))
-
-            Button {
-                store.movePeriod(byMonths: 1)
-            } label: {
-                Image(systemName: "chevron.right")
-            }
-            .accessibilityLabel(Text("Next period"))
-        }
+        .toolbar { PeriodToolbar(store: store, viewModel: viewModel) }
     }
 
     // MARK: - First run

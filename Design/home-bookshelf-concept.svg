@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="2"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#FFD98A" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFD98A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC9A0"/>
+      <stop offset="1" stop-color="#FFE6B8"/>
+    </linearGradient>
+    <style>
+      .s{stroke:#5B3B2A;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+      .t{stroke:#5B3B2A;stroke-width:2.5;stroke-linecap:round;fill:none}
+      .hand{font-family:'Chalkboard SE','Marker Felt','Comic Sans MS',cursive;fill:#5B3B2A}
+      .spine{font-family:'Chalkboard SE','Marker Felt',cursive;font-size:24px;fill:#FFF6EA;font-weight:bold}
+    </style>
+  </defs>
+
+  <g filter="url(#rough)">
+    <!-- wall + floor -->
+    <rect width="1080" height="1350" fill="#F7E6D0"/>
+    <g stroke="#F0D6B8" stroke-width="14" opacity="0.6">
+      <path d="M40 0V1080M140 0V1080M240 0V1080M340 0V1080M440 0V1080M540 0V1080M640 0V1080M740 0V1080M840 0V1080M940 0V1080M1040 0V1080"/>
+    </g>
+    <rect y="1075" width="1080" height="275" fill="#E7C29A"/>
+    <path class="s" fill="none" d="M0 1078 C300 1072 700 1084 1080 1076"/>
+    <path class="t" opacity="0.4" d="M0 1160 H1080 M0 1250 H1080"/>
+
+    <!-- lamp glow -->
+    <circle cx="100" cy="700" r="230" fill="url(#glow)"/>
+
+    <!-- window -->
+    <rect class="s" x="70" y="110" width="290" height="350" rx="14" fill="#FFF4E4"/>
+    <rect x="88" y="128" width="254" height="314" rx="8" fill="url(#sky)"/>
+    <circle cx="250" cy="330" r="46" fill="#FFB27A"/>
+    <path fill="#F6D7B0" d="M88 395 C150 360 220 380 342 350 V442 H88Z"/>
+    <path class="t" d="M215 128 V442 M88 285 H342"/>
+    <rect class="s" x="55" y="455" width="320" height="22" rx="6" fill="#E8B489"/>
+    <path class="s" fill="#E8957A" d="M60 100 C110 220 70 340 120 470 L60 470Z"/>
+    <path class="s" fill="#C47A63" d="M40 92 H390" stroke-width="6"/>
+    <!-- little pot on the sill -->
+    <path class="s" fill="#D9694A" d="M300 455 L306 420 H346 L352 455Z"/>
+    <path class="s" fill="#8FAE7C" d="M326 420 C300 400 300 380 312 372 C322 390 326 400 326 420 C330 395 340 378 356 374 C356 396 344 410 326 420Z"/>
+
+    <!-- calendar = the period picker -->
+    <path class="t" d="M480 140 L480 158"/>
+    <circle cx="480" cy="138" r="7" fill="#D9694A" class="s"/>
+    <rect class="s" x="415" y="158" width="130" height="140" rx="10" fill="#FFF8EC"/>
+    <rect x="417" y="160" width="126" height="34" rx="8" fill="#D9694A"/>
+    <text x="480" y="186" text-anchor="middle" class="hand" style="fill:#FFF6EA;font-size:22px;font-weight:bold">NOV</text>
+    <text x="480" y="260" text-anchor="middle" class="hand" style="font-size:52px;font-weight:bold">11</text>
+    <ellipse class="t" cx="480" cy="244" rx="38" ry="30" stroke="#D9694A"/>
+    <text x="480" y="288" text-anchor="middle" class="hand" style="font-size:15px">period</text>
+
+    <!-- balance sign -->
+    <path class="t" d="M690 60 L720 100 M940 60 L910 100"/>
+    <circle cx="690" cy="58" r="5" fill="#5B3B2A"/><circle cx="940" cy="58" r="5" fill="#5B3B2A"/>
+    <rect class="s" x="640" y="100" width="350" height="96" rx="16" fill="#FFF8EC"/>
+    <text x="815" y="134" text-anchor="middle" class="hand" style="font-size:20px">left this month</text>
+    <text x="815" y="178" text-anchor="middle" class="hand" style="font-size:38px;font-weight:bold;fill:#4E9A96">₼ 1 240,50</text>
+    <path d="M960 120 l6 -12 l6 12 l-6 -4z" fill="#E3A948"/>
+
+    <!-- shelf 1 -->
+    <rect class="s" x="600" y="440" width="430" height="24" rx="5" fill="#B9794F"/>
+    <path class="s" fill="#A0663F" d="M630 464 V500 H660Z M1000 464 V500 H970Z"/>
+
+    <!-- Expenses -->
+    <rect class="s" x="622" y="222" width="60" height="218" rx="6" fill="#D9694A"/>
+    <path class="t" stroke="#FFF6EA" d="M630 245 H674 M630 418 H674"/>
+    <text class="spine" transform="translate(660 400) rotate(-90)">Expenses</text>
+    <!-- Income -->
+    <rect class="s" x="684" y="248" width="54" height="192" rx="6" fill="#8FAE7C"/>
+    <path class="t" stroke="#FFF6EA" d="M692 270 H730 M692 418 H730"/>
+    <text class="spine" transform="translate(719 404) rotate(-90)">Income</text>
+    <!-- Bills, with a ribbon for what is due -->
+    <rect class="s" x="740" y="236" width="66" height="204" rx="6" fill="#E3A948"/>
+    <path class="t" stroke="#FFF6EA" d="M748 258 H798 M748 418 H798"/>
+    <text class="spine" transform="translate(782 386) rotate(-90)">Bills</text>
+    <path class="s" fill="#C2453A" d="M786 440 V520 L796 508 L806 520 V440Z"/>
+    <circle class="s" cx="796" cy="545" r="17" fill="#FFF8EC"/>
+    <text x="796" y="553" text-anchor="middle" class="hand" style="font-size:20px;font-weight:bold;fill:#C2453A">2</text>
+    <!-- Loans, bookmark shows how far it is paid -->
+    <path class="s" fill="#F3C96B" d="M826 252 V214 L836 224 L846 214 V252Z"/>
+    <rect class="s" x="808" y="250" width="58" height="190" rx="6" fill="#8A6A9E"/>
+    <path class="t" stroke="#FFF6EA" d="M816 272 H858 M816 418 H858"/>
+    <text class="spine" transform="translate(845 398) rotate(-90)">Loans</text>
+    <!-- Savings jar fills up -->
+    <path class="s" fill="#FFFFFF" fill-opacity="0.55" d="M888 330 C880 330 878 340 878 352 V420 C878 434 888 440 902 440 H978 C992 440 1002 434 1002 420 V352 C1002 340 1000 330 992 330Z"/>
+    <g class="s" fill="#F3C96B" stroke-width="2.5">
+      <ellipse cx="905" cy="428" rx="18" ry="7"/><ellipse cx="945" cy="430" rx="18" ry="7"/><ellipse cx="982" cy="428" rx="16" ry="7"/>
+      <ellipse cx="920" cy="414" rx="18" ry="7"/><ellipse cx="962" cy="414" rx="18" ry="7"/>
+      <ellipse cx="900" cy="400" rx="16" ry="7"/><ellipse cx="940" cy="398" rx="18" ry="7"/><ellipse cx="980" cy="400" rx="16" ry="7"/>
+      <ellipse cx="925" cy="384" rx="18" ry="7"/><ellipse cx="965" cy="382" rx="17" ry="7"/>
+    </g>
+    <rect class="s" x="884" y="312" width="112" height="22" rx="6" fill="#B9794F"/>
+    <text x="940" y="368" text-anchor="middle" class="hand" style="font-size:30px;font-weight:bold;fill:#4E9A96">₼</text>
+    <path class="t" d="M996 340 L1016 372"/>
+    <rect class="s" x="990" y="372" width="62" height="30" rx="6" fill="#4E9A96" transform="rotate(12 1021 387)"/>
+    <text class="hand" transform="translate(996 394) rotate(12)" style="font-size:15px;fill:#FFF6EA;font-weight:bold">Savings</text>
+
+    <!-- shelf 2 -->
+    <rect class="s" x="600" y="760" width="430" height="24" rx="5" fill="#B9794F"/>
+    <path class="s" fill="#A0663F" d="M630 784 V820 H660Z M1000 784 V820 H970Z"/>
+
+    <!-- Overview as a pie -->
+    <path class="s" fill="#B9794F" d="M650 760 L670 745 L690 760Z"/>
+    <circle class="s" cx="670" cy="682" r="62" fill="#FFF8EC"/>
+    <path fill="#D9694A" d="M670 682 L670 626 A56 56 0 0 1 723 698Z"/>
+    <path fill="#8FAE7C" d="M670 682 L723 698 A56 56 0 0 1 640 730Z"/>
+    <path fill="#E3A948" d="M670 682 L640 730 A56 56 0 0 1 625 650Z"/>
+    <path fill="#8A6A9E" d="M670 682 L625 650 A56 56 0 0 1 670 626Z"/>
+    <circle class="s" cx="670" cy="682" r="56" fill="none"/>
+    <text x="670" y="606" text-anchor="middle" class="hand" style="font-size:18px">overview</text>
+
+    <!-- Reminders as an alarm clock -->
+    <path class="s" d="M772 742 L762 760 M828 742 L838 760" fill="none"/>
+    <circle class="s" cx="776" cy="672" r="16" fill="#E3A948"/><circle class="s" cx="824" cy="672" r="16" fill="#E3A948"/>
+    <circle class="s" cx="800" cy="708" r="42" fill="#FFF8EC"/>
+    <path class="t" d="M800 708 V680 M800 708 L818 718"/>
+    <path class="t" stroke="#C2453A" d="M752 664 l-10 -8 M848 664 l10 -8"/>
+    <text x="800" y="636" text-anchor="middle" class="hand" style="font-size:18px">reminders</text>
+
+    <!-- Categories as a little stack -->
+    <rect class="s" x="860" y="730" width="150" height="30" rx="5" fill="#4E9A96"/>
+    <rect class="s" x="872" y="700" width="132" height="30" rx="5" fill="#E8957A"/>
+    <rect class="s" x="866" y="671" width="140" height="29" rx="5" fill="#C9B27A"/>
+    <text x="935" y="752" text-anchor="middle" class="hand" style="font-size:15px;fill:#FFF6EA">groceries</text>
+    <text x="938" y="722" text-anchor="middle" class="hand" style="font-size:15px;fill:#FFF6EA">café</text>
+    <text x="936" y="692" text-anchor="middle" class="hand" style="font-size:15px;fill:#FFF6EA">transport</text>
+    <!-- plant grows with savings -->
+    <path class="s" fill="#D9694A" d="M916 671 L922 640 H958 L964 671Z"/>
+    <path class="s" fill="#8FAE7C" d="M940 640 C910 620 905 590 918 578 C934 600 940 615 940 640Z"/>
+    <path class="s" fill="#A9C29A" d="M940 640 C946 608 962 590 984 588 C982 616 964 632 940 640Z"/>
+    <path class="s" fill="#8FAE7C" d="M940 640 C936 610 940 585 948 568 C958 590 952 620 940 640Z"/>
+
+    <!-- floor lamp -->
+    <ellipse class="s" cx="100" cy="1168" rx="52" ry="14" fill="#B9794F"/>
+    <path class="s" d="M100 1166 V706" fill="none" stroke-width="6"/>
+    <path class="s" fill="#F6C66B" d="M40 708 L160 708 L134 628 L66 628Z"/>
+    <path class="t" stroke="#E3A948" d="M70 690 H150" opacity="0.7"/>
+
+    <!-- rug -->
+    <ellipse class="s" cx="560" cy="1205" rx="440" ry="78" fill="#D98E73"/>
+    <ellipse class="t" cx="560" cy="1205" rx="400" ry="60" stroke="#FFF1E2" stroke-dasharray="4 14" stroke-width="4"/>
+
+    <!-- armchair back -->
+    <rect class="s" x="170" y="790" width="380" height="290" rx="80" fill="#E8957A"/>
+    <path class="t" opacity="0.5" d="M260 820 V1000 M360 812 V1000 M460 820 V1000"/>
+
+    <!-- girl -->
+    <path class="s" fill="#6B3F2A" d="M296 880 C285 840 300 790 360 790 C420 790 436 840 424 880 C410 870 405 860 405 845 L315 845 C315 860 310 870 296 880Z"/>
+    <rect class="s" x="347" y="886" width="26" height="22" fill="#F2C6A0"/>
+    <path class="s" fill="#A9C29A" d="M286 1010 C282 940 296 905 332 900 L388 900 C424 905 438 940 434 1010Z"/>
+    <path class="t" d="M332 900 C340 916 380 916 388 900"/>
+    <circle class="s" cx="360" cy="838" r="58" fill="#F2C6A0"/>
+    <path class="s" fill="#6B3F2A" d="M302 840 C296 772 424 772 418 840 C405 808 380 798 362 806 C342 796 312 808 302 840Z"/>
+    <circle class="s" cx="360" cy="764" r="30" fill="#6B3F2A"/>
+    <path class="t" d="M328 846 q10 9 20 0 M372 846 q10 9 20 0"/>
+    <path class="t" d="M350 870 q10 9 20 0"/>
+    <circle cx="322" cy="864" r="10" fill="#F29C8F" opacity="0.7"/>
+    <circle cx="398" cy="864" r="10" fill="#F29C8F" opacity="0.7"/>
+    <!-- headphones -->
+    <path class="s" fill="none" stroke="#5B3B2A" stroke-width="16" d="M294 836 C290 760 430 760 426 836"/>
+    <path fill="none" stroke="#D9694A" stroke-width="10" stroke-linecap="round" d="M294 836 C290 760 430 760 426 836"/>
+    <ellipse class="s" cx="296" cy="846" rx="17" ry="27" fill="#D9694A"/>
+    <ellipse class="s" cx="424" cy="846" rx="17" ry="27" fill="#D9694A"/>
+    <!-- open book -->
+    <path class="s" fill="#4E9A96" d="M282 944 L360 966 L438 944 L438 1004 L360 1026 L282 1004Z"/>
+    <path class="s" fill="#FFF8EC" d="M290 938 L360 958 L430 938 L430 996 L360 1016 L290 996Z"/>
+    <path class="t" d="M360 958 V1016 M304 956 L344 968 M304 970 L344 982 M376 968 L416 956 M376 982 L416 970"/>
+    <circle class="s" cx="288" cy="976" r="14" fill="#F2C6A0"/>
+    <circle class="s" cx="432" cy="976" r="14" fill="#F2C6A0"/>
+    <!-- music -->
+    <text x="452" y="790" class="hand" style="font-size:40px;fill:#D9694A">♪</text>
+    <text x="492" y="740" class="hand" style="font-size:32px;fill:#8A6A9E">♫</text>
+    <text x="232" y="770" class="hand" style="font-size:28px;fill:#4E9A96">♪</text>
+
+    <!-- blanket -->
+    <path class="s" fill="#F3C96B" d="M236 1004 C310 990 450 986 562 1002 L596 1112 C480 1134 300 1134 206 1112Z"/>
+    <path class="t" stroke="#E3A948" stroke-width="7" d="M226 1050 C330 1040 450 1040 576 1054 M216 1088 C330 1078 460 1080 588 1092"/>
+    <path class="t" d="M206 1112 l-6 16 M240 1118 l-4 16 M560 1118 l4 16 M594 1112 l6 16"/>
+
+    <!-- armchair arms + legs -->
+    <rect class="s" x="138" y="920" width="100" height="200" rx="40" fill="#F0A98F"/>
+    <rect class="s" x="518" y="920" width="100" height="200" rx="40" fill="#F0A98F"/>
+    <path class="s" stroke-width="10" d="M170 1122 L162 1160 M586 1122 L594 1160"/>
+
+    <!-- side table + mug -->
+    <path class="s" d="M700 1006 V1160 M670 1160 H730" fill="none" stroke-width="7"/>
+    <ellipse class="s" cx="700" cy="1004" rx="64" ry="16" fill="#B9794F"/>
+    <path class="s" fill="#FFF8EC" d="M676 950 H720 V990 C720 998 712 1002 698 1002 C684 1002 676 998 676 990Z"/>
+    <path class="t" d="M720 962 C736 962 736 984 720 984"/>
+    <path class="t" opacity="0.6" d="M690 940 c-8 -12 8 -18 0 -30 M706 940 c-8 -12 8 -18 0 -30"/>
+    <path fill="#D9694A" d="M690 972 c-4 -6 4 -10 8 -4 c4 -6 12 -2 8 4 l-8 8z"/>
+
+    <!-- sleeping cat: nothing is due today -->
+    <path class="s" fill="#E3A060" d="M790 1222 C860 1250 960 1230 950 1190 C940 1160 870 1150 820 1170 C790 1180 776 1206 790 1222Z"/>
+    <path class="s" fill="none" d="M946 1196 C990 1196 990 1236 950 1236 C930 1236 900 1236 870 1232"/>
+    <circle class="s" cx="806" cy="1190" r="32" fill="#E3A060"/>
+    <path class="s" fill="#E3A060" d="M782 1174 L780 1146 L800 1162Z M816 1160 L832 1144 L834 1172Z"/>
+    <path class="t" d="M792 1192 q6 5 12 0 M812 1192 q6 5 12 0"/>
+    <path class="t" opacity="0.5" d="M860 1176 q8 18 0 34 M890 1172 q8 20 0 38"/>
+    <text x="840" y="1140" class="hand" style="font-size:26px">z</text>
+    <text x="866" y="1112" class="hand" style="font-size:20px">z</text>
+  </g>
+
+  <!-- paper grain -->
+  <rect width="1080" height="1350" filter="url(#grain)" opacity="0.07" style="mix-blend-mode:multiply"/>
+
+  <text x="40" y="1318" class="hand" style="font-size:30px;font-weight:bold">manatik · my cozy corner</text>
+</svg>

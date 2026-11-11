@@ -1088,7 +1088,8 @@ final class AppStore {
     func updateSettings(
         currency: Currency? = nil,
         monthStartDay: Int? = nil,
-        showsRecentCategoriesFirst: Bool? = nil
+        showsRecentCategoriesFirst: Bool? = nil,
+        homeStyle: HomeStyle? = nil
     ) {
         var settings = state.settings
         if let currency { settings.currency = currency }
@@ -1096,6 +1097,7 @@ final class AppStore {
         if let showsRecentCategoriesFirst {
             settings.showsRecentCategoriesFirst = showsRecentCategoriesFirst
         }
+        if let homeStyle { settings.homeStyle = homeStyle }
         settings.normalize()
 
         guard settings != state.settings else { return }

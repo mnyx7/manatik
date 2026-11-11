@@ -24,6 +24,9 @@ enum QALaunch {
     /// add, category.
     static var route: String? { value(for: "-qa-route") }
 
+    /// A home page style to show, by `HomeStyle` raw value, e.g. posterGirl.
+    static var homeStyle: HomeStyle? { value(for: "-qa-home").flatMap(HomeStyle.init(rawValue:)) }
+
     private static func value(for flag: String) -> String? {
         guard let index = arguments.firstIndex(of: flag),
               arguments.index(after: index) < arguments.endIndex else { return nil }

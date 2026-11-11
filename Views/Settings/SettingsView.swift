@@ -9,8 +9,9 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            homeStyleSection
             generalSection
-            remindersSection
+            PaymentRemindersSection(viewModel: viewModel)
             organiseSection
             backupSection
             feedbackSection
@@ -22,15 +23,6 @@ struct SettingsView: View {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("Done") { isStartDayFocused = false }
-            }
-        }
-        .sheet(isPresented: $viewModel.isShowingReminderEditor) {
-            ReminderEditorView(
-                reminder: viewModel.editingReminder,
-                currency: viewModel.currentCurrency
-            ) { saved in
-                viewModel.saveReminder(saved)
-                Task { await syncReminders() }
             }
         }
         .fileExporter(
@@ -122,99 +114,35 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Reminders
+    // MARK: - Home page
 
-    private var remindersSection: some View {
+    /// Thumbnails in one row; tapping one applies it straight away.
+    private var homeStyleSection: some View {
         Section {
-            if reminderScheduler.isBlockedInSystemSettings {
-                Label(
-                    "Notifications are turned off for manatik in iOS Settings.",
-                    systemImage: "bell.slash"
-                )
-                .font(.footnote)
-                .foregroundStyle(AppTheme.expenseAccent)
-            } else if reminderScheduler.needsPermissionPrompt {
-                Button {
-                    Task {
-                        await reminderScheduler.requestAuthorization()
-                        await syncReminders()
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(HomeStyle.allCases) { style in
+                            HomeStyleThumbnail(
+                                style: style,
+                                isSelected: viewModel.homeStyle == style
+                            ) {
+                                withAnimation(.snappy) { viewModel.homeStyle = style }
+                            }
+                            .id(style)
+                        }
                     }
-                } label: {
-                    Label("Allow notifications", systemImage: "bell.badge")
-                        .frame(minHeight: AppTheme.minimumTapTarget)
+                    .padding(.vertical, 6)
                 }
+                .scrollClipDisabled()
+                // A chosen style further along the row would otherwise sit
+                // off-screen with nothing showing which one is active.
+                .onAppear { proxy.scrollTo(viewModel.homeStyle, anchor: .center) }
             }
-
-            ForEach(viewModel.reminders) { reminder in
-                reminderRow(reminder)
-            }
-            .onDelete { offsets in
-                for index in offsets {
-                    guard viewModel.reminders.indices.contains(index) else { continue }
-                    viewModel.deleteReminder(viewModel.reminders[index])
-                }
-                Task { await syncReminders() }
-            }
-
-            Button {
-                viewModel.addReminder()
-            } label: {
-                Label("Add a payment reminder", systemImage: "plus.circle")
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-            }
+            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         } header: {
-            Text("Payment Reminders")
-        } footer: {
-            Text("Get a notification before a loan instalment, a utility bill or a subscription is due. Reminders are local to this device.")
+            Text("Home page")
         }
-    }
-
-    @ViewBuilder
-    private func reminderRow(_ reminder: PaymentReminder) -> some View {
-        Button {
-            viewModel.editReminder(reminder)
-        } label: {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(reminder.title)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.primary)
-
-                    Text(reminderSubtitle(reminder))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 8)
-
-                Toggle("", isOn: Binding(
-                    get: { reminder.isEnabled },
-                    set: { newValue in
-                        viewModel.toggleReminder(reminder, isEnabled: newValue)
-                        Task { await syncReminders() }
-                    }
-                ))
-                .labelsHidden()
-                .accessibilityLabel(Text("Reminder enabled"))
-            }
-            .frame(minHeight: AppTheme.minimumTapTarget)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func reminderSubtitle(_ reminder: PaymentReminder) -> String {
-        var parts = [DateFormatting.dayMonthYear(reminder.fireDate)]
-        if reminder.repeatRule.repeats {
-            parts.append(reminder.repeatRule.localizedTitle)
-        }
-        let money = reminder.localizedSubtitle(currency: viewModel.currentCurrency)
-        if !money.isEmpty {
-            parts.append(money)
-        }
-        if reminder.hasLapsed() {
-            parts.append(NSLocalizedString("passed", comment: "Reminder state"))
-        }
-        return parts.joined(separator: " \u{00B7} ")
     }
 
     // MARK: - Organise

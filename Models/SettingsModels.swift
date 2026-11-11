@@ -34,6 +34,8 @@ struct AppSettings: Codable, Hashable {
     /// When true the entry form leads with recently used categories. When
     /// false it follows the order set in Settings.
     var showsRecentCategoriesFirst: Bool
+    /// Which home page to show. Classic is the default and stays available.
+    var homeStyle: HomeStyle
 
     static let `default` = AppSettings(
         currency: .azn,
@@ -42,13 +44,19 @@ struct AppSettings: Codable, Hashable {
     )
 
     enum CodingKeys: String, CodingKey {
-        case currency, monthStartDay, showsRecentCategoriesFirst
+        case currency, monthStartDay, showsRecentCategoriesFirst, homeStyle
     }
 
-    init(currency: Currency, monthStartDay: Int, showsRecentCategoriesFirst: Bool = true) {
+    init(
+        currency: Currency,
+        monthStartDay: Int,
+        showsRecentCategoriesFirst: Bool = true,
+        homeStyle: HomeStyle = .classic
+    ) {
         self.currency = currency
         self.monthStartDay = monthStartDay
         self.showsRecentCategoriesFirst = showsRecentCategoriesFirst
+        self.homeStyle = homeStyle
     }
 
     init(from decoder: Decoder) throws {
@@ -59,6 +67,9 @@ struct AppSettings: Codable, Hashable {
             Bool.self,
             forKey: .showsRecentCategoriesFirst
         ) ?? true
+        // An unknown value (a style a later version removed) falls back to
+        // Classic instead of failing the whole settings decode.
+        homeStyle = (try? container.decodeIfPresent(HomeStyle.self, forKey: .homeStyle)) ?? .classic
     }
 
     mutating func normalize() {

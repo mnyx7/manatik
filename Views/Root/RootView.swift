@@ -9,6 +9,7 @@ enum RootDestination: Hashable {
     case savingsGoal(UUID)
     case loanDetail(UUID)
     case yearOverview
+    case reminders
 }
 
 /// The app shell: content under a floating Liquid Glass bar carrying Home,
@@ -232,14 +233,29 @@ struct RootView: View {
     private var content: some View {
         switch tab {
         case .home:
-            HomeView(
-                viewModel: viewModel,
-                onOpenActivities: { select(.activities) },
-                onOpenSavings: { push(.savings) },
-                onOpenLoans: { push(.loans) },
-                onOpenGoal: { push(.savingsGoal($0)) },
-                onOpenLoan: { push(.loanDetail($0)) }
-            )
+            if store.state.settings.homeStyle == .classic {
+                HomeView(
+                    viewModel: viewModel,
+                    onOpenActivities: { select(.activities) },
+                    onOpenSavings: { push(.savings) },
+                    onOpenLoans: { push(.loans) },
+                    onOpenGoal: { push(.savingsGoal($0)) },
+                    onOpenLoan: { push(.loanDetail($0)) }
+                )
+            } else {
+                IllustratedHomeView(
+                    viewModel: viewModel,
+                    style: store.state.settings.homeStyle,
+                    onOpenActivities: { scope in
+                        viewModel.scope = scope
+                        select(.activities)
+                    },
+                    onOpenOverview: { select(.overview) },
+                    onOpenSavings: { push(.savings) },
+                    onOpenLoans: { push(.loans) },
+                    onOpenReminders: { push(.reminders) }
+                )
+            }
         case .activities:
             ActivitiesView(viewModel: viewModel)
         case .overview:
@@ -359,6 +375,8 @@ struct RootView: View {
             YearlyOverviewView(
                 viewModel: YearlyOverviewViewModel(store: store, year: store.selectedYear)
             )
+        case .reminders:
+            RemindersView(viewModel: SettingsViewModel(store: store))
         }
     }
 
@@ -444,6 +462,9 @@ struct RootView: View {
 
     #if DEBUG
     private func applyQALaunchRouteIfNeeded() {
+        if let style = QALaunch.homeStyle {
+            store.updateSettings(homeStyle: style)
+        }
         if let name = QALaunch.tab, let slot = Tab(rawValue: name) {
             tab = slot
         }
@@ -455,6 +476,7 @@ struct RootView: View {
         case "goal": path = [.savingsGoal(QALaunch.goalID)]
         case "loan": path = [.loanDetail(QALaunch.loanID)]
         case "add": viewModel.isShowingAddSheet = true
+        case "reminders": path = [.reminders]
         case "bill":
             viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
                 .first { $0.transactionID == QALaunch.billTransactionID }

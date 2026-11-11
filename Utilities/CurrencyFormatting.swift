@@ -36,6 +36,18 @@ enum CurrencyFormatting {
             ?? "\(currency.symbol)\(amount)"
     }
 
+    /// Whole units only, e.g. "₼1 960", for labels too small for cents.
+    static func formatWhole(amount: Decimal, currency: Currency) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        formatter.currencyCode = currency.rawValue
+        formatter.maximumFractionDigits = 0
+        formatter.roundingMode = .halfUp
+        return formatter.string(from: NSDecimalNumber(decimal: amount))
+            ?? "\(currency.symbol)\(amount)"
+    }
+
     /// Signed string for a ledger row, e.g. "-$4.20" / "+$3,200.00".
     static func formatSigned(amount: Decimal, type: TransactionType, currency: Currency) -> String {
         let magnitude = format(amount: amount, currency: currency)

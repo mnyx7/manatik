@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 2340" width="1080" height="2340">
+  <!-- iPhone-shaped (393x852pt at 2.75px/pt). Every #hit-* rect is a tap
+       target of at least 73pt with 11pt+ between targets. -->
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="2"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#FFD98A" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#FFD98A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC9A0"/><stop offset="1" stop-color="#FFE6B8"/>
+    </linearGradient>
+    <style>
+      .s{stroke:#5B3B2A;stroke-width:4;stroke-linejoin:round;stroke-linecap:round}
+      .t{stroke:#5B3B2A;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+      .ic{stroke:#5B3B2A;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+      .hand{font-family:'Chalkboard SE','Marker Felt','Comic Sans MS',cursive;fill:#5B3B2A}
+      .lbl{font-family:'Chalkboard SE','Marker Felt',cursive;font-size:36px;font-weight:bold;fill:#FFF6EA;text-anchor:middle}
+      .val{font-family:'Chalkboard SE','Marker Felt',cursive;font-size:28px;fill:#FFF6EA;text-anchor:middle}
+      .card{font-family:'Chalkboard SE','Marker Felt',cursive;font-size:30px;font-weight:bold;fill:#5B3B2A;text-anchor:middle}
+      .tab{font-family:'Chalkboard SE','Marker Felt',cursive;font-size:24px;fill:#7A5A45;text-anchor:middle}
+    </style>
+  </defs>
+
+  <g filter="url(#rough)">
+    <!-- wall -->
+    <rect width="1080" height="2340" fill="#F7E6D0"/>
+    <g stroke="#F0D6B8" stroke-width="16" opacity="0.6">
+      <path d="M60 0V1880M180 0V1880M300 0V1880M420 0V1880M540 0V1880M660 0V1880M780 0V1880M900 0V1880M1020 0V1880"/>
+    </g>
+    <!-- floor -->
+    <rect y="1880" width="1080" height="460" fill="#E7C29A"/>
+    <path class="s" fill="none" d="M0 1882 C300 1876 700 1888 1080 1880"/>
+    <ellipse class="s" cx="560" cy="2010" rx="480" ry="92" fill="#D98E73"/>
+    <ellipse class="t" cx="560" cy="2010" rx="436" ry="70" stroke="#FFF1E2" stroke-dasharray="4 16" stroke-width="5"/>
+
+    <text x="70" y="100" class="hand" style="font-size:38px;font-weight:bold">9:41</text>
+
+    <!-- BALANCE sign -->
+    <path class="t" d="M260 140 L300 200 M820 140 L780 200"/>
+    <circle cx="260" cy="138" r="7" fill="#5B3B2A"/><circle cx="820" cy="138" r="7" fill="#5B3B2A"/>
+    <rect class="s" x="90" y="200" width="900" height="220" rx="34" fill="#FFF8EC"/>
+    <text x="540" y="262" text-anchor="middle" class="hand" style="font-size:32px">good evening ✿</text>
+    <text x="540" y="360" text-anchor="middle" class="hand" style="font-size:84px;font-weight:bold;fill:#4E9A96">₼ 1 240,50</text>
+    <text x="540" y="400" text-anchor="middle" class="hand" style="font-size:26px;fill:#9A7A62">left this month</text>
+
+    <!-- SHELF 1 -->
+    <rect class="s" x="70" y="860" width="940" height="32" rx="6" fill="#B9794F"/>
+    <path class="s" fill="#A0663F" d="M110 892 V940 H150Z M970 892 V940 H930Z"/>
+
+    <!-- Expenses -->
+    <rect class="s" x="95" y="500" width="200" height="360" rx="16" fill="#D9694A"/>
+    <path class="t" stroke="#FFF6EA" d="M115 530 H275 M115 830 H275"/>
+    <circle class="s" cx="195" cy="610" r="46" fill="#FFF6EA"/>
+    <path class="ic" d="M175 600 H215 V632 H175Z M184 600 C184 580 206 580 206 600"/>
+    <text class="lbl" x="195" y="720">Expenses</text>
+    <text class="val" x="195" y="768">₼ 1 960</text>
+    <!-- Income -->
+    <rect class="s" x="325" y="530" width="200" height="330" rx="16" fill="#8FAE7C"/>
+    <path class="t" stroke="#FFF6EA" d="M345 560 H505 M345 830 H505"/>
+    <circle class="s" cx="425" cy="636" r="46" fill="#FFF6EA"/>
+    <path class="ic" d="M425 610 V646 M411 632 L425 646 L439 632 M403 648 V660 H447 V648"/>
+    <text class="lbl" x="425" y="740">Income</text>
+    <text class="val" x="425" y="786">₼ 3 650</text>
+    <!-- Bills, with what is due on its corner -->
+    <rect class="s" x="555" y="510" width="200" height="350" rx="16" fill="#E3A948"/>
+    <path class="t" stroke="#FFF6EA" d="M575 540 H735 M575 830 H735"/>
+    <circle class="s" cx="655" cy="620" r="46" fill="#FFF6EA"/>
+    <path class="ic" d="M631 604 H679 V638 H631Z M631 604 L655 624 L679 604"/>
+    <text class="lbl" x="655" y="730">Bills</text>
+    <text class="val" x="655" y="776">2 due soon</text>
+    <circle class="s" cx="737" cy="528" r="30" fill="#C2453A"/>
+    <text x="737" y="540" text-anchor="middle" class="hand" style="font-size:34px;font-weight:bold;fill:#FFF6EA">2</text>
+    <!-- Loans, with how much is paid -->
+    <rect class="s" x="785" y="540" width="200" height="320" rx="16" fill="#8A6A9E"/>
+    <path class="t" stroke="#FFF6EA" d="M805 570 H965 M805 830 H965"/>
+    <circle class="s" cx="885" cy="644" r="46" fill="#FFF6EA"/>
+    <path class="ic" d="M859 636 L885 618 L911 636Z M869 642 V662 M885 642 V662 M901 642 V662 M859 668 H911"/>
+    <text class="lbl" x="885" y="742">Loans</text>
+    <rect x="825" y="768" width="120" height="16" rx="8" fill="#FFF6EA" opacity="0.45"/>
+    <rect x="825" y="768" width="74" height="16" rx="8" fill="#FFF6EA"/>
+    <text class="val" x="885" y="816" style="font-size:24px">62% paid</text>
+
+    <!-- SHELF 2 -->
+    <rect class="s" x="70" y="1300" width="940" height="32" rx="6" fill="#B9794F"/>
+    <path class="s" fill="#A0663F" d="M110 1332 V1380 H150Z M970 1332 V1380 H930Z"/>
+
+    <!-- Savings jar -->
+    <rect class="s" x="135" y="1000" width="210" height="38" rx="10" fill="#B9794F"/>
+    <path class="s" fill="#FFFFFF" fill-opacity="0.6" d="M150 1036 C134 1036 128 1050 128 1070 V1272 C128 1290 140 1300 160 1300 H320 C340 1300 352 1290 352 1272 V1070 C352 1050 346 1036 330 1036Z"/>
+    <g class="s" fill="#F3C96B" stroke-width="3">
+      <ellipse cx="170" cy="1284" rx="30" ry="11"/><ellipse cx="240" cy="1286" rx="30" ry="11"/><ellipse cx="310" cy="1284" rx="30" ry="11"/>
+      <ellipse cx="200" cy="1262" rx="30" ry="11"/><ellipse cx="275" cy="1262" rx="30" ry="11"/>
+      <ellipse cx="165" cy="1240" rx="28" ry="11"/><ellipse cx="238" cy="1238" rx="30" ry="11"/><ellipse cx="312" cy="1240" rx="28" ry="11"/>
+      <ellipse cx="200" cy="1216" rx="30" ry="11"/><ellipse cx="276" cy="1214" rx="30" ry="11"/>
+    </g>
+    <rect class="s" x="160" y="1090" width="160" height="96" rx="12" fill="#4E9A96"/>
+    <text class="lbl" x="240" y="1132" style="font-size:30px">Savings</text>
+    <text class="val" x="240" y="1170" style="font-size:24px">58% · ₼2 300</text>
+
+    <!-- Overview pie -->
+    <path class="t" stroke-width="6" d="M540 1200 L490 1300 M540 1200 L590 1300"/>
+    <circle class="s" cx="540" cy="1100" r="104" fill="#FFF8EC"/>
+    <path fill="#D9694A" d="M540 1100 L540 1004 A96 96 0 0 1 631 1128Z"/>
+    <path fill="#8FAE7C" d="M540 1100 L631 1128 A96 96 0 0 1 488 1181Z"/>
+    <path fill="#E3A948" d="M540 1100 L488 1181 A96 96 0 0 1 452 1062Z"/>
+    <path fill="#8A6A9E" d="M540 1100 L452 1062 A96 96 0 0 1 540 1004Z"/>
+    <circle class="s" cx="540" cy="1100" r="96" fill="none"/>
+    <rect class="s" x="445" y="1232" width="190" height="60" rx="12" fill="#FFF8EC"/>
+    <text class="card" x="540" y="1273">Overview</text>
+
+    <!-- Reminders clock -->
+    <path class="s" d="M790 1210 L772 1260 M890 1210 L908 1260" fill="none" stroke-width="6"/>
+    <circle class="s" cx="782" cy="1030" r="30" fill="#E3A948"/>
+    <circle class="s" cx="898" cy="1030" r="30" fill="#E3A948"/>
+    <circle class="s" cx="840" cy="1110" r="96" fill="#FFF8EC"/>
+    <path class="ic" d="M840 1110 V1050 M840 1110 L878 1132"/>
+    <circle cx="840" cy="1110" r="7" fill="#5B3B2A"/>
+    <rect class="s" x="745" y="1232" width="190" height="60" rx="12" fill="#FFF8EC"/>
+    <text class="card" x="840" y="1273">Reminders</text>
+    <circle class="s" cx="925" cy="1012" r="26" fill="#C2453A"/>
+    <text x="925" y="1023" text-anchor="middle" class="hand" style="font-size:30px;font-weight:bold;fill:#FFF6EA">3</text>
+
+    <!-- PERIOD calendar -->
+    <path class="t" d="M160 1386 V1410"/>
+    <circle class="s" cx="160" cy="1384" r="9" fill="#D9694A"/>
+    <rect class="s" x="60" y="1410" width="200" height="210" rx="16" fill="#FFF8EC"/>
+    <rect x="63" y="1413" width="194" height="52" rx="13" fill="#D9694A"/>
+    <text x="160" y="1452" text-anchor="middle" class="hand" style="font-size:32px;font-weight:bold;fill:#FFF6EA">NOV</text>
+    <text x="160" y="1556" text-anchor="middle" class="hand" style="font-size:76px;font-weight:bold">11</text>
+    <text x="160" y="1600" text-anchor="middle" class="hand" style="font-size:22px;fill:#9A7A62">change period</text>
+
+    <!-- window, decorative -->
+    <circle cx="905" cy="1500" r="250" fill="url(#glow)"/>
+    <rect class="s" x="800" y="1380" width="210" height="230" rx="14" fill="#FFF4E4"/>
+    <rect x="814" y="1394" width="182" height="202" rx="8" fill="url(#sky)"/>
+    <circle cx="930" cy="1530" r="34" fill="#FFB27A"/>
+    <path class="t" d="M905 1394 V1596 M814 1495 H996"/>
+
+    <!-- girl in the armchair (decorative) -->
+    <g transform="translate(47.5 490) scale(1.25)">
+      <rect class="s" x="170" y="790" width="380" height="290" rx="80" fill="#E8957A"/>
+      <path class="t" opacity="0.5" d="M260 820 V1000 M360 812 V1000 M460 820 V1000"/>
+      <rect class="s" x="347" y="886" width="26" height="22" fill="#F2C6A0"/>
+      <path class="s" fill="#4E9A96" d="M280 1010 C276 936 292 902 330 897 L390 897 C428 902 444 936 440 1010Z"/>
+      <path class="t" stroke="#FFF6EA" d="M342 904 V932 M378 904 V932"/>
+      <path class="s" fill="#3F8682" d="M318 900 C330 918 390 918 402 900 C392 892 328 892 318 900Z"/>
+      <circle class="s" cx="360" cy="838" r="58" fill="#F2C6A0"/>
+      <path class="s" fill="#6B3F2A" d="M300 838 C290 768 430 766 420 838 C412 812 396 800 376 806 C366 796 340 794 328 808 C314 812 304 824 300 838Z"/>
+      <path class="s" fill="#6B3F2A" d="M342 784 C346 760 372 756 384 772 C374 770 362 774 356 786Z"/>
+      <path class="t" d="M326 830 q10 -5 20 0 M374 830 q10 -5 20 0"/>
+      <path class="t" d="M328 848 q10 9 20 0 M372 848 q10 9 20 0 M350 872 q10 8 20 0"/>
+      <circle cx="324" cy="866" r="8" fill="#F29C8F" opacity="0.5"/>
+      <circle cx="396" cy="866" r="8" fill="#F29C8F" opacity="0.5"/>
+      <path fill="none" stroke="#5B3B2A" stroke-width="16" stroke-linecap="round" d="M294 836 C290 760 430 760 426 836"/>
+      <path fill="none" stroke="#D9694A" stroke-width="10" stroke-linecap="round" d="M294 836 C290 760 430 760 426 836"/>
+      <ellipse class="s" cx="296" cy="846" rx="17" ry="27" fill="#D9694A"/>
+      <ellipse class="s" cx="424" cy="846" rx="17" ry="27" fill="#D9694A"/>
+      <path class="s" fill="#D9694A" d="M282 944 L360 966 L438 944 L438 1004 L360 1026 L282 1004Z"/>
+      <path class="s" fill="#FFF8EC" d="M290 938 L360 958 L430 938 L430 996 L360 1016 L290 996Z"/>
+      <path class="t" d="M360 958 V1016 M304 956 L344 968 M304 970 L344 982 M376 968 L416 956 M376 982 L416 970"/>
+      <circle class="s" cx="288" cy="976" r="14" fill="#F2C6A0"/>
+      <circle class="s" cx="432" cy="976" r="14" fill="#F2C6A0"/>
+      <text x="452" y="790" class="hand" style="font-size:40px;fill:#D9694A">♪</text>
+      <text x="236" y="770" class="hand" style="font-size:30px;fill:#4E9A96">♫</text>
+      <path class="s" fill="#F3C96B" d="M236 1004 C310 990 450 986 562 1002 L596 1112 C480 1134 300 1134 206 1112Z"/>
+      <path class="t" stroke="#E3A948" stroke-width="7" d="M226 1050 C330 1040 450 1040 576 1054 M216 1088 C330 1078 460 1080 588 1092"/>
+      <rect class="s" x="138" y="920" width="100" height="200" rx="40" fill="#F0A98F"/>
+      <rect class="s" x="518" y="920" width="100" height="200" rx="40" fill="#F0A98F"/>
+      <path class="s" stroke-width="10" d="M170 1122 L162 1160 M586 1122 L594 1160"/>
+    </g>
+
+    <!-- side table + mug -->
+    <path class="s" d="M920 1800 V1950 M886 1950 H954" fill="none" stroke-width="7"/>
+    <ellipse class="s" cx="920" cy="1798" rx="70" ry="17" fill="#B9794F"/>
+    <path class="s" fill="#FFF8EC" d="M896 1740 H942 V1782 C942 1790 934 1794 920 1794 C906 1794 896 1790 896 1782Z"/>
+    <path class="t" d="M942 1752 C960 1752 960 1774 942 1774"/>
+    <path class="t" opacity="0.6" d="M910 1728 c-8 -12 8 -18 0 -30 M928 1728 c-8 -12 8 -18 0 -30"/>
+    <path fill="#D9694A" d="M911 1764 c-4 -6 4 -10 8 -4 c4 -6 12 -2 8 4 l-8 8z"/>
+
+    <!-- sleeping cat: nothing due today -->
+    <g transform="translate(-640 790)">
+      <path class="s" fill="#E3A060" d="M790 1222 C860 1250 960 1230 950 1190 C940 1160 870 1150 820 1170 C790 1180 776 1206 790 1222Z"/>
+      <path class="s" fill="none" d="M946 1196 C990 1196 990 1236 950 1236 C930 1236 900 1236 870 1232"/>
+      <circle class="s" cx="806" cy="1190" r="32" fill="#E3A060"/>
+      <path class="s" fill="#E3A060" d="M782 1174 L780 1146 L800 1162Z M816 1160 L832 1144 L834 1172Z"/>
+      <path class="t" d="M792 1192 q6 5 12 0 M812 1192 q6 5 12 0"/>
+      <text x="840" y="1140" class="hand" style="font-size:28px">z</text>
+      <text x="866" y="1110" class="hand" style="font-size:22px">z</text>
+    </g>
+
+    <!-- tab bar, as in the app -->
+    <rect class="s" x="50" y="2110" width="980" height="170" rx="85" fill="#FFF8EC" fill-opacity="0.94"/>
+    <path class="ic" stroke="#D9694A" d="M130 2196 L160 2170 L190 2196 V2222 H130Z"/>
+    <text class="tab" x="160" y="2256" style="fill:#D9694A;font-weight:bold">Home</text>
+    <path class="ic" d="M310 2176 H360 M310 2196 H360 M310 2216 H360"/>
+    <text class="tab" x="335" y="2256">Activity</text>
+    <circle class="s" cx="540" cy="2195" r="66" fill="#D9694A"/>
+    <path stroke="#FFF6EA" stroke-width="9" stroke-linecap="round" d="M540 2165 V2225 M510 2195 H570"/>
+    <circle class="ic" cx="745" cy="2196" r="24"/><path class="ic" d="M745 2172 V2196 H769"/>
+    <text class="tab" x="745" y="2256">Overview</text>
+    <circle class="ic" cx="920" cy="2196" r="14"/><circle class="ic" cx="920" cy="2196" r="27" stroke-dasharray="9 7"/>
+    <text class="tab" x="920" y="2256">Settings</text>
+  </g>
+
+  <rect width="1080" height="2340" filter="url(#grain)" opacity="0.06" style="mix-blend-mode:multiply"/>
+
+  <!-- tap targets: shown only in the -taps render -->
+  <g id="hotspots" style="display:none" fill="#2F7BF6" fill-opacity="0.12" stroke="#2F7BF6" stroke-width="4" stroke-dasharray="14 8">
+    <rect id="hit-balance" x="86" y="196" width="908" height="228" rx="34"/>
+    <rect id="hit-expenses" x="88" y="494" width="214" height="372" rx="16"/>
+    <rect id="hit-income" x="318" y="494" width="214" height="372" rx="16"/>
+    <rect id="hit-bills" x="548" y="494" width="214" height="372" rx="16"/>
+    <rect id="hit-loans" x="778" y="494" width="214" height="372" rx="16"/>
+    <rect id="hit-savings" x="110" y="990" width="260" height="306" rx="16"/>
+    <rect id="hit-overview" x="410" y="990" width="260" height="306" rx="16"/>
+    <rect id="hit-reminders" x="710" y="990" width="260" height="306" rx="16"/>
+    <rect id="hit-period" x="54" y="1376" width="212" height="250" rx="16"/>
+  </g>
+</svg>
