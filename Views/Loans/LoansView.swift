@@ -337,53 +337,21 @@ struct LoanEditorView: View {
                     TextField("For example: Car loan", text: $name)
                         .focused($isNameFocused)
 
-                    HStack {
-                        Text("Borrowed amount")
-                        Spacer()
-                        TextField(
-                            "0",
-                            text: Binding(
-                                get: { initialInput },
-                                set: { initialInput = DecimalAmountValidator.sanitize($0) }
-                            )
-                        )
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                    }
+                    AmountFieldRow(title: "Borrowed amount", text: $initialInput)
                 }
 
                 Section {
-                    HStack {
-                        Text("Already paid")
-                        Spacer()
-                        TextField(
-                            "0",
-                            text: Binding(
-                                get: { paidInput },
-                                set: { paidInput = DecimalAmountValidator.sanitize($0) }
-                            )
-                        )
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                    }
+                    AmountFieldRow(title: "Already paid", text: $paidInput)
                 } footer: {
                     Text("What you had already repaid before tracking it here. It counts as paid without appearing as an expense.")
                 }
 
                 Section {
-                    HStack {
-                        Text("Monthly payment")
-                        Spacer()
-                        TextField(
-                            NSLocalizedString("Optional", comment: "Placeholder"),
-                            text: Binding(
-                                get: { monthlyInput },
-                                set: { monthlyInput = DecimalAmountValidator.sanitize($0) }
-                            )
-                        )
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                    }
+                    AmountFieldRow(
+                        title: "Monthly payment",
+                        text: $monthlyInput,
+                        placeholder: NSLocalizedString("Optional", comment: "Placeholder")
+                    )
 
                     DatePicker("Started", selection: $startDate, displayedComponents: [.date])
 

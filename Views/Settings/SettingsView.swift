@@ -115,6 +115,9 @@ struct SettingsView: View {
                     .onSubmit { viewModel.commitMonthStartDay() }
                     .accessibilityLabel(Text("Start day of the month"))
             }
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .contentShape(.rect)
+            .onTapGesture { isStartDayFocused = true }
 
             if let error = viewModel.monthStartDayError {
                 Text(error)

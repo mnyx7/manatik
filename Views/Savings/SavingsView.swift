@@ -295,35 +295,11 @@ struct SavingsGoalEditorView: View {
                     TextField("For example: New laptop", text: $name)
                         .focused($isNameFocused)
 
-                    HStack {
-                        Text("Target amount")
-                        Spacer()
-                        TextField(
-                            "0",
-                            text: Binding(
-                                get: { targetInput },
-                                set: { targetInput = DecimalAmountValidator.sanitize($0) }
-                            )
-                        )
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                    }
+                    AmountFieldRow(title: "Target amount", text: $targetInput)
                 }
 
                 Section {
-                    HStack {
-                        Text("Already saved")
-                        Spacer()
-                        TextField(
-                            "0",
-                            text: Binding(
-                                get: { openingInput },
-                                set: { openingInput = DecimalAmountValidator.sanitize($0) }
-                            )
-                        )
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                    }
+                    AmountFieldRow(title: "Already saved", text: $openingInput)
                 } footer: {
                     // Avoids inventing a past expense just to show a balance.
                     Text("Money you had put aside before tracking it here. It counts towards the goal without appearing as an expense.")

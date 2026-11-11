@@ -45,6 +45,9 @@ struct AmountEntrySheet: View {
                         .focused($isAmountFocused)
                         .accessibilityLabel(Text("Amount"))
                     }
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+                    .contentShape(.rect)
+                    .onTapGesture { isAmountFocused = true }
 
                     if let suggestedAmount, suggestedAmount > 0 {
                         Button {

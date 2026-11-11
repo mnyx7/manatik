@@ -209,7 +209,11 @@ struct TransactionFormView: View {
                 .focused($focusedField, equals: .amount)
                 .accessibilityLabel(Text("Amount"))
             }
-            .frame(maxWidth: .infinity)
+            // .fixedSize keeps the field only as wide as "0", so the whole row
+            // takes the tap and hands it to the field.
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .contentShape(.rect)
+            .onTapGesture { focusedField = .amount }
 
             Divider()
 
@@ -220,6 +224,9 @@ struct TransactionFormView: View {
                     .font(.footnote)
                     .lineLimit(1...2)
                     .focused($focusedField, equals: .note)
+                    .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
+                    .contentShape(.rect)
+                    .onTapGesture { focusedField = .note }
 
                 AttachmentButton(attachments: $viewModel.attachments)
             }

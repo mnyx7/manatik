@@ -62,6 +62,9 @@ struct ReminderEditorView: View {
                         .multilineTextAlignment(.trailing)
                         .focused($isAmountFocused)
                     }
+                    .frame(minHeight: AppTheme.minimumTapTarget)
+                    .contentShape(.rect)
+                    .onTapGesture { isAmountFocused = true }
 
                     Picker(selection: $categoryID) {
                         Text("None").tag(String?.none)
