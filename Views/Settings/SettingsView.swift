@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State var viewModel: SettingsViewModel
 
     @FocusState private var isStartDayFocused: Bool
+    @State private var isShowingCurrencyPicker = false
 
     var body: some View {
         Form {
@@ -88,18 +89,31 @@ struct SettingsView: View {
     private var generalSection: some View {
         Section {
             // Applied on selection; no confirmation step.
-            Picker(selection: Binding(
-                get: { viewModel.currency },
-                set: { viewModel.currency = $0 }
-            )) {
-                ForEach(Currency.allCases) { currency in
-                    Text("\(currency.rawValue) \u{2014} \(currency.localizedName)")
-                        .tag(currency)
-                }
+            Button {
+                isShowingCurrencyPicker = true
             } label: {
-                Text("Currency")
+                HStack {
+                    Text("Main currency")
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text("\(viewModel.currency.symbol) \(viewModel.currency.rawValue)")
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .frame(minHeight: AppTheme.minimumTapTarget)
+                .contentShape(.rect)
             }
-            .frame(minHeight: AppTheme.minimumTapTarget)
+            .buttonStyle(.plain)
+            .accessibilityValue(Text(viewModel.currency.localizedName))
+            .sheet(isPresented: $isShowingCurrencyPicker) {
+                CurrencyPickerView(
+                    title: "Main currency",
+                    selection: viewModel.currency,
+                    pinned: viewModel.store.pinnedCurrencies
+                ) { viewModel.currency = $0 }
+            }
 
             HStack {
                 Text("Start date of the month")
@@ -127,7 +141,7 @@ struct SettingsView: View {
         } header: {
             Text("General")
         } footer: {
-            Text("Changing the currency relabels existing amounts; it does not convert them.\n\nType the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.")
+            Text("New entries start in the main currency, and you can pick another one on each entry. Totals add up entries in the main currency; amounts are never converted.\n\nType the day your budgeting month begins, from 1 to 28. Days after 28 are not allowed because they do not exist in February.")
         }
     }
 
@@ -609,7 +623,7 @@ struct RecurringSeriesListView: View {
                             CurrencyFormatting.formatSigned(
                                 amount: series.amount,
                                 type: series.type,
-                                currency: store.state.settings.currency
+                                currency: series.currency ?? store.mainCurrency
                             )
                         )
                         .font(.subheadline.weight(.semibold))

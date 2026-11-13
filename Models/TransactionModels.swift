@@ -110,6 +110,9 @@ struct Transaction: Identifiable, Codable, Hashable {
     var savingsGoalID: UUID?
     /// Set when this entry is a payment against a loan.
     var loanID: UUID?
+    /// The currency the amount was entered in. Nil only in files written
+    /// before entries had their own currency; the store fills it in on load.
+    var currency: Currency?
 
     init(
         id: UUID = UUID(),
@@ -124,7 +127,8 @@ struct Transaction: Identifiable, Codable, Hashable {
         isFeatured: Bool = false,
         attachments: [Attachment] = [],
         savingsGoalID: UUID? = nil,
-        loanID: UUID? = nil
+        loanID: UUID? = nil,
+        currency: Currency? = nil
     ) {
         self.id = id
         self.amount = amount
@@ -139,6 +143,7 @@ struct Transaction: Identifiable, Codable, Hashable {
         self.attachments = attachments
         self.savingsGoalID = savingsGoalID
         self.loanID = loanID
+        self.currency = currency
     }
 
     var isSavingsContribution: Bool { savingsGoalID != nil }
@@ -147,7 +152,7 @@ struct Transaction: Identifiable, Codable, Hashable {
 
     enum CodingKeys: String, CodingKey {
         case id, amount, note, categoryID, type, date, createdAt, updatedAt, seriesID
-        case isFeatured, attachments, savingsGoalID, loanID
+        case isFeatured, attachments, savingsGoalID, loanID, currency
     }
 
     /// New fields decode permissively so files written by earlier versions keep
@@ -167,6 +172,9 @@ struct Transaction: Identifiable, Codable, Hashable {
         attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments) ?? []
         savingsGoalID = try container.decodeIfPresent(UUID.self, forKey: .savingsGoalID)
         loanID = try container.decodeIfPresent(UUID.self, forKey: .loanID)
+        // A malformed code leaves the entry in the default currency rather
+        // than failing the whole file.
+        currency = (try? container.decodeIfPresent(Currency.self, forKey: .currency)) ?? nil
     }
 }
 
@@ -189,6 +197,8 @@ struct RecurringSeries: Identifiable, Codable, Hashable {
     var materializedThrough: Date?
     let createdAt: Date
     var updatedAt: Date
+    /// See `Transaction.currency`; every row the series creates inherits it.
+    var currency: Currency?
 
     init(
         id: UUID = UUID(),
@@ -203,8 +213,10 @@ struct RecurringSeries: Identifiable, Codable, Hashable {
         skippedDays: Set<Date> = [],
         materializedThrough: Date? = nil,
         createdAt: Date = Date(),
-        updatedAt: Date = Date()
+        updatedAt: Date = Date(),
+        currency: Currency? = nil
     ) {
+        self.currency = currency
         self.id = id
         self.amount = amount
         self.note = note
@@ -240,6 +252,8 @@ struct TransactionOccurrence: Identifiable, Hashable {
     let attachmentCount: Int
     let savingsGoalID: UUID?
     let loanID: UUID?
+    /// Nil means the default currency from Settings.
+    let currency: Currency?
 
     init(
         id: String,
@@ -254,8 +268,10 @@ struct TransactionOccurrence: Identifiable, Hashable {
         isFeatured: Bool = false,
         attachmentCount: Int = 0,
         savingsGoalID: UUID? = nil,
-        loanID: UUID? = nil
+        loanID: UUID? = nil,
+        currency: Currency? = nil
     ) {
+        self.currency = currency
         self.id = id
         self.transactionID = transactionID
         self.seriesID = seriesID
@@ -282,6 +298,10 @@ struct TransactionOccurrence: Identifiable, Hashable {
     /// Signed contribution to a balance: income positive, expense negative.
     var signedAmount: Decimal {
         type == .income ? amount : -amount
+    }
+
+    func isIn(_ main: Currency) -> Bool {
+        (currency ?? main) == main
     }
 }
 
@@ -320,8 +340,9 @@ struct DailyTransactionSection: Identifiable, Hashable {
     let date: Date
     let items: [TransactionOccurrence]
 
-    var net: Decimal {
-        items.reduce(Decimal.zero) { $0 + $1.signedAmount }
+    /// Only entries in `currency` count; amounts are never converted.
+    func net(in currency: Currency) -> Decimal {
+        items.filter { $0.isIn(currency) }.reduce(Decimal.zero) { $0 + $1.signedAmount }
     }
 }
 

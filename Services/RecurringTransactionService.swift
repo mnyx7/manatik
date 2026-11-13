@@ -126,7 +126,8 @@ struct RecurringTransactionService: RecurringTransactionServicing {
                     categoryID: item.categoryID,
                     type: item.type,
                     date: date,
-                    isProjected: true
+                    isProjected: true,
+                    currency: item.currency
                 )
             }
         }

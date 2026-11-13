@@ -47,6 +47,7 @@ struct HomeView: View {
                         netBalance: summary.netBalance,
                         currency: currency,
                         hasProjections: summary.hasProjections,
+                        otherCurrencies: CurrencyFormatting.formatOthers(summary.otherCurrencies),
                         onOpen: onOpenActivities
                     )
 

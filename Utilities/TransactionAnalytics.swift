@@ -12,6 +12,10 @@ struct TransactionSummary: Hashable {
     /// How many of those rows are forecasts rather than recorded entries.
     let projectedTransactions: Int
 
+    /// Entries in other currencies, which the figures above leave out because
+    /// amounts are never converted.
+    var otherCurrencies: [CurrencyTotal] = []
+
     var hasProjections: Bool { projectedTransactions > 0 }
 
     static let empty = TransactionSummary(
@@ -23,6 +27,13 @@ struct TransactionSummary: Hashable {
         totalTransactions: 0,
         projectedTransactions: 0
     )
+}
+
+struct CurrencyTotal: Identifiable, Hashable {
+    var id: String { currency.rawValue }
+    let currency: Currency
+    let income: Decimal
+    let expense: Decimal
 }
 
 struct CategorySpending: Identifiable, Hashable {
@@ -83,6 +94,25 @@ enum TransactionAnalytics {
             totalTransactions: occurrences.count,
             projectedTransactions: projected
         )
+    }
+
+    /// Income and expense per currency other than `main`, largest first.
+    static func otherCurrencyTotals(
+        _ occurrences: [TransactionOccurrence],
+        main: Currency
+    ) -> [CurrencyTotal] {
+        var income: [Currency: Decimal] = [:]
+        var expense: [Currency: Decimal] = [:]
+        for item in occurrences {
+            guard let currency = item.currency, currency != main else { continue }
+            switch item.type {
+            case .income: income[currency, default: 0] += item.amount
+            case .expense: expense[currency, default: 0] += item.amount
+            }
+        }
+        return Set(income.keys).union(expense.keys)
+            .map { CurrencyTotal(currency: $0, income: income[$0] ?? 0, expense: expense[$0] ?? 0) }
+            .sorted { ($0.income + $0.expense) > ($1.income + $1.expense) }
     }
 
     /// Totals per category for one side of the ledger, with each one's share.

@@ -71,8 +71,8 @@ final class SettingsViewModel {
 
     // MARK: - Currency
 
-    /// Applied straight away. Switching only relabels amounts, which the note
-    /// under the picker says, so a confirmation step was just friction.
+    /// Applied straight away, with no confirmation step. Existing entries keep
+    /// their own currency; only new entries and the totals follow it.
     var currency: Currency {
         get { store.state.settings.currency }
         set { store.updateSettings(currency: newValue) }
@@ -259,7 +259,7 @@ final class SettingsViewModel {
         let others = preview.currencies.subtracting([currentCurrency.rawValue])
         if !others.isEmpty {
             parts.append(String(
-                format: NSLocalizedString("Amounts in %@ are added as they are, not converted.", comment: "CSV import summary"),
+                format: NSLocalizedString("Entries in %@ keep that currency and are not converted.", comment: "CSV import summary"),
                 others.sorted().joined(separator: ", ")
             ))
         }

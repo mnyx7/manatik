@@ -3,6 +3,7 @@ import SwiftUI
 struct TransactionRowView: View {
     let item: TransactionOccurrence
     let category: TransactionCategory
+    /// The main currency, used when the entry has none of its own.
     let currency: Currency
     /// Off when the surrounding list already groups rows under a day heading.
     var showsDate = true
@@ -45,7 +46,7 @@ struct TransactionRowView: View {
                     CurrencyFormatting.formatSigned(
                         amount: item.amount,
                         type: item.type,
-                        currency: currency
+                        currency: item.currency ?? currency
                     )
                 )
                 .font(.moneyMedium())
@@ -105,7 +106,7 @@ struct TransactionRowView: View {
             CurrencyFormatting.accessibleDescription(
                 amount: item.amount,
                 type: item.type,
-                currency: currency
+                currency: item.currency ?? currency
             )
         )
         parts.append(DateFormatting.shortDate(item.date))

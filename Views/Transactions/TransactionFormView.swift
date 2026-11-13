@@ -18,7 +18,7 @@ struct TransactionFormView: View {
         _viewModel = State(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
     }
 
-    private var currency: Currency { viewModel.store.state.settings.currency }
+    private var currency: Currency { viewModel.currency }
     private var accent: Color { AppTheme.accent(for: viewModel.type) }
 
     var body: some View {
@@ -108,6 +108,13 @@ struct TransactionFormView: View {
             .onChange(of: viewModel.type) { _, _ in
                 viewModel.handleTypeChange()
             }
+            .sheet(isPresented: $viewModel.isShowingCurrencyPicker) {
+                CurrencyPickerView(
+                    title: "Currency",
+                    selection: viewModel.currency,
+                    pinned: viewModel.store.pinnedCurrencies
+                ) { viewModel.currency = $0 }
+            }
             .sheet(isPresented: $viewModel.isShowingCategoryEditor) {
                 CategoryEditorView(suggestedKind: viewModel.type == .income ? .income : .expense) {
                     name, icon, kind in
@@ -191,9 +198,26 @@ struct TransactionFormView: View {
 
             // The amount is the reason the screen exists, so it gets the size.
             HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text(currency.symbol)
-                    .font(.title.weight(.medium))
-                    .foregroundStyle(.secondary)
+                // The symbol is the currency switch: one tap, no extra row.
+                Button {
+                    viewModel.isShowingCurrencyPicker = true
+                } label: {
+                    HStack(alignment: .firstTextBaseline, spacing: 2) {
+                        Text(currency.symbol)
+                            .font(.title.weight(.medium))
+                        if viewModel.canChangeCurrency {
+                            Image(systemName: "chevron.down")
+                                .font(.caption.weight(.bold))
+                        }
+                    }
+                    .foregroundStyle(viewModel.isInOtherCurrency ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget)
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .disabled(!viewModel.canChangeCurrency)
+                .accessibilityLabel(Text("Currency"))
+                .accessibilityValue(Text(currency.localizedName))
 
                 TextField(
                     "0",
@@ -215,6 +239,14 @@ struct TransactionFormView: View {
             .frame(maxWidth: .infinity, minHeight: 64)
             .contentShape(.rect)
             .onTapGesture { focusedField = .amount }
+
+            if viewModel.isInOtherCurrency {
+                Text("Kept in \(currency.rawValue). Totals add up \(viewModel.store.mainCurrency.rawValue) entries only.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .transition(.opacity)
+            }
 
             Divider()
 
@@ -239,6 +271,7 @@ struct TransactionFormView: View {
             }
         }
         .animation(.snappy, value: viewModel.attachments.count)
+        .animation(.snappy, value: viewModel.currency)
         .glassCard(tint: accent, tintOpacity: 0.09, padding: 16)
     }
 

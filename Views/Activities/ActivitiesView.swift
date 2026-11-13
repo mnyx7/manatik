@@ -112,8 +112,16 @@ struct ActivitiesView: View {
                         HStack {
                             Text(section.title)
                             Spacer()
-                            Text(CurrencyFormatting.format(amount: section.net, currency: currency))
-                                .foregroundStyle(AppTheme.netAccent(for: section.net))
+                            if section.items.contains(where: { $0.isIn(currency) }) {
+                                Text(CurrencyFormatting.format(amount: section.net(in: currency), currency: currency))
+                                    .foregroundStyle(AppTheme.netAccent(for: section.net(in: currency)))
+                            } else {
+                                // Only other currencies that day: a "₼0,00" would mislead.
+                                Text(CurrencyFormatting.formatOthers(
+                                    TransactionAnalytics.otherCurrencyTotals(section.items, main: currency)
+                                ))
+                                .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }

@@ -61,6 +61,16 @@ struct OverviewView: View {
                     )
                 }
 
+                if !summary.otherCurrencies.isEmpty {
+                    Label(
+                        "Not in these totals: \(CurrencyFormatting.formatOthers(summary.otherCurrencies))",
+                        systemImage: "dollarsign.arrow.circlepath"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 SpendingChartView(
                     points: store.dailySpend(in: period),
                     averagePerDay: summary.averageSpendingPerDay,

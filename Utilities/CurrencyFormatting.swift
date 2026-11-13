@@ -11,6 +11,9 @@ enum CurrencyFormatting {
 
     private static func formatter(for currency: Currency) -> NumberFormatter {
         let key = "\(currency.rawValue)|\(Locale.current.identifier)"
+        // Looked up before taking the lock: `symbol(for:)` takes it too, and
+        // NSLock is not reentrant.
+        let glyph = symbol(for: currency)
 
         lock.lock()
         defer { lock.unlock() }
@@ -23,11 +26,55 @@ enum CurrencyFormatting {
         formatter.numberStyle = .currency
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
+        formatter.currencySymbol = glyph
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         formatter.roundingMode = .halfUp
         formatters[key] = formatter
         return formatter
+    }
+
+    private static var symbols: [String: String] = [:]
+
+    /// See `Currency.symbol`. Cached because pickers ask for every currency.
+    static func symbol(for currency: Currency) -> String {
+        let key = "\(currency.rawValue)|\(Locale.current.identifier)"
+        lock.lock()
+        if let cached = symbols[key] {
+            lock.unlock()
+            return cached
+        }
+        lock.unlock()
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = .current
+        formatter.currencyCode = currency.rawValue
+        let value: String
+        if let local = formatter.currencySymbol, local != currency.rawValue {
+            value = local
+        } else {
+            value = Currency.nativeSymbols[currency.rawValue] ?? currency.rawValue
+        }
+
+        lock.lock()
+        symbols[key] = value
+        lock.unlock()
+        return value
+    }
+
+    /// Totals in other currencies, e.g. "+$200 · −€30", for the line under a
+    /// balance. Empty when everything is in the main currency.
+    static func formatOthers(_ others: [CurrencyTotal]) -> String {
+        others.map { total in
+            [
+                total.income > 0 ? formatSigned(amount: total.income, type: .income, currency: total.currency) : nil,
+                total.expense > 0 ? formatSigned(amount: total.expense, type: .expense, currency: total.currency) : nil
+            ]
+            .compactMap { $0 }
+            .joined(separator: " ")
+        }
+        .joined(separator: " \u{00B7} ")
     }
 
     static func format(amount: Decimal, currency: Currency) -> String {
@@ -49,6 +96,7 @@ enum CurrencyFormatting {
         formatter.numberStyle = .currency
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
+        formatter.currencySymbol = symbol(for: currency)
         formatter.maximumFractionDigits = 0
         formatter.roundingMode = .halfUp
         return formatter.string(from: NSDecimalNumber(decimal: amount))
@@ -85,6 +133,7 @@ enum CurrencyFormatting {
     static func invalidateCache() {
         lock.lock()
         formatters.removeAll()
+        symbols.removeAll()
         lock.unlock()
     }
 }

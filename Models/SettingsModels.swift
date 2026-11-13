@@ -1,29 +1,73 @@
 import Foundation
 
-enum Currency: String, Codable, CaseIterable, Identifiable {
-    case azn = "AZN"
-    case usd = "USD"
-    case eur = "EUR"
+/// An ISO 4217 currency, e.g. "AZN". Encoded as the bare code, which is what
+/// the old three-case enum wrote, so existing files decode unchanged.
+struct Currency: RawRepresentable, Codable, Hashable, Identifiable, Sendable {
+    let rawValue: String
+
+    nonisolated init?(rawValue: String) {
+        let code = rawValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard code.count == 3, code.allSatisfy({ $0.isASCII && $0.isLetter }) else { return nil }
+        self.rawValue = code
+    }
+
+    nonisolated private init(code: String) { rawValue = code }
+
+    static let azn = Currency(code: "AZN")
+    static let usd = Currency(code: "USD")
+    static let eur = Currency(code: "EUR")
 
     var id: String { rawValue }
 
-    /// Fallback glyph only. Normal formatting goes through `CurrencyFormatting`,
-    /// which renders the symbol using the device locale.
-    var symbol: String {
-        switch self {
-        case .azn: return "\u{20BC}"
-        case .usd: return "$"
-        case .eur: return "\u{20AC}"
+    init(from decoder: Decoder) throws {
+        let code = try decoder.singleValueContainer().decode(String.self)
+        guard let value = Currency(rawValue: code) else {
+            throw DecodingError.dataCorrupted(
+                .init(codingPath: decoder.codingPath, debugDescription: "Not a currency code: \(code)")
+            )
         }
+        self = value
     }
 
-    var localizedName: String {
-        switch self {
-        case .azn: return NSLocalizedString("Azerbaijani manat", comment: "Currency name")
-        case .usd: return NSLocalizedString("US dollar", comment: "Currency name")
-        case .eur: return NSLocalizedString("Euro", comment: "Currency name")
-        }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
     }
+
+    /// Every currency in current use, by name in the user's language.
+    static let allCases: [Currency] = Locale.commonISOCurrencyCodes
+        .compactMap(Currency.init(rawValue:))
+        .filter { Locale.current.localizedString(forCurrencyCode: $0.rawValue) != nil }
+        .sorted { $0.localizedName.localizedCaseInsensitiveCompare($1.localizedName) == .orderedAscending }
+
+    /// Offered first in pickers, after the user's own. The neighbours and
+    /// travel currencies someone budgeting in manat reaches for most.
+    static let suggested: [Currency] = ["AZN", "USD", "EUR", "RUB", "TRY", "GEL", "GBP", "AED"]
+        .compactMap(Currency.init(rawValue:))
+
+    /// The short glyph, e.g. "₼" or "₺". The device locale's own symbol wins,
+    /// because it keeps lookalikes apart ("CA$" next to "$"). When it only
+    /// knows the code ("AZN" on an English phone), the symbol comes from a
+    /// locale of the country that uses it.
+    var symbol: String { CurrencyFormatting.symbol(for: self) }
+
+    var localizedName: String {
+        Locale.current.localizedString(forCurrencyCode: rawValue) ?? rawValue
+    }
+
+    static let nativeSymbols: [String: String] = {
+        var symbols: [String: String] = ["AZN": "\u{20BC}"]
+        for identifier in Locale.availableIdentifiers {
+            let locale = Locale(identifier: identifier)
+            guard let code = locale.currency?.identifier,
+                  let symbol = locale.currencySymbol,
+                  symbol != code else { continue }
+            // Prefer the shortest, so "$" beats "US$".
+            if let existing = symbols[code], existing.count <= symbol.count { continue }
+            symbols[code] = symbol
+        }
+        return symbols
+    }()
 }
 
 struct AppSettings: Codable, Hashable {
@@ -156,6 +200,19 @@ struct AppState: Codable, Hashable {
 
     var isEmpty: Bool {
         transactions.isEmpty && recurringSeries.isEmpty
+    }
+
+    /// Files from before entries had their own currency were all in the one
+    /// Settings currency, so that is what their entries are pinned to. After
+    /// this, changing the Settings currency no longer relabels old entries.
+    mutating func pinUntaggedEntriesToMainCurrency() {
+        let main = settings.currency
+        for index in transactions.indices where transactions[index].currency == nil {
+            transactions[index].currency = main
+        }
+        for index in recurringSeries.indices where recurringSeries[index].currency == nil {
+            recurringSeries[index].currency = main
+        }
     }
 
     var hasAnythingAtAll: Bool {

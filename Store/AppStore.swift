@@ -12,6 +12,7 @@ struct TransactionDraft {
     var recurrenceEndDate: Date?
     var isFeatured: Bool = false
     var attachments: [Attachment] = []
+    var currency: Currency
 }
 
 struct MonthOverviewItem: Identifiable, Hashable {
@@ -91,6 +92,7 @@ final class AppStore {
 
         if let initialState {
             self.state = initialState
+            self.state.pinUntaggedEntriesToMainCurrency()
             return
         }
 
@@ -126,6 +128,7 @@ final class AppStore {
                 isBlocking: true
             )
         }
+        state.pinUntaggedEntriesToMainCurrency()
     }
 
     // MARK: - Categories
@@ -411,7 +414,8 @@ final class AppStore {
                     isFeatured: transaction.isFeatured,
                     attachmentCount: transaction.attachments.count,
                     savingsGoalID: transaction.savingsGoalID,
-                    loanID: transaction.loanID
+                    loanID: transaction.loanID,
+                    currency: transaction.currency
                 )
             }
 
@@ -433,10 +437,12 @@ final class AppStore {
     func summary(in interval: DateInterval) -> TransactionSummary {
         if let cached = summaryCache[interval] { return cached }
 
-        let value = TransactionAnalytics.summary(
-            occurrences: occurrences(in: interval),
+        let all = occurrences(in: interval)
+        var value = TransactionAnalytics.summary(
+            occurrences: all.filter { $0.isIn(mainCurrency) },
             elapsedDayCount: DateRangeCalculator.elapsedDayCount(for: interval, calendar: calendar)
         )
+        value.otherCurrencies = TransactionAnalytics.otherCurrencyTotals(all, main: mainCurrency)
         summaryCache[interval] = value
         return value
     }
@@ -449,7 +455,7 @@ final class AppStore {
         if let cached = categorySpendCache[key] { return cached }
 
         let value = TransactionAnalytics.categorySpending(
-            from: occurrences(in: interval),
+            from: occurrences(in: interval).filter { $0.isIn(mainCurrency) },
             categories: categories,
             type: type
         )
@@ -459,7 +465,7 @@ final class AppStore {
 
     func dailySpend(in interval: DateInterval) -> [DailySpendPoint] {
         TransactionAnalytics.dailySpend(
-            occurrences: occurrences(in: interval),
+            occurrences: occurrences(in: interval).filter { $0.isIn(mainCurrency) },
             in: interval,
             calendar: calendar
         )
@@ -499,6 +505,20 @@ final class AppStore {
         return items
     }
 
+    /// The currency from Settings: new entries start in it and totals add up
+    /// entries in it.
+    var mainCurrency: Currency { state.settings.currency }
+
+    /// The main currency, then others used before, most recent first.
+    var pinnedCurrencies: [Currency] {
+        var seen: Set<Currency> = [mainCurrency]
+        let used = state.transactions
+            .sorted { $0.date > $1.date }
+            .compactMap(\.currency)
+            .filter { seen.insert($0).inserted }
+        return [mainCurrency] + used.prefix(4)
+    }
+
     func series(for id: UUID?) -> RecurringSeries? {
         guard let id else { return nil }
         return state.series(id: id)
@@ -520,7 +540,8 @@ final class AppStore {
                 startDate: draft.date,
                 rule: draft.recurrenceRule,
                 endDate: draft.recurrenceEndDate,
-                materializedThrough: nil
+                materializedThrough: nil,
+                currency: draft.currency
             )
             state.recurringSeries.append(series)
             mutated()
@@ -536,7 +557,8 @@ final class AppStore {
             type: draft.type,
             date: draft.date,
             isFeatured: draft.isFeatured,
-            attachments: draft.attachments
+            attachments: draft.attachments,
+            currency: draft.currency
         )
         state.transactions.append(transaction)
         mutated()
@@ -571,7 +593,8 @@ final class AppStore {
                         date: draft.date,
                         seriesID: seriesID,
                         isFeatured: draft.isFeatured,
-                        attachments: draft.attachments
+                        attachments: draft.attachments,
+                        currency: draft.currency
                     )
                 )
                 mutated()
@@ -659,7 +682,8 @@ final class AppStore {
                     date: series.startDate,
                     seriesID: series.id,
                     isFeatured: draft.isFeatured,
-                    attachments: draft.attachments
+                    attachments: draft.attachments,
+                    currency: series.currency
                 )
             )
         }
@@ -685,6 +709,7 @@ final class AppStore {
         updated.date = draft.date
         updated.isFeatured = draft.isFeatured
         updated.attachments = draft.attachments
+        updated.currency = draft.currency
         updated.updatedAt = Date()
         if !keepSeriesLink {
             updated.seriesID = nil
@@ -723,7 +748,8 @@ final class AppStore {
             endDate: draft.recurrenceEndDate ?? original.endDate,
             isPaused: original.isPaused,
             skippedDays: original.skippedDays.filter { $0 >= day },
-            materializedThrough: calendar.date(byAdding: .day, value: -1, to: day)
+            materializedThrough: calendar.date(byAdding: .day, value: -1, to: day),
+            currency: draft.currency
         )
         state.recurringSeries.append(replacement)
 
@@ -741,7 +767,8 @@ final class AppStore {
                     date: draft.date,
                     seriesID: replacement.id,
                     isFeatured: draft.isFeatured,
-                    attachments: draft.attachments
+                    attachments: draft.attachments,
+                    currency: draft.currency
                 )
             )
         }
@@ -844,7 +871,8 @@ final class AppStore {
                 categoryID: DefaultCategories.savingsCategoryID,
                 type: .expense,
                 date: date,
-                savingsGoalID: goal.id
+                savingsGoalID: goal.id,
+                currency: mainCurrency
             )
         )
         refreshGoalCompletion()
@@ -963,7 +991,8 @@ final class AppStore {
                 categoryID: DefaultCategories.loanCategoryID,
                 type: .expense,
                 date: date,
-                loanID: loan.id
+                loanID: loan.id,
+                currency: mainCurrency
             )
         )
         refreshLoanClosure()
@@ -1047,7 +1076,8 @@ final class AppStore {
                         categoryID: series.categoryID,
                         type: series.type,
                         date: date,
-                        seriesID: series.id
+                        seriesID: series.id,
+                        currency: series.currency
                     )
                 )
             }
@@ -1183,7 +1213,9 @@ final class AppStore {
                     note: row.note,
                     categoryID: categoryID,
                     type: row.type,
-                    date: row.date
+                    date: row.date,
+                    // The file's own currency is kept, never converted.
+                    currency: Currency(rawValue: row.currency) ?? mainCurrency
                 )
             )
         }
@@ -1199,6 +1231,7 @@ final class AppStore {
     func applyImport(_ pending: PendingImport) -> URL? {
         let snapshot = try? persistence.writeSnapshot(state, tag: "before-import")
         state = pending.state
+        state.pinUntaggedEntriesToMainCurrency()
         isPersistenceSuspended = false
         mutated()
         materializeDueOccurrences()

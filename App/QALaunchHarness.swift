@@ -155,6 +155,18 @@ enum QALaunch {
             )
         )
 
+        // Paid abroad, so the other-currency line and row have something to show.
+        transactions.append(
+            Transaction(
+                amount: money("38"),
+                note: "Hotel, Tbilisi",
+                categoryID: "travel",
+                type: .expense,
+                date: daysAgo(0),
+                currency: .usd
+            )
+        )
+
         // Linked rows: the goal and loan figures derive from these.
         transactions.append(
             Transaction(

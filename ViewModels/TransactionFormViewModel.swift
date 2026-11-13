@@ -21,8 +21,11 @@ final class TransactionFormViewModel {
     /// Bookmarks the entry as a bill to find again later.
     var isFeatured: Bool = false
     var attachments: [Attachment] = []
+    /// Starts on the Settings currency; the entry keeps whatever is picked.
+    var currency: Currency
 
     var isShowingCategoryEditor = false
+    var isShowingCurrencyPicker = false
 
     /// Shown only after a failed save attempt, so the form does not scold the
     /// user while they are still typing.
@@ -36,6 +39,7 @@ final class TransactionFormViewModel {
     init(store: AppStore, mode: Mode) {
         self.store = store
         self.mode = mode
+        self.currency = store.mainCurrency
         configureInitialState()
     }
 
@@ -105,6 +109,12 @@ final class TransactionFormViewModel {
         return nil
     }
 
+    /// Savings and loan entries count towards a goal or loan, which are kept
+    /// in the main currency.
+    var canChangeCurrency: Bool { !isLinkedEntry }
+
+    var isInOtherCurrency: Bool { currency != store.mainCurrency }
+
     var canEditRecurrence: Bool {
         guard !isLinkedEntry else { return false }
         switch mode {
@@ -163,7 +173,8 @@ final class TransactionFormViewModel {
             recurrenceRule: isLinkedEntry ? .none : recurrenceRule,
             recurrenceEndDate: hasEndDate ? endDate : nil,
             isFeatured: isFeatured,
-            attachments: attachments
+            attachments: attachments,
+            currency: currency
         )
     }
 
@@ -198,7 +209,7 @@ final class TransactionFormViewModel {
             format: NSLocalizedString("Saved %@", comment: "Confirmation"),
             CurrencyFormatting.format(
                 amount: parsedAmount ?? 0,
-                currency: store.state.settings.currency
+                currency: currency
             )
         )
 
@@ -240,6 +251,7 @@ final class TransactionFormViewModel {
             type = occurrence.type
             date = occurrence.date
             isFeatured = occurrence.isFeatured
+            currency = occurrence.currency ?? store.mainCurrency
             attachments = store.transaction(id: occurrence.transactionID)?.attachments ?? []
 
             if let series = store.series(for: occurrence.seriesID) {

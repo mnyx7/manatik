@@ -11,6 +11,8 @@ struct HeroBalanceCardView: View {
     let netBalance: Decimal
     let currency: Currency
     let hasProjections: Bool
+    /// e.g. "+$200 · −€30": entries the figures leave out, never converted.
+    var otherCurrencies: String = ""
     /// Each part opens Activity on its slice: the balance on everything,
     /// In on income, Out on expenses.
     var onOpen: ((ActivityScope) -> Void)?
@@ -47,13 +49,21 @@ struct HeroBalanceCardView: View {
                     .moneyDigits()
                     .lineLimit(1)
                     .minimumScaleFactor(0.55)
+
+                if !otherCurrencies.isEmpty {
+                    Text("Also \(otherCurrencies)")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
             .onTapGesture { onOpen?(.all) }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(isNegative ? Text("Over budget") : Text("Left to spend"))
-            .accessibilityValue(netText)
+            .accessibilityValue(otherCurrencies.isEmpty ? netText : "\(netText), \(otherCurrencies)")
             .accessibilityAddTraits(onOpen == nil ? [] : .isButton)
             .accessibilityAction { onOpen?(.all) }
 
