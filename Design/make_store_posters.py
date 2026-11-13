@@ -61,7 +61,7 @@ def slide(name, line1, line2, sub, bg, accent, text):
     <rect x="{PX + 14}" y="{PY - 14}" width="{PHONE_W}" height="{PHONE_H}" rx="118" fill="none" stroke="{INK}" stroke-width="7"/>
   </g>
 
-  <text x="{W // 2}" y="150" text-anchor="middle" font-family="Avenir Next" font-weight="600" font-size="34" letter-spacing="10" fill="{text}">MANATIK</text>
+  <text x="{W // 2}" y="150" text-anchor="middle" font-family="Avenir Next" font-weight="600" font-size="34" letter-spacing="10" fill="{text}">MUNA</text>
   <text x="{W // 2}" y="340" text-anchor="middle" font-family="Didot" font-size="130" fill="{text}">{line1}</text>
   <text x="{W // 2}" y="480" text-anchor="middle" font-family="Didot" font-style="italic" font-size="130" fill="{text}">{line2}</text>
   <text x="{W // 2}" y="600" text-anchor="middle" font-family="Avenir Next" font-weight="600" font-size="34" letter-spacing="7" fill="{text}" opacity="0.85">{sub}</text>

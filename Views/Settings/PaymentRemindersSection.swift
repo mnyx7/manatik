@@ -10,7 +10,7 @@ struct PaymentRemindersSection: View {
         Section {
             if reminderScheduler.isBlockedInSystemSettings {
                 Label(
-                    "Notifications are turned off for manatik in iOS Settings.",
+                    "Notifications are turned off for muna in iOS Settings.",
                     systemImage: "bell.slash"
                 )
                 .font(.footnote)

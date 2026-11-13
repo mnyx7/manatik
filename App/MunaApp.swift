@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct ManatikApp: App {
+struct MunaApp: App {
     @State private var store = AppStore.makeForLaunch()
     @State private var reminderScheduler = ReminderScheduler()
     @State private var isShowingSplash = true

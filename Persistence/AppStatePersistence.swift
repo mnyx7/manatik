@@ -19,11 +19,11 @@ enum AppStatePersistenceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidFile:
-            return NSLocalizedString("This is not a valid manatik backup file.", comment: "Error")
+            return NSLocalizedString("This is not a valid muna backup file.", comment: "Error")
         case .unsupportedSchema(let version):
             return String(
                 format: NSLocalizedString(
-                    "This backup was made by a newer version of manatik (format %d). Update the app and try again.",
+                    "This backup was made by a newer version of muna (format %d). Update the app and try again.",
                     comment: "Error"
                 ),
                 version
@@ -54,6 +54,8 @@ final class AppStatePersistence: AppStatePersisting {
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
 
+    // Keeps the pre-rename name on purpose: renaming it would leave existing
+    // users' data behind in the old file.
     init(filename: String = "manatik-state.json") {
         let documents = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)
@@ -135,7 +137,7 @@ final class AppStatePersistence: AppStatePersisting {
 
     func writeSnapshot(_ state: AppState, tag: String) throws -> URL {
         let data = try encoder.encode(StateFile(state: state))
-        let url = directory.appendingPathComponent("manatik-\(tag)-\(Self.timestamp()).json")
+        let url = directory.appendingPathComponent("muna-\(tag)-\(Self.timestamp()).json")
         try data.write(to: url, options: .atomic)
         return url
     }
@@ -252,7 +254,7 @@ final class AppStatePersistence: AppStatePersisting {
     // MARK: - Helpers
 
     private func copyAside(data: Data, tag: String) throws -> URL {
-        let url = directory.appendingPathComponent("manatik-\(tag)-\(Self.timestamp()).json")
+        let url = directory.appendingPathComponent("muna-\(tag)-\(Self.timestamp()).json")
         try data.write(to: url, options: .atomic)
         return url
     }

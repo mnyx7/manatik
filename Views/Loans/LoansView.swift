@@ -365,7 +365,7 @@ struct LoanEditorView: View {
                 } header: {
                     Text("Optional")
                 } footer: {
-                    Text("Giving a monthly payment lets manatik estimate how many instalments are left and offer a monthly reminder.")
+                    Text("Giving a monthly payment lets muna estimate how many instalments are left and offer a monthly reminder.")
                 }
             }
             .navigationTitle(existing == nil ? "New Loan" : "Edit Loan")

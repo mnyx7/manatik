@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		AA0000000000000000000124 /* manatik.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = manatik.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000124 /* muna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = muna.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -16,7 +16,7 @@
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = AA0000000000000000000004 /* manatik */;
+			target = AA0000000000000000000004 /* muna */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -66,7 +66,7 @@
 		AA0000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000124 /* manatik.app */,
+				AA0000000000000000000124 /* muna.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -74,9 +74,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA0000000000000000000004 /* manatik */ = {
+		AA0000000000000000000004 /* muna */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000000000000000000000C /* Build configuration list for PBXNativeTarget "manatik" */;
+			buildConfigurationList = AA000000000000000000000C /* Build configuration list for PBXNativeTarget "muna" */;
 			buildPhases = (
 				AA0000000000000000000006 /* Sources */,
 				AA0000000000000000000007 /* Frameworks */,
@@ -99,9 +99,9 @@
 				AA0000000000000000000509 /* Utilities */,
 				AA000000000000000000050A /* Resources */,
 			);
-			name = manatik;
-			productName = manatik;
-			productReference = AA0000000000000000000124 /* manatik.app */;
+			name = muna;
+			productName = muna;
+			productReference = AA0000000000000000000124 /* muna.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -119,7 +119,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA0000000000000000000009 /* Build configuration list for PBXProject "manatik" */;
+			buildConfigurationList = AA0000000000000000000009 /* Build configuration list for PBXProject "muna" */;
 			compatibilityVersion = "Xcode 16.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -134,7 +134,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA0000000000000000000004 /* manatik */,
+				AA0000000000000000000004 /* muna */,
 			);
 		};
 /* End PBXProject section */
@@ -268,7 +268,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA0000000000000000000009 /* Build configuration list for PBXProject "manatik" */ = {
+		AA0000000000000000000009 /* Build configuration list for PBXProject "muna" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000000000000000000000A /* Debug */,
@@ -277,7 +277,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000000000000000000000C /* Build configuration list for PBXNativeTarget "manatik" */ = {
+		AA000000000000000000000C /* Build configuration list for PBXNativeTarget "muna" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000000000000000000000D /* Debug */,

@@ -1,4 +1,4 @@
-"""Builds the short manatik walkthrough deck (16:9) in the poster style.
+"""Builds the short muna walkthrough deck (16:9) in the poster style.
 
 Usage: python make_deck.py <screenshots dir> <app icon png> <output .pptx>
 Needs python-pptx (which brings Pillow).
@@ -142,7 +142,7 @@ circle(slide, 7.6, 0.9, 5.2, BUTTER)
 circle(slide, 7.72, 0.78, 5.2, BUTTER, outline=True)
 slide.shapes.add_picture(str(ICON), inches(8.6), inches(1.9), height=inches(3.2))
 text(slide, 0.8, 1.6, 7, 0.4, [caps("A cozy budget for manat")])
-text(slide, 0.8, 2.0, 7, 1.6, [[("manatik", SERIF, 88, False, INK)]])
+text(slide, 0.8, 2.0, 7, 1.6, [[("muna", SERIF, 88, False, INK)]])
 text(slide, 0.8, 3.7, 6.4, 1.6, [[("Track what you spend and earn, keep every bill, and watch savings grow. Everything stays on your iPhone.", SANS, 18, False, INK)]])
 rule(slide, 0.8, 6.6, 11.7)
 text(slide, 0.8, 6.7, 8, 0.4, [caps("How it works · Version 1.0", INK, 11)])

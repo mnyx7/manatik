@@ -1,2 +1,2 @@
-# manatik
+# muna
 Budget tracker

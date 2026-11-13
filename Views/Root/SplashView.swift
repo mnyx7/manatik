@@ -18,6 +18,7 @@ struct SplashView: View {
     @State private var sparklesIn = false
     @State private var twinkle = false
     @State private var nameIn = false
+    @State private var mottoIn = false
     @State private var leaving = false
 
     /// Where the stem meets the coin in the 1024pt artwork; the flower grows
@@ -53,17 +54,25 @@ struct SplashView: View {
                 }
                 .frame(width: 260, height: 260)
 
-                Text("manatik")
-                    .font(.custom("Didot", size: 40, relativeTo: .largeTitle).weight(.bold))
-                    .foregroundStyle(.primary)
-                    .opacity(nameIn ? 1 : 0)
-                    .offset(y: nameIn ? 0 : 12)
+                VStack(spacing: 6) {
+                    Text("muna")
+                        .font(.custom("Didot", size: 44, relativeTo: .largeTitle).weight(.bold))
+                        .foregroundStyle(.primary)
+                        .opacity(nameIn ? 1 : 0)
+                        .offset(y: nameIn ? 0 : 12)
+
+                    Text("money feels like home.")
+                        .font(.custom("Didot", size: 18, relativeTo: .subheadline).italic())
+                        .foregroundStyle(.secondary)
+                        .opacity(mottoIn ? 1 : 0)
+                        .offset(y: mottoIn ? 0 : 8)
+                }
             }
             .scaleEffect(leaving ? 1.08 : 1)
         }
         .opacity(leaving ? 0 : 1)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("manatik"))
+        .accessibilityLabel(Text("muna. money feels like home."))
         .task { await play() }
     }
 
@@ -83,8 +92,8 @@ struct SplashView: View {
 
     private func play() async {
         if reduceMotion {
-            circleIn = true; coinsIn = true; flowerIn = true; sparklesIn = true; nameIn = true
-            try? await Task.sleep(for: .seconds(0.9))
+            circleIn = true; coinsIn = true; flowerIn = true; sparklesIn = true; nameIn = true; mottoIn = true
+            try? await Task.sleep(for: .seconds(1.2))
             await leave()
             return
         }
@@ -97,9 +106,11 @@ struct SplashView: View {
         try? await Task.sleep(for: .seconds(0.4))
         withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) { sparklesIn = true }
         withAnimation(.easeOut(duration: 0.4).delay(0.1)) { nameIn = true }
+        withAnimation(.easeOut(duration: 0.5).delay(0.35)) { mottoIn = true }
         try? await Task.sleep(for: .seconds(0.45))
         withAnimation(.easeInOut(duration: 0.35).repeatCount(2, autoreverses: true)) { twinkle = true }
-        try? await Task.sleep(for: .seconds(0.75))
+        // A little longer than before, so the motto can be read.
+        try? await Task.sleep(for: .seconds(1.1))
         await leave()
     }
 

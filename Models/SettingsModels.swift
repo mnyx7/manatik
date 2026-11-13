@@ -148,7 +148,7 @@ struct FeedbackNote: Identifiable, Codable, Hashable {
 
     /// What gets shared: the note plus the context that makes it useful.
     var shareableText: String {
-        "\(text)\n\n---\nmanatik \(appVersion)\n\(DateFormatting.dayMonthYear(createdAt))"
+        "\(text)\n\n---\nmuna \(appVersion)\n\(DateFormatting.dayMonthYear(createdAt))"
     }
 }
 

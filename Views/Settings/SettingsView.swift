@@ -30,7 +30,7 @@ struct SettingsView: View {
             isPresented: $viewModel.isShowingExporter,
             document: viewModel.exportDocument,
             contentType: .json,
-            defaultFilename: "manatik-backup"
+            defaultFilename: "muna-backup"
         ) { result in
             viewModel.handleExportResult(result)
         }
@@ -277,7 +277,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section {
-            Text("manatik keeps your budget on this device only. Nothing is uploaded, so export a backup regularly.")
+            Text("muna keeps your budget on this device only. Nothing is uploaded, so export a backup regularly.")
                 .font(.footnote)
 
             Text(viewModel.appVersionText)
@@ -533,7 +533,7 @@ struct FeedbackView: View {
         Form {
             Section {
                 TextField(
-                    "What would make manatik better?",
+                    "What would make muna better?",
                     text: $viewModel.feedbackDraft,
                     axis: .vertical
                 )

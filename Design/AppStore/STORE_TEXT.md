@@ -1,4 +1,4 @@
-# manatik — App Store text
+# muna — App Store text
 
 Screenshots: `1-home.jpg` … `6-styles.jpg` in this folder, 1320 × 2868
 (the 6.9" iPhone size; App Store Connect scales them down for smaller
@@ -9,14 +9,14 @@ iPhones). Upload them in this order. Rebuild them with
 
 **English**
 
-Welcome to manatik 1.0.
+Welcome to muna 1.0.
 • Pick your home page: Classic, or a cozy illustrated room where every book on the shelf opens what it shows. Christmas rooms included.
 • Attach a bill photo or PDF to any entry and open it straight from Activity.
 • Savings goals, loans and payment reminders, all in one calm place.
 
 **Русский**
 
-Добро пожаловать в manatik 1.0.
+Добро пожаловать в muna 1.0.
 • Выберите главный экран: классический или уютную комнату, где каждая книга на полке открывает свой раздел. Есть и новогодние комнаты.
 • Прикрепляйте фото или PDF счёта к любой записи и открывайте его прямо из «Активности».
 • Цели накоплений, кредиты и напоминания о платежах — всё в одном спокойном месте.

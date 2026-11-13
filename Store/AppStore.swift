@@ -1308,7 +1308,7 @@ final class AppStore {
                 title: NSLocalizedString("Changes may not be saved", comment: "Alert title"),
                 message: String(
                     format: NSLocalizedString(
-                        "manatik could not write to storage: %@\n\nExport a backup from Settings before closing the app.",
+                        "muna could not write to storage: %@\n\nExport a backup from Settings before closing the app.",
                         comment: "Alert message"
                     ),
                     error.localizedDescription
