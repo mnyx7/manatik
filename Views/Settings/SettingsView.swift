@@ -277,6 +277,22 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Muna — A Softer Way to Save. ✨")
+                    .font(.custom("Didot", size: 22, relativeTo: .title3).weight(.bold))
+
+                Text("Inspired by **Money + Serenity**, Muna brings warmth, simplicity, and peace of mind to personal finance.")
+
+                Text("More than just tracking expenses, Muna is a cozy home for your money — a place where every penny feels valued, saving feels effortless, and financial wellbeing feels natural.")
+
+                Text("**Muna. Your money feels at home.**")
+                    .font(.custom("Didot", size: 17, relativeTo: .body).italic())
+                    .padding(.top, 2)
+            }
+            .font(.subheadline)
+            .padding(.vertical, 6)
+            .accessibilityElement(children: .combine)
+
             Text("muna keeps your budget on this device only. Nothing is uploaded, so export a backup regularly.")
                 .font(.footnote)
 
