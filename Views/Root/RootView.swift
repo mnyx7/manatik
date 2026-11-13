@@ -502,7 +502,7 @@ struct RootView: View {
         case "year": path = [.yearOverview]
         case "goal": path = [.savingsGoal(QALaunch.goalID)]
         case "loan": path = [.loanDetail(QALaunch.loanID)]
-        case "add": viewModel.isShowingAddSheet = true
+        case "add", "currency": viewModel.isShowingAddSheet = true
         case "reminders": path = [.reminders]
         case "categories": tab = .settings; path = [.categoryManager]
         case "bill":

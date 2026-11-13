@@ -11,6 +11,7 @@ struct CurrencyPickerView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
+    @FocusState private var isSearchFocused: Bool
 
     private var trimmedQuery: String {
         query.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -46,11 +47,9 @@ struct CurrencyPickerView: View {
                     ForEach(matches, content: row)
                 }
             }
-            .searchable(
-                text: $query,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: Text("Code or name")
-            )
+            // iOS 26 keeps search at the bottom, within thumb reach.
+            .safeAreaInset(edge: .bottom, spacing: 0) { searchBar }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -59,6 +58,57 @@ struct CurrencyPickerView: View {
                 }
             }
         }
+    }
+
+    private var searchBar: some View {
+        GlassEffectContainer(spacing: 10) {
+            HStack(spacing: 10) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                    TextField("Code or name", text: $query)
+                        .focused($isSearchFocused)
+                        .submitLabel(.search)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                    if !query.isEmpty {
+                        Button {
+                            query = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                                .frame(width: 32, height: 32)
+                                .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(Text("Clear search"))
+                    }
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 48)
+                .contentShape(.capsule)
+                .onTapGesture { isSearchFocused = true }
+                .glassEffect(.regular.interactive(), in: .capsule)
+
+                if isSearchFocused {
+                    Button {
+                        isSearchFocused = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.weight(.semibold))
+                            .frame(width: 48, height: 48)
+                    }
+                    .buttonStyle(.plain)
+                    .glassEffect(.regular.interactive(), in: .circle)
+                    .accessibilityLabel(Text("Close search"))
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 8)
+        .animation(.smooth(duration: 0.25), value: isSearchFocused)
     }
 
     private func row(_ currency: Currency) -> some View {

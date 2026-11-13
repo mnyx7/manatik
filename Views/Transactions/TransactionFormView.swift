@@ -72,6 +72,13 @@ struct TransactionFormView: View {
                 // A new entry starts with the amount, so open it straight away;
                 // the short wait lets the sheet finish presenting first.
                 guard viewModel.isAdding else { return }
+                #if DEBUG
+                if QALaunch.route == "currency" {
+                    try? await Task.sleep(for: .milliseconds(600))
+                    viewModel.isShowingCurrencyPicker = true
+                    return
+                }
+                #endif
                 try? await Task.sleep(for: .milliseconds(350))
                 focusedField = .amount
             }
@@ -202,22 +209,27 @@ struct TransactionFormView: View {
             .frame(maxWidth: .infinity)
 
             // The amount is the reason the screen exists, so it gets the size.
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                // The symbol is the currency switch: one tap, no extra row.
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                // The symbol reads as part of the amount, "₼60", and is also
+                // the currency switch: one tap, no extra row.
                 Button {
                     viewModel.isShowingCurrencyPicker = true
                 } label: {
-                    HStack(alignment: .firstTextBaseline, spacing: 2) {
-                        Text(currency.symbol)
-                            .font(.title.weight(.medium))
-                        if viewModel.canChangeCurrency {
-                            Image(systemName: "chevron.down")
-                                .font(.caption.weight(.bold))
+                    Text(currency.symbol)
+                        .font(.system(size: currency.symbol.count > 2 ? 30 : 42, weight: .bold, design: .rounded))
+                        .foregroundStyle(accent.opacity(0.8))
+                        .lineLimit(1)
+                        .overlay(alignment: .bottomTrailing) {
+                            if viewModel.canChangeCurrency {
+                                Image(systemName: "chevron.down")
+                                    .font(.system(size: 9, weight: .heavy))
+                                    .foregroundStyle(.secondary)
+                                    .offset(x: 9, y: -2)
+                            }
                         }
-                    }
-                    .foregroundStyle(viewModel.isInOtherCurrency ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
-                    .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget)
-                    .contentShape(.rect)
+                        .padding(.trailing, viewModel.canChangeCurrency ? 8 : 0)
+                        .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget, alignment: .trailing)
+                        .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
                 .disabled(!viewModel.canChangeCurrency)
