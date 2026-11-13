@@ -12,6 +12,7 @@ enum RootDestination: Hashable {
     case reminders
     case categoryManager
     case recurringSeries
+    case about
 }
 
 /// The app shell: content under a floating Liquid Glass bar carrying Home,
@@ -398,6 +399,8 @@ struct RootView: View {
             CategoryManagerView(viewModel: SettingsViewModel(store: store))
         case .recurringSeries:
             RecurringSeriesListView(store: store)
+        case .about:
+            AboutView()
         }
     }
 
@@ -502,6 +505,7 @@ struct RootView: View {
         case "add", "currency": viewModel.isShowingAddSheet = true
         case "reminders": path = [.reminders]
         case "categories": tab = .settings; path = [.categoryManager]
+        case "about": tab = .settings; path = [.about]
         case "usd":
             viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
                 .first { $0.currency == .usd }
