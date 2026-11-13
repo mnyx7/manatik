@@ -1,266 +1,301 @@
+//
+//  HomeView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
+/// The main page. Deliberately short: what is left, the goals and debts being
+/// worked on, a fast way to add something, and the latest few entries.
+///
+/// The period controls moved into the navigation bar. They used to take a whole
+/// content row of their own, and the range was then printed a second time
+/// inside the balance card directly below it.
 struct HomeView: View {
-    @StateObject var viewModel: HomeViewModel
+    @Environment(AppStore.self) private var store
+    @Bindable var viewModel: HomeViewModel
 
-    @State private var showingDateFilterSheet = false
-    @State private var showingPeriodPicker = false
-    @State private var quickAddCategoryID: String?
+    let onOpenActivities: (ActivityScope) -> Void
+    let onOpenSavings: () -> Void
+    let onOpenLoans: () -> Void
+    let onOpenGoal: (UUID) -> Void
+    let onOpenLoan: (UUID) -> Void
+
+    private let recentLimit = 4
+    private let carouselCardWidth: CGFloat = 268
+
+    private var period: DateInterval { store.selectedPeriod }
+    private var summary: TransactionSummary { store.summary(in: period) }
+    private var currency: Currency { store.state.settings.currency }
+
+    private var recentOccurrences: [TransactionOccurrence] {
+        Array(store.occurrences(in: period).prefix(recentLimit))
+    }
+
+    /// A brand new install: no entries, no goals, no loans. One clear next step
+    /// beats three competing "add something" prompts.
+    private var isFirstRun: Bool {
+        !store.hasAnyData
+            && store.activeSavingsGoals.isEmpty
+            && store.activeLoans.isEmpty
+    }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    periodHeader
-                    summaryCards
-                    savingsCard
-                    statsCard
-                    quickAddBar
-                    filterBar
-                    categoryTotals
-                    transactionsSection
-                }
-                .padding()
-            }
-            .background(AppTheme.groupedBackground)
-            .navigationTitle("manatik")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        viewModel.isShowingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
+                if isFirstRun {
+                    welcomeCard
                 }
 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        quickAddCategoryID = nil
-                        viewModel.editingTransactionID = nil
-                        viewModel.isShowingAddSheet = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $viewModel.isShowingAddSheet) {
-                TransactionFormView(
-                    viewModel: TransactionFormViewModel(
-                        store: viewModel.store,
-                        mode: .add(preselectedCategoryID: quickAddCategoryID)
-                    )
+                HeroBalanceCardView(
+                    income: summary.income,
+                    expense: summary.expense,
+                    netBalance: summary.netBalance,
+                    currency: currency,
+                    hasProjections: summary.hasProjections,
+                    otherCurrencies: CurrencyFormatting.formatOthers(summary.otherCurrencies),
+                    onOpen: onOpenActivities
                 )
+
+                quickAdd
+                savingsSection
+                loansSection
+                recentActivity
             }
-            .sheet(isPresented: $viewModel.isShowingSettings) {
-                SettingsView(viewModel: SettingsViewModel(store: viewModel.store))
+            .padding(.horizontal, AppTheme.pageHorizontalPadding)
+            .padding(.top, 4)
+        }
+        .scrollIndicators(.hidden)
+        // The bar floats over the page, so the last row needs room to clear it.
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
+        .navigationTitle(DateRangeCalculator.periodDisplayText(for: period))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { PeriodToolbar(store: store, viewModel: viewModel) }
+    }
+
+    // MARK: - First run
+
+    /// A short hello above the usual page on a brand new install. The page
+    /// itself stays complete, so savings, loans and quick add are visible
+    /// from the first launch.
+    private var welcomeCard: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Start with one entry")
+                    .font(.title3.weight(.semibold))
+                Text("Add something you spent or earned today. Savings goals and loans can wait until you want them.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .sheet(isPresented: $viewModel.isShowingYearlyOverview) {
-                YearlyOverviewView(
-                    viewModel: YearlyOverviewViewModel(
-                        store: viewModel.store,
-                        year: viewModel.store.selectedYear
-                    )
-                )
-            }
-            .sheet(isPresented: $showingDateFilterSheet) {
-                DateFilterSheetView(filter: $viewModel.filter)
-            }
-            .sheet(isPresented: $showingPeriodPicker) {
-                PeriodPickerSheet(
-                    selectedDate: viewModel.store.state.selectedPeriodAnchorDate,
-                    onSelect: { viewModel.setPeriodAnchorDate($0) }
-                )
-            }
-            .confirmationDialog(
-                "Delete this transaction?",
-                isPresented: Binding(
-                    get: { viewModel.pendingDeleteID != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            viewModel.pendingDeleteID = nil
-                        }
-                    }
-                ),
-                titleVisibility: .visible
-            ) {
-                Button("Delete", role: .destructive) {
-                    viewModel.deletePendingTransaction()
-                }
-                Button("Cancel", role: .cancel) {
-                    viewModel.pendingDeleteID = nil
-                }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .glassCard()
+    }
+
+    // MARK: - Quick add
+
+    private var quickAdd: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(title: "Quick add", actionTitle: nil, action: nil)
+
+            QuickAddBarView(categories: viewModel.quickAddCategories) { category in
+                viewModel.beginQuickAdd(category)
             }
         }
     }
 
-    private var periodHeader: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Button {
-                viewModel.isShowingYearlyOverview = true
-            } label: {
-                Text(viewModel.selectedYearText)
-                    .font(.title2.bold())
-            }
-            .buttonStyle(.plain)
+    // MARK: - Savings
 
-            Button {
-                showingPeriodPicker = true
-            } label: {
-                HStack(spacing: 6) {
-                    Text(viewModel.selectedPeriodText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .buttonStyle(.plain)
+    @ViewBuilder
+    private var savingsSection: some View {
+        let goals = store.activeSavingsGoals
 
-            HStack {
-                Button("Previous") { viewModel.movePeriod(by: -1) }
-                Spacer()
-                Button("Next") { viewModel.movePeriod(by: 1) }
-            }
-            .font(.footnote.weight(.medium))
-        }
-    }
-
-    private var summaryCards: some View {
-        let summary = viewModel.summary
-        return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-            SummaryCardView(
-                title: "Income",
-                value: viewModel.amountText(summary.income),
-                backgroundColor: AppTheme.incomeColor,
-                valueColor: .green
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(
+                title: "Savings",
+                actionTitle: goals.isEmpty ? nil : "All",
+                action: goals.isEmpty ? nil : onOpenSavings
             )
-            SummaryCardView(
-                title: "Expense",
-                value: viewModel.amountText(summary.expense),
-                backgroundColor: AppTheme.expenseColor,
-                valueColor: .red
-            )
-            SummaryCardView(
-                title: "Amount Left",
-                value: viewModel.amountText(summary.amountLeft),
-                backgroundColor: AppTheme.savingsColor,
-                valueColor: summary.amountLeft < 0 ? .red : .blue
-            )
-            SummaryCardView(
-                title: "Avg/day",
-                value: viewModel.amountText(summary.averageSpendingPerDay),
-                backgroundColor: Color(.secondarySystemBackground),
-                valueColor: .primary
-            )
-        }
-    }
 
-    private var savingsCard: some View {
-        let progress = viewModel.monthlySavingsProgress()
-        return SavingsGoalCardView(
-            currentText: viewModel.amountText(progress.current),
-            targetText: viewModel.amountText(progress.target),
-            progress: progress.progress
-        )
-    }
-
-    private var statsCard: some View {
-        let summary = viewModel.summary
-        return StatisticsCardView(
-            averagePerDay: viewModel.amountText(summary.averageSpendingPerDay),
-            biggestExpense: viewModel.amountText(summary.biggestExpense),
-            transactionCount: summary.totalTransactions,
-            amountLeft: viewModel.amountText(summary.amountLeft)
-        )
-    }
-
-    private var quickAddBar: some View {
-        QuickAddBarView(categories: viewModel.quickAddCategories) { category in
-            quickAddCategoryID = category.id
-            viewModel.isShowingAddSheet = true
-        }
-    }
-
-    private var filterBar: some View {
-        FilterBarView(
-            filter: $viewModel.filter,
-            categories: viewModel.store.categories,
-            onDateFilterTap: { showingDateFilterSheet = true }
-        )
-    }
-
-    private var categoryTotals: some View {
-        CategoryTotalsCardView(
-            totals: viewModel.categoryTotals,
-            amountText: viewModel.amountText
-        )
-    }
-
-    private var transactionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Transactions")
-                .font(.headline)
-
-            if viewModel.sections.isEmpty {
-                EmptyStateView(
-                    title: "No transactions",
-                    subtitle: "Tap + to add your first income or expense."
+            if goals.isEmpty {
+                promptCard(
+                    symbol: "target",
+                    tint: AppTheme.savingsAccent,
+                    title: "Set a savings goal",
+                    subtitle: "Track what you are putting aside.",
+                    action: { viewModel.newGoal() }
                 )
             } else {
-                ForEach(viewModel.sections) { section in
-                    Section {
-                        ForEach(section.items) { item in
-                            let category = DefaultCategories.category(for: item.categoryID)
-                            TransactionRowView(
-                                item: item,
-                                category: category,
-                                amountText: viewModel.amountText(item.amount)
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                viewModel.editingTransactionID = item.transactionID
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    viewModel.pendingDeleteID = item.transactionID
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                        }
-                    } header: {
-                        Text(section.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 8)
+                carousel {
+                    ForEach(goals) { progress in
+                        SavingsGoalCardView(
+                            progress: progress,
+                            currency: currency,
+                            onAddMoney: { viewModel.contributingGoal = progress.goal },
+                            onOpen: { onOpenGoal(progress.goal.id) }
+                        )
+                        .frame(width: carouselCardWidth)
                     }
                 }
-            }
-        }
-        .sheet(
-            isPresented: Binding(
-                get: { viewModel.editingTransactionID != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        viewModel.editingTransactionID = nil
-                    }
-                }
-            )
-        ) {
-            if let id = viewModel.editingTransactionID {
-                TransactionFormView(
-                    viewModel: TransactionFormViewModel(
-                        store: viewModel.store,
-                        mode: .edit(transactionID: id)
-                    )
-                )
             }
         }
     }
-}
 
-#Preview {
-    HomeView(viewModel: HomeViewModel(store: AppStore()))
+    // MARK: - Loans
+
+    @ViewBuilder
+    private var loansSection: some View {
+        let loans = store.activeLoans
+
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(
+                title: "Loans",
+                actionTitle: loans.isEmpty ? nil : "All",
+                action: loans.isEmpty ? nil : onOpenLoans
+            )
+
+            if loans.isEmpty {
+                promptCard(
+                    symbol: "building.columns",
+                    tint: AppTheme.loanAccent,
+                    title: "Track a loan",
+                    subtitle: "See what you borrowed, paid and still owe.",
+                    action: { viewModel.newLoan() }
+                )
+            } else {
+                carousel {
+                    ForEach(loans) { progress in
+                        LoanCardView(
+                            progress: progress,
+                            currency: currency,
+                            onRecordPayment: { viewModel.payingLoan = progress.loan },
+                            onOpen: { onOpenLoan(progress.loan.id) }
+                        )
+                        .frame(width: carouselCardWidth)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Recent
+
+    private var recentActivity: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(title: "Recent", actionTitle: "See all", action: { onOpenActivities(.all) })
+
+            if recentOccurrences.isEmpty {
+                EmptyStateView.emptyPeriod(
+                    isCurrent: store.isViewingCurrentPeriod,
+                    onGoToToday: { store.resetPeriodToToday() }
+                )
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(recentOccurrences) { item in
+                        Button {
+                            viewModel.editingOccurrence = item
+                        } label: {
+                            TransactionRowView(
+                                item: item,
+                                category: store.category(for: item.categoryID),
+                                currency: currency
+                            )
+                        }
+                        .buttonStyle(.plain)
+
+                        if item.id != recentOccurrences.last?.id {
+                            Divider().padding(.leading, 52)
+                        }
+                    }
+                }
+                .glassCard(padding: 14)
+            }
+        }
+    }
+
+    // MARK: - Building blocks
+
+    /// Horizontally paged cards, so several goals fit without pushing the rest
+    /// of the page down.
+    @ViewBuilder
+    private func carousel<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .top, spacing: 12) {
+                content()
+            }
+            .padding(.vertical, 2)
+            .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.viewAligned)
+        .scrollClipDisabled()
+    }
+
+    @ViewBuilder
+    private func promptCard(
+        symbol: String,
+        tint: Color,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: symbol)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 40, height: 40)
+                    .background(tint.opacity(0.16), in: AppTheme.innerShape)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "plus")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(tint)
+                    .accessibilityHidden(true)
+            }
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .interactiveGlassCard(tint: tint)
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func sectionHeader(
+        title: LocalizedStringKey,
+        actionTitle: LocalizedStringKey?,
+        action: (() -> Void)?
+    ) -> some View {
+        HStack {
+            Text(title)
+                .font(.sectionTitle())
+            Spacer()
+            if let actionTitle, let action {
+                Button(action: action) {
+                    HStack(spacing: 2) {
+                        Text(actionTitle)
+                            .font(.footnote.weight(.semibold))
+                        Image(systemName: "chevron.right")
+                            .font(.caption2.weight(.bold))
+                    }
+                    .frame(minHeight: 32)
+                }
+            }
+        }
+    }
 }

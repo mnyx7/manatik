@@ -1,101 +1,127 @@
+//
+//  YearlyOverviewView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 struct YearlyOverviewView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel: YearlyOverviewViewModel
+    @State var viewModel: YearlyOverviewViewModel
 
     private let grid = [GridItem(.flexible()), GridItem(.flexible())]
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: grid, spacing: 12) {
-                    ForEach(viewModel.months) { item in
-                        monthCard(item)
-                    }
+        ScrollView {
+            LazyVGrid(columns: grid, spacing: 12) {
+                ForEach(viewModel.months) { item in
+                    monthCard(item)
                 }
-                .padding()
             }
-            .background(AppTheme.groupedBackground)
-            .navigationTitle("Year Overview")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        viewModel.previousYear()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                    }
+            .padding()
+        }
+        .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
+        .navigationTitle(Text(verbatim: "\(viewModel.year)"))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    viewModel.previousYear()
+                } label: {
+                    Image(systemName: "chevron.left")
                 }
+                .disabled(!viewModel.canGoToPreviousYear)
+                .accessibilityLabel(Text("Previous year"))
 
-                ToolbarItem(placement: .principal) {
-                    Text("\(viewModel.year)")
-                        .font(.headline)
+                Button {
+                    viewModel.nextYear()
+                } label: {
+                    Image(systemName: "chevron.right")
                 }
-
-                ToolbarItem(placement: .topBarTrailing) {
-                    HStack {
-                        Button {
-                            viewModel.nextYear()
-                        } label: {
-                            Image(systemName: "chevron.right")
-                        }
-
-                        Button("Done") {
-                            dismiss()
-                        }
-                    }
-                }
+                .disabled(!viewModel.canGoToNextYear)
+                .accessibilityLabel(Text("Next year"))
             }
         }
     }
 
+    @ViewBuilder
     private func monthCard(_ item: MonthOverviewItem) -> some View {
         let isSelected = item.interval.start == viewModel.selectedInterval.start
+        let incomeText = CurrencyFormatting.format(amount: item.income, currency: viewModel.currency)
+        let expenseText = CurrencyFormatting.format(amount: item.expense, currency: viewModel.currency)
 
-        return Button {
+        Button {
             viewModel.select(month: item)
             dismiss()
         } label: {
             VStack(alignment: .leading, spacing: 8) {
-                Text(monthTitle(item.month))
-                    .font(.headline)
-
                 HStack {
-                    Text("Income")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(DateFormatting.monthName(item.month))
+                        .font(.headline)
                     Spacer()
-                    Text(CurrencyFormatting.format(amount: item.income, currency: viewModel.store.state.settings.currency))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.green)
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.tint)
+                            .accessibilityHidden(true)
+                    }
                 }
 
-                HStack {
-                    Text("Expense")
+                if item.hasActivity {
+                    figureRow(label: "Income", value: incomeText, accent: AppTheme.incomeAccent)
+                    figureRow(label: "Expense", value: expenseText, accent: AppTheme.expenseAccent)
+                } else {
+                    Text("No entries")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Text(CurrencyFormatting.format(amount: item.expense, currency: viewModel.store.state.settings.currency))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(.tertiary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 6)
                 }
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                isSelected ? AppTheme.savingsColor.opacity(0.45) : AppTheme.cardBackground,
-                in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                isSelected ? AppTheme.savingsSurface : AppTheme.cardBackground,
+                in: RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
             )
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(DateFormatting.monthName(item.month)))
+        .accessibilityValue(
+            item.hasActivity
+                ? String(
+                    format: NSLocalizedString("income %1$@, expense %2$@", comment: "Accessibility"),
+                    incomeText,
+                    expenseText
+                )
+                : NSLocalizedString("No entries", comment: "Accessibility")
+        )
+        .accessibilityHint(Text("Shows this month on the main page"))
     }
 
-    private func monthTitle(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        return formatter.monthSymbols[max(0, min(month - 1, 11))]
+    @ViewBuilder
+    private func figureRow(label: LocalizedStringKey, value: String, accent: Color) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 6)
+            Text(value)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(accent)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
 #Preview {
-    YearlyOverviewView(viewModel: YearlyOverviewViewModel(store: AppStore(), year: 2026))
+    NavigationStack {
+        YearlyOverviewView(
+            viewModel: YearlyOverviewViewModel(store: MockData.previewStore(), year: 2026)
+        )
+    }
 }

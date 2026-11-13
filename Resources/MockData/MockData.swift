@@ -1,20 +1,89 @@
+//
+//  MockData.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
+/// Sample data for SwiftUI previews. Not referenced by the shipping app.
 enum MockData {
-    static let sampleTransactions: [Transaction] = {
-        let calendar = Calendar.current
+    static func previewState(calendar: Calendar = .current) -> AppState {
         let now = Date()
+        func daysAgo(_ value: Int) -> Date {
+            calendar.date(byAdding: .day, value: -value, to: now) ?? now
+        }
 
-        let salaryDate = calendar.date(byAdding: .day, value: -10, to: now) ?? now
-        let rentDate = calendar.date(byAdding: .day, value: -7, to: now) ?? now
-        let groceriesDate = calendar.date(byAdding: .day, value: -2, to: now) ?? now
-        let coffeeDate = calendar.date(byAdding: .day, value: -1, to: now) ?? now
+        let salary = RecurringSeries(
+            amount: 3_200,
+            note: "Monthly salary",
+            categoryID: "salary",
+            type: .income,
+            startDate: daysAgo(40),
+            rule: .monthly
+        )
 
-        return [
-            Transaction(amount: 3_200, note: "Monthly salary", categoryID: "salary", type: .income, date: salaryDate, recurrenceRule: .monthly),
-            Transaction(amount: 900, note: "Apartment rent", categoryID: "rent", type: .expense, date: rentDate, recurrenceRule: .monthly),
-            Transaction(amount: 84.50, note: "Weekly groceries", categoryID: "groceries", type: .expense, date: groceriesDate, recurrenceRule: .weekly),
-            Transaction(amount: 4.20, note: "Morning coffee", categoryID: "cafe", type: .expense, date: coffeeDate, recurrenceRule: .daily)
+        let rent = RecurringSeries(
+            amount: 900,
+            note: "Apartment rent",
+            categoryID: "rent",
+            type: .expense,
+            startDate: daysAgo(37),
+            rule: .monthly
+        )
+
+        let transactions = [
+            Transaction(
+                amount: Decimal(string: "84.50") ?? 0,
+                note: "Weekly groceries",
+                categoryID: "groceries",
+                type: .expense,
+                date: daysAgo(2)
+            ),
+            Transaction(
+                amount: Decimal(string: "4.20") ?? 0,
+                note: "Morning coffee",
+                categoryID: "cafe",
+                type: .expense,
+                date: daysAgo(1)
+            ),
+            Transaction(
+                amount: Decimal(string: "22.00") ?? 0,
+                note: "Metro top-up",
+                categoryID: "transport",
+                type: .expense,
+                date: now
+            )
         ]
-    }()
+
+        return AppState(
+            transactions: transactions,
+            recurringSeries: [salary, rent],
+            settings: .default
+        )
+    }
+
+    static func previewStore() -> AppStore {
+        let store = AppStore(
+            persistence: InMemoryPersistence(),
+            initialState: previewState()
+        )
+        store.materializeDueOccurrences()
+        return store
+    }
+
+    static func previewOccurrence(projected: Bool) -> TransactionOccurrence {
+        TransactionOccurrence(
+            id: projected ? "preview-projected" : "preview-real",
+            transactionID: projected ? nil : UUID(),
+            seriesID: projected ? UUID() : nil,
+            amount: projected ? 900 : (Decimal(string: "84.50") ?? 0),
+            note: projected ? "Apartment rent" : "Weekly groceries",
+            categoryID: projected ? "rent" : "groceries",
+            type: .expense,
+            date: Date(),
+            isProjected: projected
+        )
+    }
 }

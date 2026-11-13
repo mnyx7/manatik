@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- muna app icon: one flower growing out of two manat coins, with two
+       sparkles. Each shape has a dark ink silhouette set a few pixels
+       down-right, like a slightly misregistered print, under flat soft
+       colour. Full-bleed square; iOS applies its own corner mask. -->
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <path id="coinLow" d="M292,770 A220,68 0 0 1 732,770 L732,816 A220,68 0 0 1 292,816 Z"/>
+    <path id="coinTop" d="M292,704 A220,68 0 0 1 732,704 L732,750 A220,68 0 0 1 292,750 Z"/>
+    <ellipse id="faceTop" cx="512" cy="704" rx="220" ry="68"/>
+
+    <path id="stem" d="M512,690 C496,600 498,500 512,400"/>
+    <path id="leaf" d="M508,580 C566,582 614,548 636,496 C574,494 526,528 508,580 Z"/>
+
+    <g id="petals">
+      <ellipse cx="512" cy="232" rx="66" ry="92"/>
+      <ellipse cx="512" cy="232" rx="66" ry="92" transform="rotate(72 512 324)"/>
+      <ellipse cx="512" cy="232" rx="66" ry="92" transform="rotate(144 512 324)"/>
+      <ellipse cx="512" cy="232" rx="66" ry="92" transform="rotate(216 512 324)"/>
+      <ellipse cx="512" cy="232" rx="66" ry="92" transform="rotate(288 512 324)"/>
+    </g>
+    <circle id="heart" cx="512" cy="324" r="52"/>
+
+    <path id="spark" d="M0,-1 Q0.12,-0.12 1,0 Q0.12,0.12 0,1 Q-0.12,0.12 -1,0 Q-0.12,-0.12 0,-1 Z"/>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#F7EADB"/>
+  <circle cx="512" cy="470" r="360" fill="#DDE9D3"/>
+
+  <g filter="url(#rough)" stroke-linejoin="round" stroke-linecap="round">
+    <!-- coins -->
+    <use xlink:href="#coinLow" transform="translate(8 8)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+    <use xlink:href="#coinLow" fill="#E2A845"/>
+    <use xlink:href="#coinTop" transform="translate(8 8)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+    <use xlink:href="#coinTop" fill="#E2A845"/>
+    <use xlink:href="#faceTop" fill="#F8D67F"/>
+    <g transform="translate(512 722) scale(1 0.42)" fill="none" stroke="#C98932" stroke-width="22">
+      <path d="M-66,42 C-66,-42 -36,-78 0,-78 C36,-78 66,-42 66,42"/>
+    </g>
+
+    <!-- stem and leaf -->
+    <use xlink:href="#stem" transform="translate(7 7)" fill="none" stroke="#3B2F2C" stroke-width="28"/>
+    <use xlink:href="#stem" fill="none" stroke="#7AA882" stroke-width="18"/>
+    <use xlink:href="#leaf" transform="translate(7 7)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="10"/>
+    <use xlink:href="#leaf" fill="#A3CBA4"/>
+
+    <!-- flower -->
+    <use xlink:href="#petals" transform="translate(8 8)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+    <use xlink:href="#petals" fill="#F6A9A0"/>
+    <use xlink:href="#heart" transform="translate(6 6)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="8"/>
+    <use xlink:href="#heart" fill="#F8D67F"/>
+
+    <!-- sparkles -->
+    <use xlink:href="#spark" transform="translate(262 322) scale(62)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.15"/>
+    <use xlink:href="#spark" transform="translate(256 316) scale(62)" fill="#F7C95A"/>
+    <use xlink:href="#spark" transform="translate(782 560) scale(42)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.2"/>
+    <use xlink:href="#spark" transform="translate(777 555) scale(42)" fill="#FFFFFF"/>
+  </g>
+</svg>

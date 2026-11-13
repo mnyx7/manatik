@@ -1,62 +1,131 @@
+//
+//  FilterBarView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
-struct FilterBarView: View {
+/// Filter controls as a toolbar menu.
+///
+/// The old inline filter bar sat mid-page inside a ScrollView, so it scrolled
+/// out of sight and the user could not tell a filter was still applied.
+struct FilterMenuContent: View {
     @Binding var filter: TransactionFilter
     let categories: [TransactionCategory]
-    let onDateFilterTap: () -> Void
+    let onEditDateRange: () -> Void
 
     var body: some View {
-        VStack(spacing: 10) {
-            TextField("Search note", text: $filter.searchText)
-                .textFieldStyle(.roundedBorder)
+        Group {
+            Picker(selection: $filter.type) {
+                Text("All types").tag(TransactionType?.none)
+                ForEach(TransactionType.allCases) { type in
+                    Text(type.localizedTitle).tag(TransactionType?.some(type))
+                }
+            } label: {
+                Text("Type")
+            }
 
-            HStack(spacing: 10) {
-                Menu {
-                    Button("All Categories") { filter.categoryID = nil }
-                    ForEach(categories) { category in
-                        Button("\(category.icon) \(category.name)") {
-                            filter.categoryID = category.id
-                        }
-                    }
+            Picker(selection: $filter.categoryID) {
+                Text("All categories").tag(String?.none)
+                ForEach(categories) { category in
+                    Label(
+                        category.localizedName,
+                        systemImage: CategoryVisuals.symbolName(for: category)
+                    )
+                    .tag(String?.some(category.id))
+                }
+            } label: {
+                Text("Category")
+            }
+
+            Button {
+                onEditDateRange()
+            } label: {
+                Label("Date range\u{2026}", systemImage: "calendar")
+            }
+
+            if filter.isActive {
+                Divider()
+                Button(role: .destructive) {
+                    filter = .empty
                 } label: {
-                    filterChip(title: selectedCategoryTitle)
-                }
-
-                Menu {
-                    Button("All Types") { filter.type = nil }
-                    ForEach(TransactionType.allCases) { type in
-                        Button(type.title) { filter.type = type }
-                    }
-                } label: {
-                    filterChip(title: filter.type?.title ?? "Type")
-                }
-
-                Button(action: onDateFilterTap) {
-                    filterChip(title: filter.dateInterval == nil ? "Date" : "Date ✓")
-                }
-
-                if filter.isActive {
-                    Button("Clear") {
-                        filter = .empty
-                    }
-                    .font(.caption.weight(.semibold))
+                    Label("Clear filters", systemImage: "xmark.circle")
                 }
             }
         }
     }
+}
 
-    private var selectedCategoryTitle: String {
-        guard let id = filter.categoryID else { return "Category" }
-        let category = categories.first(where: { $0.id == id }) ?? DefaultCategories.category(for: id)
-        return "\(category.icon) \(category.name)"
+/// A persistent, visible summary of what is currently being filtered.
+struct ActiveFilterSummaryView: View {
+    let filter: TransactionFilter
+    let intervalText: String?
+    let resultCount: Int
+    let onClear: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                    .foregroundStyle(.tint)
+                    .accessibilityHidden(true)
+
+                Text(
+                    String(
+                        format: NSLocalizedString("%d matching entries", comment: "Filter summary"),
+                        resultCount
+                    )
+                )
+                .font(.subheadline.weight(.medium))
+
+                Spacer(minLength: 8)
+
+                Button(role: .destructive) {
+                    onClear()
+                } label: {
+                    Text("Clear")
+                        .font(.footnote.weight(.semibold))
+                        .frame(minHeight: AppTheme.minimumTapTarget)
+                }
+            }
+
+            if let intervalText {
+                // Without this, a date range outside the browsed month looked
+                // like an empty month rather than a deliberate range.
+                Text(
+                    String(
+                        format: NSLocalizedString("Date range: %@", comment: "Filter summary"),
+                        intervalText
+                    )
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            if let descriptor = narrowingDescription {
+                Text(descriptor)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 
-    private func filterChip(title: String) -> some View {
-        Text(title)
-            .font(.caption.weight(.medium))
-            .lineLimit(1)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(Color(.secondarySystemBackground), in: Capsule())
+    private var narrowingDescription: String? {
+        var parts: [String] = []
+
+        if let type = filter.type {
+            parts.append(type.localizedTitle)
+        }
+        if let categoryID = filter.categoryID {
+            parts.append(DefaultCategories.category(for: categoryID).localizedName)
+        }
+        if !filter.trimmedSearchText.isEmpty {
+            parts.append("\u{201C}\(filter.trimmedSearchText)\u{201D}")
+        }
+
+        guard !parts.isEmpty else { return nil }
+        return parts.joined(separator: " \u{00B7} ")
     }
 }

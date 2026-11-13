@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 2340" width="1080" height="2340">
+  <!-- Same tap layout as home-cozy-shelf.svg: every #hit-* is 73pt or more. -->
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="4"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <pattern id="hatch" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="13" stroke="#1E2340" stroke-width="2.4"/>
+    </pattern>
+    <pattern id="hatchLight" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#FFFFFF" stroke-width="2.2" stroke-opacity="0.7"/>
+    </pattern>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="2.2" fill="#1E2340"/>
+    </pattern>
+    <pattern id="snow" width="70" height="70" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="14" r="4" fill="#F2EBE1"/><circle cx="48" cy="34" r="3" fill="#F2EBE1"/><circle cx="26" cy="58" r="2.5" fill="#F2EBE1"/>
+    </pattern>
+    <style>
+      .ink{stroke:#1E2340;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .inkb{stroke:#1E2340;stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .caps{font-family:'Avenir Next','Helvetica Neue',sans-serif;font-weight:600;letter-spacing:5px;fill:#1E2340}
+      .serif{font-family:Didot,'Bodoni 72','Playfair Display',serif;fill:#1E2340}
+    </style>
+  </defs>
+
+  <rect width="1080" height="2340" fill="#F2EBE1"/>
+
+  <g filter="url(#rough)">
+    <rect class="ink" x="30" y="30" width="1020" height="2280" rx="4" stroke-width="2"/>
+
+    <!-- masthead -->
+    <text x="70" y="112" class="caps" style="font-size:22px">MUNA</text>
+    <text x="1010" y="112" text-anchor="end" class="caps" style="font-size:22px">Nº 12 · DEC</text>
+    <path class="ink" stroke-width="2" d="M70 136 H1010"/>
+    <text x="540" y="186" text-anchor="middle" class="serif" style="font-size:30px;font-style:italic;fill:#D2654A">— merry &amp; bright —</text>
+
+    <!-- BALANCE -->
+    <text x="540" y="246" text-anchor="middle" class="caps" style="font-size:24px">LEFT THIS MONTH</text>
+    <text x="540" y="380" text-anchor="middle" class="serif" style="font-size:138px">1 240<tspan style="font-size:80px">,50</tspan><tspan dx="16" style="fill:#D2654A;font-size:96px">₼</tspan></text>
+    <path class="ink" d="M300 408 C360 398 420 418 480 408 C540 398 600 418 660 408 C720 398 780 418 800 410"/>
+    <g class="ink" stroke-width="2.5"><path d="M150 300 v34 M133 317 h34 M138 305 l24 24 M162 305 l-24 24"/><path d="M930 230 v24 M918 242 h24"/></g>
+
+    <!-- SHELF 1 -->
+    <rect x="70" y="866" width="940" height="16" fill="url(#hatch)"/>
+    <path class="inkb" d="M60 862 H1020"/>
+
+    <!-- Expenses -->
+    <rect x="95" y="500" width="200" height="362" fill="#D2654A"/>
+    <rect x="228" y="500" width="67" height="362" fill="url(#hatchLight)"/>
+    <rect class="ink" x="102" y="494" width="200" height="362"/>
+    <path class="inkb" d="M175 590 H215 V622 H175Z M184 590 C184 570 206 570 206 590"/>
+    <text x="195" y="720" text-anchor="middle" class="caps" style="font-size:22px;fill:#F2EBE1">EXPENSES</text>
+    <text x="195" y="790" text-anchor="middle" class="serif" style="font-size:46px;fill:#F2EBE1">1 960</text>
+    <!-- Income -->
+    <rect x="325" y="530" width="200" height="332" fill="#9DB89A"/>
+    <rect x="458" y="530" width="67" height="332" fill="url(#hatch)" opacity="0.35"/>
+    <rect class="ink" x="332" y="524" width="200" height="332"/>
+    <path class="inkb" d="M425 596 V632 M411 618 L425 632 L439 618 M403 636 V648 H447 V636"/>
+    <text x="425" y="740" text-anchor="middle" class="caps" style="font-size:22px">INCOME</text>
+    <text x="425" y="806" text-anchor="middle" class="serif" style="font-size:46px">3 650</text>
+    <!-- Bills -->
+    <rect x="555" y="510" width="200" height="352" fill="#F1D488"/>
+    <rect x="555" y="510" width="200" height="40" fill="url(#dots)" opacity="0.5"/>
+    <rect class="ink" x="562" y="504" width="200" height="352"/>
+    <path class="inkb" d="M631 604 H679 V638 H631Z M631 604 L655 624 L679 604"/>
+    <text x="655" y="730" text-anchor="middle" class="caps" style="font-size:22px">BILLS</text>
+    <text x="655" y="796" text-anchor="middle" class="serif" style="font-size:40px;font-style:italic">2 due</text>
+    <circle cx="732" cy="534" r="30" fill="#1E2340"/>
+    <text x="732" y="547" text-anchor="middle" class="serif" style="font-size:36px;fill:#F2EBE1">2</text>
+    <!-- Loans -->
+    <rect x="785" y="540" width="200" height="322" fill="#B9A6CF"/>
+    <rect x="918" y="540" width="67" height="322" fill="url(#hatch)" opacity="0.35"/>
+    <rect class="ink" x="792" y="534" width="200" height="322"/>
+    <path class="inkb" d="M859 636 L885 618 L911 636Z M869 642 V662 M885 642 V662 M901 642 V662 M859 668 H911"/>
+    <text x="885" y="742" text-anchor="middle" class="caps" style="font-size:22px">LOANS</text>
+    <path class="ink" d="M825 790 H945" opacity="0.5"/>
+    <path class="inkb" stroke-width="7" d="M825 790 H899"/>
+    <text x="885" y="836" text-anchor="middle" class="serif" style="font-size:34px;font-style:italic">62% paid</text>
+
+    <!-- SHELF 2 -->
+    <rect x="70" y="1304" width="940" height="16" fill="url(#hatch)"/>
+    <path class="inkb" d="M60 1300 H1020"/>
+
+    <!-- Savings: an arch that fills -->
+    <path fill="#9DB89A" d="M130 1300 V1110 A110 110 0 0 1 350 1110 V1300Z"/>
+    <rect x="130" y="1200" width="220" height="100" fill="#F1D488"/>
+    <rect x="130" y="1200" width="220" height="100" fill="url(#hatch)" opacity="0.25"/>
+    <path class="ink" d="M137 1294 V1104 A110 110 0 0 1 357 1104 V1294Z"/>
+    <path class="ink" stroke-dasharray="2 10" d="M130 1200 H350"/>
+    <text x="240" y="1112" text-anchor="middle" class="caps" style="font-size:20px">SAVINGS</text>
+    <text x="240" y="1176" text-anchor="middle" class="serif" style="font-size:52px">58%</text>
+    <text x="240" y="1268" text-anchor="middle" class="serif" style="font-size:30px;font-style:italic">₼ 2 300</text>
+
+    <!-- Overview -->
+    <path fill="#D2654A" d="M540 1090 L540 990 A100 100 0 0 1 635 1121Z"/>
+    <path fill="#9DB89A" d="M540 1090 L635 1121 A100 100 0 0 1 486 1174Z"/>
+    <path fill="#F1D488" d="M540 1090 L486 1174 A100 100 0 0 1 448 1050Z"/>
+    <path fill="#B9A6CF" d="M540 1090 L448 1050 A100 100 0 0 1 540 990Z"/>
+    <path fill="url(#hatch)" opacity="0.4" d="M540 1090 L486 1174 A100 100 0 0 1 448 1050Z"/>
+    <circle class="ink" cx="547" cy="1084" r="100"/>
+    <circle cx="540" cy="1090" r="30" fill="#F2EBE1"/>
+    <text x="540" y="1262" text-anchor="middle" class="caps" style="font-size:20px">OVERVIEW</text>
+
+    <!-- Reminders -->
+    <path fill="#1E2340" d="M770 1030 a28 28 0 0 1 48 -24Z M910 1030 a28 28 0 0 0 -48 -24Z"/>
+    <circle cx="840" cy="1090" r="100" fill="#F1D488"/>
+    <circle class="ink" cx="847" cy="1084" r="100"/>
+    <g class="ink" stroke-width="3"><path d="M840 1004 v12 M840 1164 v12 M754 1090 h12 M914 1090 h12"/></g>
+    <path class="inkb" stroke-width="6" d="M840 1090 V1036 M840 1090 L876 1112"/>
+    <circle cx="840" cy="1090" r="7" fill="#1E2340"/>
+    <path class="ink" d="M800 1196 L790 1220 M880 1196 L890 1220"/>
+    <text x="840" y="1262" text-anchor="middle" class="caps" style="font-size:20px">REMINDERS</text>
+    <circle cx="930" cy="1012" r="26" fill="#D2654A"/>
+    <text x="930" y="1024" text-anchor="middle" class="serif" style="font-size:32px;fill:#F2EBE1">3</text>
+
+    <!-- PERIOD -->
+    <rect x="60" y="1410" width="200" height="210" fill="#EDBFB3"/>
+    <rect x="60" y="1410" width="200" height="54" fill="#1E2340"/>
+    <rect class="ink" x="67" y="1404" width="200" height="210"/>
+    <text x="160" y="1447" text-anchor="middle" class="caps" style="font-size:24px;fill:#F2EBE1">DEC</text>
+    <text x="160" y="1572" text-anchor="middle" class="serif" style="font-size:104px">24</text>
+    <rect x="200" y="1580" width="60" height="40" fill="url(#hatch)" opacity="0.5"/>
+
+    <!-- sun behind her -->
+    <circle cx="560" cy="1660" r="290" fill="#4F7A5E" opacity="0.92"/>
+    <circle cx="560" cy="1660" r="290" fill="url(#snow)"/>
+    <circle class="ink" cx="572" cy="1650" r="290" stroke-width="2"/>
+    <circle cx="560" cy="1660" r="330" fill="none" stroke="#1E2340" stroke-width="2.5" stroke-dasharray="1 16" stroke-linecap="round"/>
+
+    <!-- Christmas tree, flat -->
+    <path fill="#3E6B4E" d="M846 1846 L1028 1846 L937 1716Z"/>
+    <path fill="#4F7A5E" d="M864 1752 L1010 1752 L937 1630Z"/>
+    <path fill="#5E8B6B" d="M884 1656 L990 1656 L937 1556Z"/>
+    <path fill="url(#hatch)" opacity="0.3" d="M937 1716 L1028 1846 L937 1846Z M937 1630 L1010 1752 L937 1752Z M937 1556 L990 1656 L937 1656Z"/>
+    <path class="ink" d="M853 1840 L944 1710 L1035 1840Z M871 1746 L944 1624 L1017 1746Z M891 1650 L944 1550 L997 1650Z"/>
+    <circle cx="892" cy="1828" r="10" fill="#D2654A"/><circle cx="980" cy="1810" r="10" fill="#F1D488"/>
+    <circle cx="912" cy="1736" r="9" fill="#F1D488"/><circle cx="966" cy="1720" r="9" fill="#D2654A"/>
+    <circle cx="937" cy="1640" r="8" fill="#F2EBE1"/>
+    <path fill="#F1D488" d="M937 1512 L947 1538 L974 1538 L952 1554 L960 1580 L937 1564 L914 1580 L922 1554 L900 1538 L927 1538Z"/>
+    <path class="ink" stroke-width="2.4" d="M941 1508 L951 1534 L978 1534 L956 1550 L964 1576 L941 1560 L918 1576 L926 1550 L904 1534 L931 1534Z"/>
+    <rect x="836" y="1832" width="64" height="50" fill="#D2654A"/>
+    <rect class="ink" x="842" y="1826" width="64" height="50" stroke-width="2.4"/>
+    <path stroke="#F2EBE1" stroke-width="6" d="M868 1832 V1882"/>
+    <rect x="968" y="1842" width="56" height="40" fill="#B9A6CF"/>
+    <rect x="968" y="1842" width="56" height="40" fill="url(#hatch)" opacity="0.3"/>
+    <rect class="ink" x="974" y="1836" width="56" height="40" stroke-width="2.4"/>
+
+    <!-- garlands, snow, the cat's scarf -->
+    <path class="ink" stroke-width="2" d="M80 890 Q195 934 310 892 Q425 934 540 892 Q655 934 770 892 Q885 934 1000 890"/>
+    <path class="ink" stroke-width="2" d="M80 1328 Q195 1370 310 1330 Q425 1370 540 1330 Q655 1370 770 1330 Q885 1370 1000 1328"/>
+    <g>
+      <circle cx="138" cy="912" r="10" fill="#D2654A"/><circle cx="252" cy="912" r="10" fill="#F1D488"/><circle cx="368" cy="912" r="10" fill="#9DB89A"/>
+      <circle cx="482" cy="912" r="10" fill="#D2654A"/><circle cx="598" cy="912" r="10" fill="#F1D488"/><circle cx="712" cy="912" r="10" fill="#9DB89A"/>
+      <circle cx="828" cy="912" r="10" fill="#D2654A"/><circle cx="942" cy="912" r="10" fill="#F1D488"/>
+      <circle cx="368" cy="1350" r="10" fill="#D2654A"/><circle cx="482" cy="1350" r="10" fill="#F1D488"/><circle cx="598" cy="1350" r="10" fill="#9DB89A"/>
+      <circle cx="712" cy="1350" r="10" fill="#D2654A"/><circle cx="828" cy="1350" r="10" fill="#F1D488"/>
+    </g>
+    <g class="ink" stroke-width="2.5">
+      <path d="M60 470 v26 M47 483 h26 M51 474 l18 18 M69 474 l-18 18"/>
+      <path d="M1030 960 v22 M1019 971 h22"/>
+      <path d="M44 980 v24 M32 992 h24 M36 984 l16 16 M52 984 l-16 16"/>
+      <path d="M300 1440 v20 M290 1450 h20"/>
+      <path d="M820 1460 v22 M809 1471 h22 M812 1463 l16 16 M828 1463 l-16 16"/>
+    </g>
+
+    <!-- her, flat -->
+    <g transform="translate(47.5 490) scale(1.25)">
+      <rect x="170" y="790" width="380" height="290" rx="90" fill="#D2654A"/>
+      <path class="ink" d="M176 870 C176 830 210 796 262 796 H460 C510 796 556 830 556 880" stroke-width="2.4"/>
+      <path fill="#1E2340" d="M296 880 C285 840 300 790 360 790 C420 790 436 840 424 880 C410 870 405 860 405 845 L315 845 C315 860 310 870 296 880Z"/>
+      <rect x="347" y="886" width="26" height="22" fill="#F6D9C4"/>
+      <path fill="#9DB4CB" d="M286 1010 C282 940 296 905 332 900 L388 900 C424 905 438 940 434 1010Z"/>
+      <path fill="url(#hatch)" opacity="0.3" d="M400 905 C424 910 438 940 434 1010 L400 1010Z"/>
+      <circle cx="360" cy="838" r="58" fill="#F6D9C4"/>
+      <path fill="#1E2340" d="M302 840 C296 772 424 772 418 840 C405 808 380 798 362 806 C342 796 312 808 302 840Z"/>
+      <circle cx="360" cy="764" r="30" fill="#1E2340"/>
+      <path fill="#C8463A" d="M302 812 C306 752 360 724 410 740 C440 750 458 772 466 800 L440 790 C426 770 410 762 396 760 C410 780 418 796 418 812Z"/>
+      <path class="ink" stroke-width="2.2" d="M306 808 C310 748 364 720 414 736 C444 746 462 768 470 796"/>
+      <path fill="#F2EBE1" d="M296 806 C330 794 390 794 424 806 C428 816 424 826 418 828 C390 818 330 818 302 828 C294 824 292 814 296 806Z"/>
+      <circle cx="468" cy="806" r="15" fill="#F2EBE1"/>
+      <circle class="ink" cx="471" cy="803" r="15" stroke-width="2"/>
+      <path class="ink" stroke-width="2.6" d="M330 848 q9 7 18 0 M374 848 q9 7 18 0 M352 872 q8 6 16 0"/>
+      <circle cx="324" cy="866" r="9" fill="#EDBFB3"/><circle cx="396" cy="866" r="9" fill="#EDBFB3"/>
+      <path fill="none" stroke="#1E2340" stroke-width="7" stroke-linecap="round" d="M294 836 C290 760 430 760 426 836"/>
+      <ellipse cx="296" cy="846" rx="17" ry="27" fill="#F1D488"/>
+      <ellipse cx="424" cy="846" rx="17" ry="27" fill="#F1D488"/>
+      <path class="ink" stroke-width="2.4" d="M300 822 a17 27 0 0 1 0 50 M428 822 a17 27 0 0 1 0 50"/>
+      <path fill="#F2EBE1" d="M290 938 L360 958 L430 938 L430 996 L360 1016 L290 996Z"/>
+      <path class="ink" stroke-width="2.4" d="M294 934 L364 954 L434 934 L434 992 L364 1012 L294 992Z M364 954 V1012 M308 954 L346 966 M308 968 L346 980 M380 966 L418 954 M380 980 L418 968"/>
+      <circle cx="288" cy="976" r="14" fill="#F6D9C4"/><circle cx="432" cy="976" r="14" fill="#F6D9C4"/>
+      <path fill="#EDBFB3" d="M236 1004 C310 990 450 986 562 1002 L596 1112 C480 1134 300 1134 206 1112Z"/>
+      <path fill="url(#hatch)" opacity="0.28" d="M236 1004 C310 990 450 986 562 1002 L596 1112 C480 1134 300 1134 206 1112Z"/>
+      <rect x="138" y="920" width="100" height="200" rx="44" fill="#E58A70"/>
+      <rect x="518" y="920" width="100" height="200" rx="44" fill="#E58A70"/>
+      <path class="ink" stroke-width="2.4" d="M144 1100 V964 C144 940 160 926 190 926 M524 1100 V964 C524 940 540 926 570 926"/>
+      <path stroke="#1E2340" stroke-width="6" stroke-linecap="round" d="M170 1122 L162 1160 M586 1122 L594 1160"/>
+      <path class="ink" stroke-width="2.4" d="M450 780 c10 -14 24 -2 34 -14 M470 750 c10 -14 24 -2 34 -14 M230 760 c-10 -12 -22 0 -32 -12"/>
+    </g>
+
+    <!-- floor -->
+    <path class="inkb" d="M50 1882 H1030"/>
+    <ellipse cx="560" cy="2010" rx="470" ry="80" fill="#EDBFB3"/>
+    <ellipse cx="560" cy="2010" rx="470" ry="80" fill="url(#hatch)" opacity="0.18"/>
+    <ellipse class="ink" cx="570" cy="2004" rx="470" ry="80" stroke-width="2"/>
+    <!-- cat -->
+    <path fill="#1E2340" d="M130 2040 C130 1990 170 1960 230 1960 C290 1960 330 1990 330 2040Z"/>
+    <path fill="#1E2340" d="M140 2000 L146 1960 L170 1984Z M200 1978 L220 1954 L230 1984Z"/>
+    <path stroke="#F2EBE1" stroke-width="3" stroke-linecap="round" fill="none" d="M160 2008 q7 5 14 0 M190 2008 q7 5 14 0"/>
+    <path class="ink" d="M330 2036 C370 2036 380 2000 350 1994"/>
+    <text x="250" y="1940" class="serif" style="font-size:30px;font-style:italic">z z</text>
+    <path fill="#D2654A" d="M150 1996 C176 2008 208 2006 232 1992 L236 2008 C210 2022 176 2022 148 2012Z M206 2010 L216 2042 L232 2036 L224 2006Z"/>
+
+    <!-- tab bar -->
+    <rect x="50" y="2110" width="980" height="170" rx="85" fill="#F2EBE1"/>
+    <rect class="ink" x="54" y="2106" width="980" height="170" rx="85" stroke-width="2.4"/>
+    <path class="inkb" stroke="#D2654A" d="M130 2196 L160 2170 L190 2196 V2222 H130Z"/>
+    <text x="160" y="2256" text-anchor="middle" class="caps" style="font-size:16px;fill:#D2654A">HOME</text>
+    <path class="inkb" d="M310 2176 H360 M310 2196 H360 M310 2216 H360"/>
+    <text x="335" y="2256" text-anchor="middle" class="caps" style="font-size:16px">ACTIVITY</text>
+    <circle cx="540" cy="2195" r="66" fill="#1E2340"/>
+    <path stroke="#F2EBE1" stroke-width="7" stroke-linecap="round" d="M540 2167 V2223 M512 2195 H568"/>
+    <circle class="inkb" cx="745" cy="2196" r="24"/><path class="inkb" d="M745 2172 V2196 H769"/>
+    <text x="745" y="2256" text-anchor="middle" class="caps" style="font-size:16px">OVERVIEW</text>
+    <circle class="inkb" cx="920" cy="2196" r="14"/><circle class="inkb" cx="920" cy="2196" r="27" stroke-dasharray="9 7"/>
+    <text x="920" y="2256" text-anchor="middle" class="caps" style="font-size:16px">SETTINGS</text>
+  </g>
+
+  <rect width="1080" height="2340" filter="url(#grain)" opacity="0.07" style="mix-blend-mode:multiply"/>
+
+  <g id="hotspots" style="display:none" fill="#2F7BF6" fill-opacity="0.12" stroke="#2F7BF6" stroke-width="4" stroke-dasharray="14 8">
+    <rect id="hit-balance" x="86" y="196" width="908" height="228" rx="34"/>
+    <rect id="hit-expenses" x="88" y="488" width="214" height="378" rx="16"/>
+    <rect id="hit-income" x="318" y="488" width="214" height="378" rx="16"/>
+    <rect id="hit-bills" x="548" y="488" width="214" height="378" rx="16"/>
+    <rect id="hit-loans" x="778" y="488" width="214" height="378" rx="16"/>
+    <rect id="hit-savings" x="110" y="980" width="260" height="316" rx="16"/>
+    <rect id="hit-overview" x="410" y="980" width="260" height="316" rx="16"/>
+    <rect id="hit-reminders" x="710" y="980" width="260" height="316" rx="16"/>
+    <rect id="hit-period" x="54" y="1396" width="220" height="230" rx="16"/>
+  </g>
+</svg>

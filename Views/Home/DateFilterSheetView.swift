@@ -1,3 +1,10 @@
+//
+//  DateFilterSheetView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 struct DateFilterSheetView: View {
@@ -10,35 +17,72 @@ struct DateFilterSheetView: View {
     init(filter: Binding<TransactionFilter>) {
         _filter = filter
         let interval = filter.wrappedValue.dateInterval
-        _startDate = State(initialValue: interval?.start ?? Date())
-        _endDate = State(initialValue: interval?.end ?? Date())
+        let fallbackStart = interval?.start ?? Date()
+        _startDate = State(initialValue: fallbackStart)
+        _endDate = State(
+            initialValue: interval.map {
+                Calendar.current.date(byAdding: .day, value: -1, to: $0.end) ?? $0.end
+            } ?? Date()
+        )
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                DatePicker("Start", selection: $startDate, displayedComponents: .date)
-                DatePicker("End", selection: $endDate, displayedComponents: .date)
-
-                Button("Apply") {
-                    let normalizedEnd = Calendar.current.date(byAdding: .day, value: 1, to: endDate) ?? endDate
-                    filter.dateInterval = DateInterval(start: min(startDate, endDate), end: max(normalizedEnd, startDate))
-                    dismiss()
+                Section {
+                    DatePicker("From", selection: $startDate, displayedComponents: .date)
+                    DatePicker("To", selection: $endDate, displayedComponents: .date)
+                } footer: {
+                    // Makes the override explicit. A range outside the selected
+                    // month used to return nothing, with no hint why.
+                    Text("A date range replaces the period shown on the main page, so you can search across months.")
                 }
 
-                if filter.dateInterval != nil {
-                    Button("Clear Date Filter", role: .destructive) {
-                        filter.dateInterval = nil
-                        dismiss()
+                Section {
+                    Button {
+                        apply()
+                    } label: {
+                        Text("Apply range")
+                            .frame(minHeight: AppTheme.minimumTapTarget)
+                    }
+
+                    if filter.dateInterval != nil {
+                        Button(role: .destructive) {
+                            filter.dateInterval = nil
+                            dismiss()
+                        } label: {
+                            Text("Clear date range")
+                                .frame(minHeight: AppTheme.minimumTapTarget)
+                        }
                     }
                 }
             }
-            .navigationTitle("Date Filter")
+            .navigationTitle("Date Range")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") { dismiss() }
                 }
             }
         }
+    }
+
+    private func apply() {
+        let calendar = Calendar.current
+        let lower = min(startDate, endDate)
+        let upper = max(startDate, endDate)
+
+        // End is exclusive internally, so the chosen last day is included.
+        let exclusiveEnd = calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: calendar.startOfDay(for: upper)
+        ) ?? upper
+
+        filter.dateInterval = DateInterval(
+            start: calendar.startOfDay(for: lower),
+            end: exclusiveEnd
+        )
+        dismiss()
     }
 }
