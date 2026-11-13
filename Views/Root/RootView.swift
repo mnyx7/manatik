@@ -505,6 +505,9 @@ struct RootView: View {
         case "add", "currency": viewModel.isShowingAddSheet = true
         case "reminders": path = [.reminders]
         case "categories": tab = .settings; path = [.categoryManager]
+        case "usd":
+            viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
+                .first { $0.currency == .usd }
         case "bill":
             viewModel.editingOccurrence = store.occurrences(in: store.selectedPeriod)
                 .first { $0.transactionID == QALaunch.billTransactionID }

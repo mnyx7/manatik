@@ -4,10 +4,17 @@ import SwiftUI
 struct ManatikApp: App {
     @State private var store = AppStore.makeForLaunch()
     @State private var reminderScheduler = ReminderScheduler()
+    @State private var isShowingSplash = true
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            ZStack {
+                RootView()
+                if isShowingSplash {
+                    SplashView { isShowingSplash = false }
+                        .zIndex(1)
+                }
+            }
                 .environment(store)
                 .environment(reminderScheduler)
                 .task {

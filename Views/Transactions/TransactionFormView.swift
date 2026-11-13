@@ -230,20 +230,21 @@ struct TransactionFormView: View {
                 Button {
                     viewModel.isShowingCurrencyPicker = true
                 } label: {
-                    Text(currency.symbol)
-                        .font(.system(size: currency.symbol.count > 2 ? 30 : 42, weight: .bold, design: .rounded))
-                        .foregroundStyle(accent.opacity(0.8))
-                        .lineLimit(1)
-                        .overlay(alignment: .bottomTrailing) {
-                            if viewModel.canChangeCurrency {
-                                Image(systemName: "chevron.down")
-                                    .font(.system(size: 9, weight: .heavy))
-                                    .foregroundStyle(.secondary)
-                                    .offset(x: 9, y: -2)
-                            }
+                    // The chevron sits beside the symbol, centred on it, so it
+                    // lands in the same place for "₼" and for "US$".
+                    HStack(alignment: .center, spacing: 4) {
+                        Text(currency.symbol)
+                            .font(.system(size: currency.symbol.count > 2 ? 30 : 42, weight: .bold, design: .rounded))
+                            .foregroundStyle(accent.opacity(0.8))
+                            .lineLimit(1)
+                            .fixedSize()
+                        if viewModel.canChangeCurrency {
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 12, weight: .heavy))
+                                .foregroundStyle(.secondary)
                         }
-                        .padding(.trailing, viewModel.canChangeCurrency ? 8 : 0)
-                        .padding(.leading, 4)
+                    }
+                    .padding(.leading, 4)
                         .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
                         .contentShape(.rect)
                 }
