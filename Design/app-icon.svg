@@ -1,56 +1,180 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <!-- manatik app icon: a savings arch with the manat sign, under a low sun.
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- manatik app icon: flowers growing out of a small stack of manat coins,
+       with a few sparkles. Each object is a dark ink silhouette set a few
+       pixels down-right, with its flat colour on top, like a slightly
+       misregistered print. Drawn back to front so only outer edges show.
        Full-bleed square; iOS applies its own corner mask. -->
   <defs>
     <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
-    <filter id="grain">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"/>
-      <feColorMatrix type="saturate" values="0"/>
-    </filter>
-    <pattern id="hatch" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <line x1="0" y1="0" x2="0" y2="22" stroke="#1E2340" stroke-width="4.5"/>
+    <pattern id="hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="#B97A27" stroke-width="3.5" opacity="0.4"/>
     </pattern>
-    <clipPath id="archClip">
-      <path d="M262 870 V560 A250 250 0 0 1 762 560 V870Z"/>
-    </clipPath>
+    <pattern id="hatchLeaf" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#4F7F59" stroke-width="3" opacity="0.35"/>
+    </pattern>
+
+    <!-- coins: whole coin silhouette (side band + top face), and top face -->
+    <path id="coin1" d="M296,790 A200,62 0 0 1 696,790 L696,834 A200,62 0 0 1 296,834 Z"/>
+    <ellipse id="face1" cx="496" cy="790" rx="200" ry="62"/>
+    <path id="coin2" d="M330,736 A200,62 0 0 1 730,736 L730,780 A200,62 0 0 1 330,780 Z"/>
+    <ellipse id="face2" cx="530" cy="736" rx="200" ry="62"/>
+    <path id="coin3" d="M308,682 A200,62 0 0 1 708,682 L708,726 A200,62 0 0 1 308,726 Z"/>
+    <ellipse id="face3" cx="508" cy="682" rx="200" ry="62"/>
+
+    <path id="stemMain" d="M505,676 C482,600 486,460 505,330"/>
+    <path id="stemDaisy" d="M590,680 C630,620 670,560 706,500"/>
+    <path id="stemBud" d="M428,680 C405,630 380,585 362,528"/>
+
+    <path id="leafL" d="M494,600 C440,598 400,566 382,522 C436,520 478,550 494,600 Z"/>
+    <path id="leafR" d="M500,530 C548,530 586,504 604,468 C558,466 516,490 500,530 Z"/>
+    <path id="leafBud" d="M404,628 C356,632 326,612 308,582 C348,575 386,592 404,628 Z"/>
+
+    <g id="petals">
+      <ellipse cx="505" cy="232" rx="50" ry="68"/>
+      <ellipse cx="505" cy="232" rx="50" ry="68" transform="rotate(60 505 300)"/>
+      <ellipse cx="505" cy="232" rx="50" ry="68" transform="rotate(120 505 300)"/>
+      <ellipse cx="505" cy="232" rx="50" ry="68" transform="rotate(180 505 300)"/>
+      <ellipse cx="505" cy="232" rx="50" ry="68" transform="rotate(240 505 300)"/>
+      <ellipse cx="505" cy="232" rx="50" ry="68" transform="rotate(300 505 300)"/>
+    </g>
+    <circle id="heart" cx="505" cy="300" r="40"/>
+
+    <g id="daisyPetals">
+      <ellipse cx="714" cy="436" rx="16" ry="34"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(45 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(90 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(135 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(180 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(225 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(270 714 470)"/>
+      <ellipse cx="714" cy="436" rx="16" ry="34" transform="rotate(315 714 470)"/>
+    </g>
+    <circle id="daisyHeart" cx="714" cy="470" r="20"/>
+
+    <path id="bud" d="M326,528 C320,486 336,452 360,438 C384,452 400,486 394,528 Q360,546 326,528 Z"/>
+
+    <path id="spark" d="M0,-1 Q0.12,-0.12 1,0 Q0.12,0.12 0,1 Q-0.12,0.12 -1,0 Q-0.12,-0.12 0,-1 Z"/>
   </defs>
 
-  <rect width="1024" height="1024" fill="#F2EBE1"/>
+  <!-- ground -->
+  <rect width="1024" height="1024" fill="#F7EADB"/>
+  <circle cx="512" cy="480" r="370" fill="#DDE9D3"/>
 
-  <g filter="url(#rough)">
-    <!-- sun -->
-    <circle cx="690" cy="330" r="200" fill="#F1D488"/>
-    <circle cx="704" cy="318" r="200" fill="none" stroke="#1E2340" stroke-width="5"/>
+  <g filter="url(#rough)" stroke-linejoin="round" stroke-linecap="round">
 
-    <!-- arch -->
-    <path d="M262 870 V560 A250 250 0 0 1 762 560 V870Z" fill="#D2654A"/>
-    <rect x="560" y="300" width="220" height="580" fill="url(#hatch)" opacity="0.32" clip-path="url(#archClip)"/>
-    <path d="M276 856 V546 A250 250 0 0 1 776 546 V856Z" fill="none" stroke="#1E2340" stroke-width="7"/>
-
-    <!-- manat sign -->
-    <path d="M378 760 V610 A134 134 0 0 1 646 610 V760" fill="none" stroke="#F2EBE1" stroke-width="58" stroke-linecap="round"/>
-    <path d="M512 420 V760" fill="none" stroke="#F2EBE1" stroke-width="58" stroke-linecap="round"/>
-
-    <!-- ground line with hatching -->
-    <rect x="150" y="884" width="724" height="30" fill="url(#hatch)" opacity="0.55"/>
-    <path d="M130 876 H894" stroke="#1E2340" stroke-width="9" stroke-linecap="round"/>
-
-    <!-- sage leaf -->
-    <path d="M800 870 C770 790 790 710 850 668 C880 740 862 820 800 870Z" fill="#9DB89A"/>
-    <path d="M806 864 C830 790 842 730 850 676" fill="none" stroke="#1E2340" stroke-width="5" stroke-linecap="round"/>
-
-    <!-- decoration -->
-    <g stroke="#1E2340" stroke-width="6" stroke-linecap="round">
-      <path d="M210 250 v54 M183 277 h54 M191 258 l38 38 M229 258 l-38 38"/>
-      <path d="M180 470 h30 M196 455 v30"/>
+    <!-- coins, bottom to top: ink silhouette, colour, hatched side, face -->
+    <g>
+      <use xlink:href="#coin1" transform="translate(7 7)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+      <use xlink:href="#coin1" fill="#E2A845"/>
+      <use xlink:href="#coin1" fill="url(#hatch)"/>
+      <use xlink:href="#face1" fill="#F5CE6E"/>
+      <use xlink:href="#face1" fill="none" stroke="#3B2F2C" stroke-width="5" opacity="0.55"/>
     </g>
-    <g fill="#1E2340">
-      <circle cx="300" cy="380" r="7"/><circle cx="332" cy="356" r="6"/><circle cx="268" cy="410" r="5"/>
+    <g>
+      <use xlink:href="#coin2" transform="translate(7 7)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+      <use xlink:href="#coin2" fill="#E2A845"/>
+      <use xlink:href="#coin2" fill="url(#hatch)"/>
+      <use xlink:href="#face2" fill="#F5CE6E"/>
+      <use xlink:href="#face2" fill="none" stroke="#3B2F2C" stroke-width="5" opacity="0.55"/>
+    </g>
+    <g>
+      <use xlink:href="#coin3" transform="translate(7 7)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+      <use xlink:href="#coin3" fill="#E2A845"/>
+      <use xlink:href="#coin3" fill="url(#hatch)"/>
+      <use xlink:href="#face3" fill="#F8D67F"/>
+      <ellipse cx="508" cy="682" rx="164" ry="48" fill="none" stroke="#E2A845" stroke-width="8"/>
+      <!-- manat sign engraved on the top face -->
+      <g transform="translate(508 700) scale(1 0.42)" fill="none" stroke="#C98932" stroke-width="20" stroke-linecap="round">
+        <path d="M-62,40 C-62,-40 -34,-74 0,-74 C34,-74 62,-40 62,40"/>
+        <path d="M0,-108 L0,40"/>
+      </g>
+    </g>
+
+    <!-- stems, sprouting from the top coin -->
+    <g fill="none">
+      <g transform="translate(6 6)" stroke="#3B2F2C" stroke-width="24">
+        <use xlink:href="#stemMain"/>
+        <use xlink:href="#stemDaisy"/>
+        <use xlink:href="#stemBud"/>
+      </g>
+      <g stroke="#7AA882" stroke-width="15">
+        <use xlink:href="#stemMain"/>
+        <use xlink:href="#stemDaisy"/>
+        <use xlink:href="#stemBud"/>
+      </g>
+    </g>
+
+    <!-- leaves -->
+    <g>
+      <use xlink:href="#leafL" transform="translate(6 6)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="10"/>
+      <use xlink:href="#leafL" fill="#94C19B"/>
+      <use xlink:href="#leafL" fill="url(#hatchLeaf)"/>
+      <path d="M492,598 C455,570 422,545 392,526" fill="none" stroke="#5E8C66" stroke-width="5"/>
+
+      <use xlink:href="#leafR" transform="translate(6 6)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="10"/>
+      <use xlink:href="#leafR" fill="#A9CFA8"/>
+      <path d="M502,528 C535,512 568,492 596,472" fill="none" stroke="#5E8C66" stroke-width="5"/>
+
+      <use xlink:href="#leafBud" transform="translate(6 6)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="10"/>
+      <use xlink:href="#leafBud" fill="#94C19B"/>
+      <use xlink:href="#leafBud" fill="url(#hatchLeaf)"/>
+    </g>
+
+    <!-- tulip bud -->
+    <use xlink:href="#bud" transform="translate(6 6)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="10"/>
+    <use xlink:href="#bud" fill="#EE8E80"/>
+    <path d="M360,446 C354,474 355,504 362,532" fill="none" stroke="#D6705F" stroke-width="6"/>
+
+    <!-- daisy -->
+    <use xlink:href="#daisyPetals" transform="translate(5 5)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="9"/>
+    <use xlink:href="#daisyPetals" fill="#FFFAF2"/>
+    <use xlink:href="#daisyHeart" transform="translate(4 4)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="6"/>
+    <use xlink:href="#daisyHeart" fill="#F2B84B"/>
+
+    <!-- main flower -->
+    <use xlink:href="#petals" transform="translate(7 7)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="12"/>
+    <use xlink:href="#petals" fill="#F6A9A0"/>
+    <!-- soft crease down each petal -->
+    <g stroke="#E48C82" stroke-width="5" fill="none" opacity="0.8">
+      <path d="M505,180 L505,240"/>
+      <path d="M505,180 L505,240" transform="rotate(60 505 300)"/>
+      <path d="M505,180 L505,240" transform="rotate(120 505 300)"/>
+      <path d="M505,180 L505,240" transform="rotate(180 505 300)"/>
+      <path d="M505,180 L505,240" transform="rotate(240 505 300)"/>
+      <path d="M505,180 L505,240" transform="rotate(300 505 300)"/>
+    </g>
+    <use xlink:href="#heart" transform="translate(5 5)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="8"/>
+    <use xlink:href="#heart" fill="#F8D67F"/>
+    <g fill="#C98932">
+      <circle cx="492" cy="290" r="6.5"/>
+      <circle cx="518" cy="292" r="6.5"/>
+      <circle cx="504" cy="314" r="6.5"/>
+    </g>
+
+    <!-- sparkles -->
+    <g>
+      <use xlink:href="#spark" transform="translate(268 300) scale(56)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.16"/>
+      <use xlink:href="#spark" transform="translate(262 294) scale(56)" fill="#F7C95A"/>
+      <use xlink:href="#spark" transform="translate(800 258) scale(44)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.2"/>
+      <use xlink:href="#spark" transform="translate(794 252) scale(44)" fill="#FFFFFF"/>
+      <use xlink:href="#spark" transform="translate(834 646) scale(30)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.28"/>
+      <use xlink:href="#spark" transform="translate(830 642) scale(30)" fill="#F7C95A"/>
+      <use xlink:href="#spark" transform="translate(206 492) scale(24)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.34"/>
+      <use xlink:href="#spark" transform="translate(202 488) scale(24)" fill="#FFFFFF"/>
+      <use xlink:href="#spark" transform="translate(660 178) scale(20)" fill="#3B2F2C" stroke="#3B2F2C" stroke-width="0.4"/>
+      <use xlink:href="#spark" transform="translate(657 175) scale(20)" fill="#F7C95A"/>
     </g>
   </g>
 
-  <rect width="1024" height="1024" filter="url(#grain)" opacity="0.06" style="mix-blend-mode:multiply"/>
+  <!-- sparkle dust -->
+  <g fill="#F2B84B">
+    <circle cx="338" cy="210" r="7"/>
+    <circle cx="742" cy="330" r="6"/>
+    <circle cx="868" cy="452" r="5"/>
+    <circle cx="168" cy="372" r="5"/>
+    <circle cx="186" cy="640" r="4"/>
+  </g>
 </svg>
