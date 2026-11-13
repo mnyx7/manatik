@@ -57,6 +57,7 @@ struct SavingsView: View {
             .padding()
         }
         .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle("Savings")
     }
 
@@ -128,6 +129,7 @@ struct SavingsGoalDetailView: View {
             }
         }
         .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle(store.state.savingsGoal(id: goalID)?.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
     }

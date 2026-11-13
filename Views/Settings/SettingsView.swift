@@ -18,6 +18,7 @@ struct SettingsView: View {
             feedbackSection
             aboutSection
         }
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -381,6 +382,7 @@ struct CategoryManagerView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle("My Categories")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -562,6 +564,7 @@ struct RecurringSeriesListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle("Repeating Entries")
     }
 

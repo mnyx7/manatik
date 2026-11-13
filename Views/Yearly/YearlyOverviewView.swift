@@ -16,6 +16,7 @@ struct YearlyOverviewView: View {
             .padding()
         }
         .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle(Text(verbatim: "\(viewModel.year)"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

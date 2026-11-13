@@ -63,6 +63,7 @@ struct LoansView: View {
             .padding()
         }
         .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle("Loans")
     }
 
@@ -124,6 +125,7 @@ struct LoanDetailView: View {
             }
         }
         .background(AppTheme.pageBackground)
+        .contentMargins(.bottom, AppTheme.tabBarClearance, for: .scrollContent)
         .navigationTitle(store.state.loan(id: loanID)?.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
     }
