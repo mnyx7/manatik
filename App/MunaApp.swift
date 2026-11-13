@@ -5,6 +5,7 @@ struct MunaApp: App {
     @State private var store = AppStore.makeForLaunch()
     @State private var reminderScheduler = ReminderScheduler()
     @State private var isShowingSplash = true
+    @State private var links = AppLinks()
 
     var body: some Scene {
         WindowGroup {
@@ -17,7 +18,21 @@ struct MunaApp: App {
             }
                 .environment(store)
                 .environment(reminderScheduler)
+                .environment(links)
+                .onOpenURL { url in
+                    // From the widget the user wants the form, not the
+                    // splash, so skip straight to it.
+                    if links.handle(url) { isShowingSplash = false }
+                }
                 .task {
+                    #if DEBUG
+                    // `-qa-open-url muna://add` runs a link through the same
+                    // path a widget tap takes.
+                    if let link = QALaunch.value(for: "-qa-open-url"), let url = URL(string: link),
+                       links.handle(url) {
+                        isShowingSplash = false
+                    }
+                    #endif
                     // Turn every repeating date up to today into a real entry
                     // before the first frame reads the ledger.
                     store.materializeDueOccurrences()

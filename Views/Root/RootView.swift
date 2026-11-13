@@ -62,6 +62,7 @@ struct RootView: View {
     @Environment(AppStore.self) private var store
     @Environment(ReminderScheduler.self) private var reminderScheduler
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppLinks.self) private var links
 
     @State private var viewModel = HomeViewModel()
     @State private var tab: Tab = .home
@@ -86,6 +87,11 @@ struct RootView: View {
         .animation(.smooth(duration: 0.25), value: viewModel.isSearchFocused)
         .background(AppBackgroundView())
         .tint(Color.accentColor)
+        .onChange(of: links.pendingAdd, initial: true) { _, wantsAdd in
+            guard wantsAdd else { return }
+            links.pendingAdd = false
+            viewModel.beginAdd()
+        }
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
                 store: store,
@@ -519,4 +525,5 @@ struct RootView: View {
     RootView()
         .environment(AppStore(persistence: InMemoryPersistence(), initialState: MockData.previewState()))
         .environment(ReminderScheduler())
+        .environment(AppLinks())
 }

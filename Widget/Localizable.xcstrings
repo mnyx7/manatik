@@ -1,0 +1,34 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "az" : { "stringUnit" : { "state" : "translated", "value" : "Əlavə et" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавить" } }
+      }
+    },
+    "Add an expense or income in one tap." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "az" : { "stringUnit" : { "state" : "translated", "value" : "Xərc və ya gəliri bir toxunuşla əlavə edin." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавьте расход или доход одним касанием." } }
+      }
+    },
+    "Add income or expense" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "az" : { "stringUnit" : { "state" : "translated", "value" : "Gəlir və ya xərc əlavə et" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавить доход или расход" } }
+      }
+    },
+    "Quick add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "az" : { "stringUnit" : { "state" : "translated", "value" : "Tez əlavə" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрое добавление" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

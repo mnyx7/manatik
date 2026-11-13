@@ -27,7 +27,7 @@ enum QALaunch {
     /// A home page style to show, by `HomeStyle` raw value, e.g. posterGirl.
     static var homeStyle: HomeStyle? { value(for: "-qa-home").flatMap(HomeStyle.init(rawValue:)) }
 
-    private static func value(for flag: String) -> String? {
+    static func value(for flag: String) -> String? {
         guard let index = arguments.firstIndex(of: flag),
               arguments.index(after: index) < arguments.endIndex else { return nil }
         let next = arguments[arguments.index(after: index)]
