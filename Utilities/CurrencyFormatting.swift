@@ -27,7 +27,7 @@ enum CurrencyFormatting {
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
         formatter.currencySymbol = glyph
-        pinSymbolLeft(formatter, glyph)
+        pinSymbolRight(formatter, glyph)
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         formatter.roundingMode = .halfUp
@@ -35,13 +35,14 @@ enum CurrencyFormatting {
         return formatter
     }
 
-    /// The symbol always leads, "₼1.552,86", even where the language puts
-    /// it after the number. Grouping and decimal marks still follow the phone.
-    private static func pinSymbolLeft(_ formatter: NumberFormatter, _ glyph: String) {
-        formatter.positivePrefix = glyph
-        formatter.positiveSuffix = ""
-        formatter.negativePrefix = "-" + glyph
-        formatter.negativeSuffix = ""
+    /// The symbol always follows the number, "1.552,86 ₼", even where the
+    /// language puts it first. Grouping and decimal marks still follow the
+    /// phone. The space is non-breaking so the symbol never wraps alone.
+    private static func pinSymbolRight(_ formatter: NumberFormatter, _ glyph: String) {
+        formatter.positivePrefix = ""
+        formatter.positiveSuffix = "\u{00A0}" + glyph
+        formatter.negativePrefix = "-"
+        formatter.negativeSuffix = "\u{00A0}" + glyph
     }
 
     private static var symbols: [String: String] = [:]
@@ -91,12 +92,12 @@ enum CurrencyFormatting {
         if AmountPrivacy.shared.isHidden { return masked(currency) }
         let number = NSDecimalNumber(decimal: amount)
         return formatter(for: currency).string(from: number)
-            ?? "\(currency.symbol)\(amount)"
+            ?? "\(amount)\u{00A0}\(currency.symbol)"
     }
 
     /// Keeps the currency so the layout reads the same, minus the figure.
     private static func masked(_ currency: Currency) -> String {
-        "\(currency.symbol)\(AmountPrivacy.mask)"
+        "\(AmountPrivacy.mask)\u{00A0}\(currency.symbol)"
     }
 
     /// Whole units only, e.g. "₼1 960", for labels too small for cents.
@@ -107,11 +108,11 @@ enum CurrencyFormatting {
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
         formatter.currencySymbol = symbol(for: currency)
-        pinSymbolLeft(formatter, symbol(for: currency))
+        pinSymbolRight(formatter, symbol(for: currency))
         formatter.maximumFractionDigits = 0
         formatter.roundingMode = .halfUp
         return formatter.string(from: NSDecimalNumber(decimal: amount))
-            ?? "\(currency.symbol)\(amount)"
+            ?? "\(amount)\u{00A0}\(currency.symbol)"
     }
 
     /// Signed string for a ledger row, e.g. "-$4.20" / "+$3,200.00".

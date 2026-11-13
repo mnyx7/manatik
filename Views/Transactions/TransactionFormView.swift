@@ -210,7 +210,22 @@ struct TransactionFormView: View {
 
             // The amount is the reason the screen exists, so it gets the size.
             HStack(alignment: .firstTextBaseline, spacing: 2) {
-                // The symbol reads as part of the amount, "₼60", and is also
+                TextField(
+                    "0",
+                    text: Binding(
+                        get: { viewModel.amountInput },
+                        set: { viewModel.handleAmountChange($0) }
+                    )
+                )
+                .font(.system(size: 50, weight: .bold, design: .rounded))
+                .foregroundStyle(accent)
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.leading)
+                .fixedSize()
+                .focused($focusedField, equals: .amount)
+                .accessibilityLabel(Text("Amount"))
+
+                // The symbol reads as part of the amount, "60 ₼", and is also
                 // the currency switch: one tap, no extra row.
                 Button {
                     viewModel.isShowingCurrencyPicker = true
@@ -228,7 +243,8 @@ struct TransactionFormView: View {
                             }
                         }
                         .padding(.trailing, viewModel.canChangeCurrency ? 8 : 0)
-                        .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget, alignment: .trailing)
+                        .padding(.leading, 4)
+                        .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
                         .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
@@ -236,20 +252,6 @@ struct TransactionFormView: View {
                 .accessibilityLabel(Text("Currency"))
                 .accessibilityValue(Text(currency.localizedName))
 
-                TextField(
-                    "0",
-                    text: Binding(
-                        get: { viewModel.amountInput },
-                        set: { viewModel.handleAmountChange($0) }
-                    )
-                )
-                .font(.system(size: 50, weight: .bold, design: .rounded))
-                .foregroundStyle(accent)
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.leading)
-                .fixedSize()
-                .focused($focusedField, equals: .amount)
-                .accessibilityLabel(Text("Amount"))
             }
             // .fixedSize keeps the field only as wide as "0", so the whole row
             // takes the tap and hands it to the field.
