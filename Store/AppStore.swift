@@ -337,24 +337,6 @@ final class AppStore {
         mutated()
     }
 
-    // MARK: - Feedback
-
-    var feedbackNotes: [FeedbackNote] {
-        state.feedbackNotes.sorted { $0.createdAt > $1.createdAt }
-    }
-
-    func addFeedback(_ text: String) {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        state.feedbackNotes.append(FeedbackNote(text: trimmed))
-        mutated()
-    }
-
-    func deleteFeedback(id: UUID) {
-        state.feedbackNotes.removeAll { $0.id == id }
-        mutated()
-    }
-
     // MARK: - Period
 
     var selectedPeriod: DateInterval {

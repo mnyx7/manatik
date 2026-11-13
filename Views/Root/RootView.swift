@@ -12,7 +12,6 @@ enum RootDestination: Hashable {
     case reminders
     case categoryManager
     case recurringSeries
-    case feedback
 }
 
 /// The app shell: content under a floating Liquid Glass bar carrying Home,
@@ -399,8 +398,6 @@ struct RootView: View {
             CategoryManagerView(viewModel: SettingsViewModel(store: store))
         case .recurringSeries:
             RecurringSeriesListView(store: store)
-        case .feedback:
-            FeedbackView(viewModel: SettingsViewModel(store: store))
         }
     }
 

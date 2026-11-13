@@ -33,7 +33,6 @@ final class SettingsViewModel {
     var isShowingCategoryEditor = false
     /// Non-nil when the category editor was opened to change an existing one.
     var editingCategory: TransactionCategory?
-    var feedbackDraft = ""
 
     let store: AppStore
 
@@ -165,19 +164,6 @@ final class SettingsViewModel {
 
     func deleteCustomCategory(_ category: TransactionCategory) {
         store.deleteCustomCategory(id: category.id)
-    }
-
-    // MARK: - Feedback
-
-    var feedbackNotes: [FeedbackNote] { store.feedbackNotes }
-
-    func saveFeedback() {
-        store.addFeedback(feedbackDraft)
-        feedbackDraft = ""
-    }
-
-    func deleteFeedback(_ note: FeedbackNote) {
-        store.deleteFeedback(id: note.id)
     }
 
     // MARK: - Reminders

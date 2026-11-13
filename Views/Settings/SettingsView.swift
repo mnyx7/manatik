@@ -259,19 +259,16 @@ struct SettingsView: View {
 
     private var feedbackSection: some View {
         Section {
-            NavigationLink(value: RootDestination.feedback) {
-                HStack {
-                    Label("Feedback and ideas", systemImage: "bubble.left.and.text.bubble.right")
-                    Spacer()
-                    if !viewModel.feedbackNotes.isEmpty {
-                        Text("\(viewModel.feedbackNotes.count)")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(minHeight: AppTheme.minimumTapTarget)
+            Button {
+                FeedbackMailer.shared.compose()
+            } label: {
+                Label("Send feedback", systemImage: "envelope")
+                    .frame(minHeight: AppTheme.minimumTapTarget)
             }
         } header: {
             Text("Feedback")
+        } footer: {
+            Text("Or shake your phone on any screen to report a problem with a screenshot of it.")
         }
     }
 
@@ -528,89 +525,6 @@ struct CategoryManagerView: View {
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
-            }
-        }
-    }
-}
-
-/// Somewhere to write down what the app should do better.
-///
-/// There is no server to send this to, so notes are kept on the device and
-/// each one can be shared wherever the user likes.
-struct FeedbackView: View {
-    @Bindable var viewModel: SettingsViewModel
-    @FocusState private var isWriting: Bool
-
-    private var canSave: Bool {
-        !viewModel.feedbackDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    var body: some View {
-        Form {
-            Section {
-                TextField(
-                    "What would make muna better?",
-                    text: $viewModel.feedbackDraft,
-                    axis: .vertical
-                )
-                .lineLimit(4...10)
-                .focused($isWriting)
-
-                Button {
-                    isWriting = false
-                    viewModel.saveFeedback()
-                } label: {
-                    Label("Save this note", systemImage: "square.and.pencil")
-                        .frame(minHeight: AppTheme.minimumTapTarget)
-                }
-                .disabled(!canSave)
-            } header: {
-                Text("New note")
-            } footer: {
-                Text("Notes are kept on this device with the app version attached, so you can send them on whenever you like.")
-            }
-
-            if !viewModel.feedbackNotes.isEmpty {
-                Section("Saved notes") {
-                    ForEach(viewModel.feedbackNotes) { note in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(note.text)
-                                .font(.subheadline)
-
-                            HStack(spacing: 10) {
-                                Text(DateFormatting.dayMonthYear(note.createdAt))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                Text(note.appVersion)
-                                    .font(.caption)
-                                    .foregroundStyle(.tertiary)
-
-                                Spacer()
-
-                                ShareLink(item: note.shareableText) {
-                                    Label("Share", systemImage: "square.and.arrow.up")
-                                        .font(.caption.weight(.semibold))
-                                        .labelStyle(.iconOnly)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                    .onDelete { offsets in
-                        for index in offsets {
-                            guard viewModel.feedbackNotes.indices.contains(index) else { continue }
-                            viewModel.deleteFeedback(viewModel.feedbackNotes[index])
-                        }
-                    }
-                }
-            }
-        }
-        .navigationTitle("Feedback")
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done") { isWriting = false }
             }
         }
     }
