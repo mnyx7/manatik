@@ -1,3 +1,10 @@
+//
+//  CSVImporter.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import Foundation
 
 /// One entry read from another app's CSV export.

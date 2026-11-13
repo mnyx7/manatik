@@ -1,3 +1,10 @@
+//
+//  QALaunchHarness.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 #if DEBUG
 import Foundation
 import UIKit

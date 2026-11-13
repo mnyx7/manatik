@@ -1,3 +1,10 @@
+//
+//  IllustratedHomeView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import SwiftUI
 
 /// The illustrated home pages: a picture of a room whose shelf objects are the

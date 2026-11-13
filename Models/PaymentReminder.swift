@@ -1,3 +1,10 @@
+//
+//  PaymentReminder.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
 /// A scheduled nudge about money going out: a loan instalment, a utility bill,

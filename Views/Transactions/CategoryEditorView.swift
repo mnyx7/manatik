@@ -1,3 +1,10 @@
+//
+//  CategoryEditorView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// Creates a user-made category, or edits one that already exists.

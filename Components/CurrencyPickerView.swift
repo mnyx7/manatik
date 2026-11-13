@@ -1,3 +1,10 @@
+//
+//  CurrencyPickerView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import SwiftUI
 
 /// Every currency, searchable by code or name. The few a person actually

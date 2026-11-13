@@ -1,3 +1,10 @@
+//
+//  LoansView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// All debts: still being paid, then settled.

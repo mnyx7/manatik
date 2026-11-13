@@ -1,3 +1,10 @@
+//
+//  GlassCompat.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import SwiftUI
 
 // Liquid Glass exists only on iOS 26. These wrappers use it there and fall

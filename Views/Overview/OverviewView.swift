@@ -1,3 +1,10 @@
+//
+//  OverviewView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// The Overview tab: where the money went, by category, for the chosen period.

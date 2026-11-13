@@ -1,3 +1,10 @@
+//
+//  QuickAddBarView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// The fastest path to a new entry: one tap opens the form with the category

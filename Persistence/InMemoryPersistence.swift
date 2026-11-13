@@ -1,3 +1,10 @@
+//
+//  InMemoryPersistence.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
 /// A store that keeps state in memory and never touches the filesystem.

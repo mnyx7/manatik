@@ -1,3 +1,10 @@
+//
+//  HeroBalanceCardView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// The one figure the main page leads with: what is left this period, the two

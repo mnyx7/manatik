@@ -1,3 +1,10 @@
+//
+//  AttachmentViews.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import PhotosUI
 import QuickLook
 import QuickLookThumbnailing

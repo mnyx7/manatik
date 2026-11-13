@@ -1,3 +1,10 @@
+//
+//  AmountPrivacy.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import Observation
 
 /// Whether money is shown or masked, for glancing at the app in public.

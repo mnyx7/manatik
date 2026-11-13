@@ -1,3 +1,10 @@
+//
+//  PeriodToolbar.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import SwiftUI
 
 /// Previous / back-to-today / pick / next for the browsed period. Shared by

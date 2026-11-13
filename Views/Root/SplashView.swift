@@ -1,3 +1,10 @@
+//
+//  SplashView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import SwiftUI
 
 /// Plays once at launch, over the first screen: the logo builds itself (the

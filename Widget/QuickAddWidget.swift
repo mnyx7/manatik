@@ -1,3 +1,10 @@
+//
+//  QuickAddWidget.swift
+//  MunaWidget
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import SwiftUI
 import WidgetKit
 

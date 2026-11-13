@@ -1,3 +1,10 @@
+//
+//  SettingsModels.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
 /// An ISO 4217 currency, e.g. "AZN". Encoded as the bare code, which is what

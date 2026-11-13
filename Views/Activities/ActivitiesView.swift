@@ -1,3 +1,10 @@
+//
+//  ActivitiesView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import QuickLook
 import SwiftUI
 

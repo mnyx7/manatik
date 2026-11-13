@@ -1,3 +1,10 @@
+//
+//  HomeView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// The main page. Deliberately short: what is left, the goals and debts being

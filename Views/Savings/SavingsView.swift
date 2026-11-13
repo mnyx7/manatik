@@ -1,3 +1,10 @@
+//
+//  SavingsView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// All savings goals: the ones in flight, then the ones already reached.

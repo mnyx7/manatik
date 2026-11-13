@@ -1,3 +1,10 @@
+//
+//  FeedbackMailer.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import MessageUI
 import UIKit
 

@@ -1,3 +1,10 @@
+//
+//  FilterBarView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// Filter controls as a toolbar menu.

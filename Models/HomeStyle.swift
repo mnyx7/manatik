@@ -1,3 +1,10 @@
+//
+//  HomeStyle.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import Foundation
 
 /// The home page the user picked in Settings.

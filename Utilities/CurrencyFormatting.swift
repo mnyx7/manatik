@@ -1,3 +1,10 @@
+//
+//  CurrencyFormatting.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
 /// Formats money for display.

@@ -1,3 +1,10 @@
+//
+//  PaymentRemindersSection.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import SwiftUI
 
 /// The payment reminders list with its add button and editor. Lives in its own

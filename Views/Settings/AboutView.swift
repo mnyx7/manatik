@@ -1,3 +1,10 @@
+//
+//  AboutView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 13.11.26.
+//
+
 import SwiftUI
 
 /// Settings > About us: the logo, the brand story and the version.

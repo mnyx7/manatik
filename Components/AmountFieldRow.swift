@@ -1,3 +1,10 @@
+//
+//  AmountFieldRow.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 11.11.26.
+//
+
 import SwiftUI
 
 /// "Label ........ 0" money row for forms.

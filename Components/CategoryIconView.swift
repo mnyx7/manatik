@@ -1,3 +1,10 @@
+//
+//  CategoryIconView.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import SwiftUI
 
 /// A category's symbol in a tinted, rounded tile.

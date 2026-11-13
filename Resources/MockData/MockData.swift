@@ -1,3 +1,10 @@
+//
+//  MockData.swift
+//  muna
+//
+//  Created by Minaya Yagubova on 04.11.26.
+//
+
 import Foundation
 
 /// Sample data for SwiftUI previews. Not referenced by the shipping app.
