@@ -67,35 +67,29 @@ struct QuickAddWidgetView: View {
     /// The logo's language: mint circle, terracotta badge with a dark ink
     /// outline offset like a print, and the two sparkles.
     private var small: some View {
-        VStack(spacing: 10) {
-            ZStack {
-                Circle()
-                    .fill(Palette.mint)
-                    .frame(width: 104, height: 104)
+        ZStack {
+            Circle()
+                .fill(Palette.mint)
+                .frame(width: 124, height: 124)
 
-                Circle()
-                    .fill(Palette.ink)
-                    .frame(width: 70, height: 70)
-                    .offset(x: 3, y: 3)
+            Circle()
+                .fill(Palette.ink)
+                .frame(width: 84, height: 84)
+                .offset(x: 3, y: 3)
 
-                Circle()
-                    .fill(Palette.terracotta)
-                    .frame(width: 70, height: 70)
+            Circle()
+                .fill(Palette.terracotta)
+                .frame(width: 84, height: 84)
 
-                Image(systemName: "plus")
-                    .font(.system(size: 32, weight: .heavy))
-                    .foregroundStyle(.white)
-                    .widgetAccentable()
+            Image(systemName: "plus")
+                .font(.system(size: 38, weight: .heavy))
+                .foregroundStyle(.white)
+                .widgetAccentable()
 
-                sparkle(Palette.butter, size: 20)
-                    .offset(x: 42, y: -38)
-                sparkle(.white, size: 13)
-                    .offset(x: -44, y: 30)
-            }
-
-            Text("Add")
-                .font(.custom("Didot", size: 19).weight(.bold))
-                .foregroundStyle(Palette.text)
+            sparkle(Palette.butter, size: 22)
+                .offset(x: 50, y: -46)
+            sparkle(.white, size: 14)
+                .offset(x: -52, y: 38)
         }
         .containerBackground(for: .widget) { Palette.cream }
         .widgetURL(addURL)
@@ -124,7 +118,6 @@ private enum Palette {
     static let terracotta = Color(light: (0.784, 0.333, 0.184), dark: (0.85, 0.42, 0.27))
     static let ink = Color(red: 0.231, green: 0.184, blue: 0.173)
     static let butter = Color(red: 0.969, green: 0.788, blue: 0.353)
-    static let text = Color(light: (0.231, 0.184, 0.173), dark: (0.96, 0.93, 0.89))
 }
 
 private extension Color {
