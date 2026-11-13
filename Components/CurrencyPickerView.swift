@@ -61,7 +61,7 @@ struct CurrencyPickerView: View {
     }
 
     private var searchBar: some View {
-        GlassEffectContainer(spacing: 10) {
+        LiquidGlassContainer(spacing: 10) {
             HStack(spacing: 10) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
@@ -89,7 +89,7 @@ struct CurrencyPickerView: View {
                 .frame(minHeight: 48)
                 .contentShape(.capsule)
                 .onTapGesture { isSearchFocused = true }
-                .glassEffect(.regular.interactive(), in: .capsule)
+                .liquidGlass(in: .capsule, interactive: true)
 
                 if isSearchFocused {
                     Button {
@@ -100,7 +100,7 @@ struct CurrencyPickerView: View {
                             .frame(width: 48, height: 48)
                     }
                     .buttonStyle(.plain)
-                    .glassEffect(.regular.interactive(), in: .circle)
+                    .liquidGlass(in: .circle, interactive: true)
                     .accessibilityLabel(Text("Close search"))
                     .transition(.scale.combined(with: .opacity))
                 }

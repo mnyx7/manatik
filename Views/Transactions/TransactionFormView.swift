@@ -57,7 +57,7 @@ struct TransactionFormView: View {
                             Label("Delete entry", systemImage: "trash")
                                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
                         }
-                        .buttonStyle(.glass)
+                        .glassButtonStyle()
                     }
                 }
                 .padding(.horizontal)
@@ -106,7 +106,7 @@ struct TransactionFormView: View {
                     // in the entry's colour, so it is obvious it can be saved.
                     Button(viewModel.saveButtonTitle) { attemptSave(thenDismiss: true) }
                         .fontWeight(.semibold)
-                        .buttonStyle(.glassProminent)
+                        .glassProminentButtonStyle()
                         .tint(viewModel.isFormValid ? accent : Color.secondary.opacity(0.35))
                         .disabled(!viewModel.isFormValid)
                         .animation(.smooth(duration: 0.2), value: viewModel.isFormValid)
@@ -394,7 +394,7 @@ struct TransactionFormView: View {
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
         }
-        .buttonStyle(.glassProminent)
+        .glassProminentButtonStyle()
         .tint(viewModel.isFormValid ? accent : Color.secondary.opacity(0.35))
         .disabled(!viewModel.isFormValid)
         .animation(.smooth(duration: 0.2), value: viewModel.isFormValid)
@@ -475,7 +475,7 @@ struct SavedToastView: View {
             .foregroundStyle(AppTheme.incomeAccent)
             .padding(.horizontal, 16)
             .padding(.vertical, 11)
-            .glassEffect(.regular.tint(AppTheme.incomeAccent.opacity(0.18)), in: .capsule)
+            .liquidGlass(in: .capsule, tint: AppTheme.incomeAccent.opacity(0.18))
             .accessibilityAddTraits(.isStaticText)
     }
 }

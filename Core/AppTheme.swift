@@ -117,10 +117,7 @@ extension View {
     ) -> some View {
         self
             .padding(padding)
-            .glassEffect(
-                .regular,
-                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            )
+            .liquidGlass(in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 
     /// A card that carries a meaning colour, e.g. the savings hero or a loan
@@ -134,9 +131,9 @@ extension View {
     ) -> some View {
         self
             .padding(padding)
-            .glassEffect(
-                .regular.tint(tint.opacity(tintOpacity)),
-                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .liquidGlass(
+                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous),
+                tint: tint.opacity(tintOpacity)
             )
     }
 
@@ -147,14 +144,12 @@ extension View {
         cornerRadius: CGFloat = AppTheme.cardCornerRadius,
         padding: CGFloat = AppTheme.cardPadding
     ) -> some View {
-        let glass: Glass = tint.map { .regular.tint($0.opacity(0.18)).interactive() }
-            ?? .regular.interactive()
-
-        return self
+        self
             .padding(padding)
-            .glassEffect(
-                glass,
-                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .liquidGlass(
+                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous),
+                tint: tint?.opacity(0.18),
+                interactive: true
             )
     }
 }

@@ -92,7 +92,7 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: AppTheme.minimumTapTarget)
             }
-            .buttonStyle(.glassProminent)
+            .glassProminentButtonStyle()
 
             QuickAddBarView(categories: viewModel.quickAddCategories) { category in
                 viewModel.beginQuickAdd(category)

@@ -286,7 +286,7 @@ struct RootView: View {
         // One container means the bar and the add button are a single piece of
         // glass as far as the renderer is concerned: they refract together and
         // the add button's tint bleeds correctly into the capsule beside it.
-        GlassEffectContainer(spacing: 18) {
+        LiquidGlassContainer(spacing: 18) {
             HStack(spacing: 10) {
                 HStack(spacing: 2) {
                     tabButton(.home)
@@ -302,8 +302,8 @@ struct RootView: View {
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 6)
-            .glassEffect(.regular.interactive(), in: .capsule)
-            .glassEffectID("bar", in: glassNamespace)
+            .liquidGlass(in: .capsule, interactive: true)
+            .liquidGlassID("bar", in: glassNamespace)
         }
         .padding(.bottom, 8)
     }
@@ -318,11 +318,8 @@ struct RootView: View {
                 .frame(width: 52, height: 52)
         }
         .buttonStyle(.plain)
-        .glassEffect(
-            .regular.tint(Color.accentColor.opacity(0.85)).interactive(),
-            in: .circle
-        )
-        .glassEffectID("add", in: glassNamespace)
+        .liquidGlass(in: .circle, tint: Color.accentColor.opacity(0.85), interactive: true)
+        .liquidGlassID("add", in: glassNamespace)
         .accessibilityLabel(Text("Add income or expense"))
     }
 

@@ -47,7 +47,7 @@ struct SavingsGoalCardView: View {
                     Label("Add money", systemImage: "plus")
                         .font(.caption.weight(.semibold))
                 }
-                .buttonStyle(.glass)
+                .glassButtonStyle()
                 .controlSize(.small)
                 .tint(AppTheme.savingsAccent)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
@@ -169,7 +169,7 @@ struct LoanCardView: View {
                     Label("Record payment", systemImage: "arrow.up")
                         .font(.caption.weight(.semibold))
                 }
-                .buttonStyle(.glass)
+                .glassButtonStyle()
                 .controlSize(.small)
                 .tint(AppTheme.loanAccent)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget, alignment: .leading)
