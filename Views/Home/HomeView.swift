@@ -47,22 +47,22 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: AppTheme.sectionSpacing) {
                 if isFirstRun {
                     welcomeCard
-                } else {
-                    HeroBalanceCardView(
-                        income: summary.income,
-                        expense: summary.expense,
-                        netBalance: summary.netBalance,
-                        currency: currency,
-                        hasProjections: summary.hasProjections,
-                        otherCurrencies: CurrencyFormatting.formatOthers(summary.otherCurrencies),
-                        onOpen: onOpenActivities
-                    )
-
-                    quickAdd
-                    savingsSection
-                    loansSection
-                    recentActivity
                 }
+
+                HeroBalanceCardView(
+                    income: summary.income,
+                    expense: summary.expense,
+                    netBalance: summary.netBalance,
+                    currency: currency,
+                    hasProjections: summary.hasProjections,
+                    otherCurrencies: CurrencyFormatting.formatOthers(summary.otherCurrencies),
+                    onOpen: onOpenActivities
+                )
+
+                quickAdd
+                savingsSection
+                loansSection
+                recentActivity
             }
             .padding(.horizontal, AppTheme.pageHorizontalPadding)
             .padding(.top, 4)
@@ -77,10 +77,13 @@ struct HomeView: View {
 
     // MARK: - First run
 
+    /// A short hello above the usual page on a brand new install. The page
+    /// itself stays complete, so savings, loans and quick add are visible
+    /// from the first launch.
     private var welcomeCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        HStack(alignment: .top, spacing: 14) {
             Image(systemName: "sparkles")
-                .font(.system(size: 26, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 6) {
@@ -90,19 +93,6 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Button {
-                viewModel.beginAdd()
-            } label: {
-                Text("Add an entry")
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-            }
-            .glassProminentButtonStyle()
-
-            QuickAddBarView(categories: viewModel.quickAddCategories) { category in
-                viewModel.beginQuickAdd(category)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
