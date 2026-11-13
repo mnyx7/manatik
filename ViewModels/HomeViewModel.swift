@@ -17,6 +17,9 @@ final class HomeViewModel {
     }
 
     var isShowingAddSheet = false
+    /// True while the Activity search field has the keyboard, so the tab bar
+    /// can step aside and the field sits on the keyboard.
+    var isSearchFocused = false
     var isShowingPeriodPicker = false
     var isShowingDateFilter = false
 

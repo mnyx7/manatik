@@ -27,11 +27,21 @@ enum CurrencyFormatting {
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
         formatter.currencySymbol = glyph
+        pinSymbolLeft(formatter, glyph)
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         formatter.roundingMode = .halfUp
         formatters[key] = formatter
         return formatter
+    }
+
+    /// The symbol always leads, "₼1.552,86", even where the language puts
+    /// it after the number. Grouping and decimal marks still follow the phone.
+    private static func pinSymbolLeft(_ formatter: NumberFormatter, _ glyph: String) {
+        formatter.positivePrefix = glyph
+        formatter.positiveSuffix = ""
+        formatter.negativePrefix = "-" + glyph
+        formatter.negativeSuffix = ""
     }
 
     private static var symbols: [String: String] = [:]
@@ -97,6 +107,7 @@ enum CurrencyFormatting {
         formatter.locale = Locale.current
         formatter.currencyCode = currency.rawValue
         formatter.currencySymbol = symbol(for: currency)
+        pinSymbolLeft(formatter, symbol(for: currency))
         formatter.maximumFractionDigits = 0
         formatter.roundingMode = .halfUp
         return formatter.string(from: NSDecimalNumber(decimal: amount))

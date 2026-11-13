@@ -78,8 +78,12 @@ struct RootView: View {
                     .navigationDestination(for: RootDestination.self, destination: destination)
             }
 
-            bottomBar
+            if !viewModel.isSearchFocused {
+                bottomBar
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
+        .animation(.smooth(duration: 0.25), value: viewModel.isSearchFocused)
         .background(AppBackgroundView())
         .tint(Color.accentColor)
         .sheet(isPresented: $viewModel.isShowingAddSheet) {

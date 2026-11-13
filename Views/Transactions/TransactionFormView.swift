@@ -95,9 +95,14 @@ struct TransactionFormView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
+                    // Grey until the entry is complete, then a filled button
+                    // in the entry's colour, so it is obvious it can be saved.
                     Button(viewModel.saveButtonTitle) { attemptSave(thenDismiss: true) }
-                        .disabled(!viewModel.isFormValid)
                         .fontWeight(.semibold)
+                        .buttonStyle(.glassProminent)
+                        .tint(viewModel.isFormValid ? accent : Color.secondary.opacity(0.35))
+                        .disabled(!viewModel.isFormValid)
+                        .animation(.smooth(duration: 0.2), value: viewModel.isFormValid)
                 }
 
                 ToolbarItemGroup(placement: .keyboard) {
@@ -369,10 +374,13 @@ struct TransactionFormView: View {
             attemptSave(thenDismiss: false)
         } label: {
             Label("Save and add another", systemImage: "plus.circle")
+                .fontWeight(.semibold)
                 .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
         }
-        .buttonStyle(.glass)
+        .buttonStyle(.glassProminent)
+        .tint(viewModel.isFormValid ? accent : Color.secondary.opacity(0.35))
         .disabled(!viewModel.isFormValid)
+        .animation(.smooth(duration: 0.2), value: viewModel.isFormValid)
         .padding(.top, 2)
     }
 

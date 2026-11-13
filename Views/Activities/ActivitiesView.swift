@@ -23,6 +23,7 @@ struct ActivitiesView: View {
 
     private var currency: Currency { store.state.settings.currency }
 
+    @FocusState private var isSearchFocused: Bool
     @State private var billPreviewURL: URL?
     @State private var billPreviewURLs: [URL] = []
 
@@ -131,11 +132,14 @@ struct ActivitiesView: View {
         .quickLookPreview($billPreviewURL, in: billPreviewURLs)
         .navigationTitle("Activity")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(
-            text: $viewModel.filter.searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: Text("Search notes and categories")
-        )
+        // iOS 26 puts search at the bottom, within thumb reach, as a floating
+        // glass field. It sits just above the tab bar, and on the keyboard
+        // while typing.
+        .safeAreaInset(edge: .bottom, spacing: 0) { searchBar }
+        .onChange(of: isSearchFocused) { _, focused in
+            viewModel.isSearchFocused = focused
+        }
+        .onDisappear { viewModel.isSearchFocused = false }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -154,6 +158,57 @@ struct ActivitiesView: View {
                 .accessibilityLabel(Text("Filters"))
             }
         }
+    }
+
+    private var searchBar: some View {
+        GlassEffectContainer(spacing: 10) {
+            HStack(spacing: 10) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                    TextField("Search notes and categories", text: $viewModel.filter.searchText)
+                        .focused($isSearchFocused)
+                        .submitLabel(.search)
+                        .autocorrectionDisabled()
+                    if !viewModel.filter.searchText.isEmpty {
+                        Button {
+                            viewModel.filter.searchText = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                                .frame(width: 32, height: 32)
+                                .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(Text("Clear search"))
+                    }
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 48)
+                .contentShape(.capsule)
+                .onTapGesture { isSearchFocused = true }
+                .glassEffect(.regular.interactive(), in: .capsule)
+
+                if isSearchFocused {
+                    Button {
+                        isSearchFocused = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.weight(.semibold))
+                            .frame(width: 48, height: 48)
+                    }
+                    .buttonStyle(.plain)
+                    .glassEffect(.regular.interactive(), in: .circle)
+                    .accessibilityLabel(Text("Close search"))
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+        }
+        .padding(.horizontal, AppTheme.pageHorizontalPadding)
+        // Clears the floating tab bar, which is hidden while typing.
+        .padding(.bottom, isSearchFocused ? 8 : AppTheme.tabBarClearance - 10)
+        .animation(.smooth(duration: 0.25), value: isSearchFocused)
     }
 
     @ViewBuilder
