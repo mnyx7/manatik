@@ -209,7 +209,9 @@ struct TransactionFormView: View {
             .frame(maxWidth: .infinity)
 
             // The amount is the reason the screen exists, so it gets the size.
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
+            // Amount, symbol and chevron share one vertical centre, so the
+            // smaller symbol does not sink to the digits' baseline.
+            HStack(alignment: .center, spacing: 6) {
                 TextField(
                     "0",
                     text: Binding(
