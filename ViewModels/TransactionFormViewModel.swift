@@ -48,6 +48,13 @@ final class TransactionFormViewModel {
         self.mode = mode
         self.currency = store.mainCurrency
         configureInitialState()
+        #if DEBUG
+        // `-qa-amount 24.50` fills New Entry for store screenshots.
+        if isAdding, let amount = QALaunch.value(for: "-qa-amount") {
+            handleAmountChange(amount)
+            note = QALaunch.value(for: "-qa-note") ?? ""
+        }
+        #endif
     }
 
     // MARK: - Presentation

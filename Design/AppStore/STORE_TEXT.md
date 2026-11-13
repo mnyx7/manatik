@@ -1,6 +1,6 @@
 # muna — App Store text
 
-Screenshots: `1-home.jpg` … `6-styles.jpg` in this folder, 1320 × 2868
+Screenshots: `1-home.jpg` … `8-widget.jpg` in this folder, 1320 × 2868
 (the 6.9" iPhone size; App Store Connect scales them down for smaller
 iPhones). Upload them in this order. Rebuild them with
 `python3 Design/make_store_posters.py <screenshots dir> Design/AppStore`.
@@ -35,9 +35,11 @@ budget,expense,manat,AZN,savings,loan,bills,money,spending,tracker,personal fina
 
 ## Screenshot captions
 
-1. Your money, on a cozy shelf — every book opens what it shows
+1. Your money, feels at home — every book opens what it shows
 2. Add a spend in seconds — amount, category, done
 3. Keep every bill close at hand — photo or PDF, open it in a tap
 4. Watch your savings grow — goals, deadlines, every top-up
 5. See where it all goes — a clear picture of every month
-6. A home page that feels like you — seven rooms, Christmas included
+6. Every currency, every trip — each entry keeps its own currency
+7. A home page that feels like you — seven rooms, Christmas included
+8. Add from your Home Screen — one tap opens New Entry
