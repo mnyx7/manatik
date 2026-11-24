@@ -17,13 +17,17 @@ struct TransactionFormView: View {
     @State private var viewModel: TransactionFormViewModel
     @FocusState private var focusedField: Field?
 
+    private let startsWithVoice: Bool
+    @State private var didPrepareEntry = false
+    @State private var voiceWasInitialScreen = false
     @State private var isShowingVoiceEntry = false
     @State private var voiceReviewNotice = false
     @State private var isShowingScopeChoice = false
     @State private var isShowingDeleteChoice = false
     @State private var isSearchingCategories = false
 
-    init(store: AppStore, mode: TransactionFormViewModel.Mode) {
+    init(store: AppStore, mode: TransactionFormViewModel.Mode, startsWithVoice: Bool = false) {
+        self.startsWithVoice = startsWithVoice
         _viewModel = State(wrappedValue: TransactionFormViewModel(store: store, mode: mode))
     }
 
@@ -79,12 +83,18 @@ struct TransactionFormView: View {
             .background(AppBackgroundView())
             .navigationTitle(viewModel.title)
             .navigationBarTitleDisplayMode(.inline)
-            .defaultFocus($focusedField, .amount)
+            .defaultFocus($focusedField, startsWithVoice ? nil : .amount)
             .task {
                 // defaultFocus alone does not raise the keyboard in a sheet.
                 // A new entry starts with the amount, so open it straight away;
                 // the short wait lets the sheet finish presenting first.
-                guard viewModel.isAdding else { return }
+                guard viewModel.isAdding, !didPrepareEntry else { return }
+                didPrepareEntry = true
+                if startsWithVoice {
+                    voiceWasInitialScreen = true
+                    isShowingVoiceEntry = true
+                    return
+                }
                 #if DEBUG
                 if QALaunch.route == "voice" {
                     isShowingVoiceEntry = true
@@ -104,20 +114,24 @@ struct TransactionFormView: View {
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel(Text("Cancel"))
                 }
 
-                // The bill marker is a small icon beside Save, not a row of
-                // its own.
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.isFeatured.toggle()
-                    } label: {
-                        Image(systemName: viewModel.isFeatured ? "bookmark.fill" : "bookmark")
+                if viewModel.isAdding {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            focusedField = nil
+                            voiceWasInitialScreen = false
+                            isShowingVoiceEntry = true
+                        } label: {
+                            Image(systemName: "mic.fill")
+                                .font(.system(size: 16, weight: .medium))
+                        }
+                        .accessibilityLabel(Text("Add with voice"))
                     }
-                    .foregroundStyle(viewModel.isFeatured ? AppTheme.expenseAccent : .secondary)
-                    .accessibilityLabel(Text("Save as a bill"))
-                    .accessibilityAddTraits(viewModel.isFeatured ? [.isSelected] : [])
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -139,8 +153,15 @@ struct TransactionFormView: View {
             .onChange(of: viewModel.type) { _, _ in
                 viewModel.handleTypeChange()
             }
-            .sheet(isPresented: $isShowingVoiceEntry) {
-                VoiceEntryView(currency: viewModel.currency, categories: viewModel.store.categories) { result in
+            .sheet(isPresented: $isShowingVoiceEntry, onDismiss: {
+                // Cancelling a voice-first add closes the add flow. Review
+                // switches to the editable form without opening voice again.
+                if voiceWasInitialScreen { dismiss() }
+                else if !voiceReviewNotice { focusedField = .amount }
+            }) {
+                VoiceEntryView(currency: viewModel.currency, categories: viewModel.store.categories,
+                               onManualEntry: { voiceWasInitialScreen = false }) { result in
+                    voiceWasInitialScreen = false
                     viewModel.type = result.type
                     viewModel.handleAmountChange(NSDecimalNumber(decimal: result.amount).stringValue)
                     viewModel.currency = result.currency
@@ -212,19 +233,18 @@ struct TransactionFormView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .disabled(viewModel.isLinkedEntry)
-                if viewModel.isAdding {
-                    Button {
-                        focusedField = nil
-                        isShowingVoiceEntry = true
-                    } label: {
-                        Image(systemName: "mic.fill")
-                            .font(.body.weight(.medium))
-                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-                    }
-                    .glassButtonStyle()
-                    .accessibilityLabel(Text("Add with voice"))
-                    .help("Add with voice")
+                Button {
+                    viewModel.isFeatured.toggle()
+                } label: {
+                    Image(systemName: viewModel.isFeatured ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(viewModel.isFeatured ? AppTheme.expenseAccent : .secondary)
+                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                        .contentShape(.rect)
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Save as a bill"))
+                .accessibilityAddTraits(viewModel.isFeatured ? [.isSelected] : [])
             }
 
             // A small pill rather than a full labelled row: the date matters,

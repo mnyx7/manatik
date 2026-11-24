@@ -2,9 +2,6 @@ import SwiftUI
 
 struct LanguageSettingsSection: View {
     @AppStorage("appLanguage") private var appLanguage = "system"
-    @AppStorage("voiceEntryLanguage") private var voiceLanguage = ""
-    @State private var showsSpeechLanguages = false
-
     var body: some View {
         Section {
             Picker(selection: $appLanguage) {
@@ -13,25 +10,13 @@ struct LanguageSettingsSection: View {
                 Text(verbatim: "Русский").tag("ru")
                 Text(verbatim: "Azərbaycanca").tag("az")
             } label: { Label("App language", systemImage: "globe") }
-            Button { showsSpeechLanguages = true } label: {
-                HStack {
-                    Label("Voice language", systemImage: "mic")
-                        .foregroundStyle(.primary)
-                        .fixedSize(horizontal: true, vertical: false)
-                    Spacer(minLength: 12)
-                    Text(voiceLanguage.isEmpty ? AppLocalization.string("Automatic", comment: "Default speech language") : SpeechLanguages.name(for: voiceLanguage))
-                        .font(.subheadline).foregroundStyle(.secondary)
-                        .lineLimit(1).minimumScaleFactor(0.75)
-                        .multilineTextAlignment(.trailing)
-                    Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
-                }
-                .frame(minHeight: AppTheme.minimumTapTarget)
-            }
-            .sheet(isPresented: $showsSpeechLanguages) {
-                SpeechLanguagePicker(selection: $voiceLanguage, allowsAutomatic: true)
+            NavigationLink {
+                VoiceSettingsView()
+            } label: {
+                Label("Voice settings", systemImage: "mic")
             }
         } header: { Text("Language & voice") }
-        footer: { Text("Choose Muna’s language and the language you usually speak. You can change the voice language before recording.") }
+        footer: { Text("Choose Muna’s language and customize voice entry.") }
     }
 }
 

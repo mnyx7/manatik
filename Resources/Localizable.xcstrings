@@ -924,6 +924,23 @@
     "Backup saved to %@" : {
       "extractionState" : "manual"
     },
+    "Begin recording when you open the voice screen. Microphone and speech permissions are still required. Turn this off to start recording with a tap." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запись начинается при открытии экрана диктовки. Для этого нужны разрешения на микрофон и распознавание речи. Выключите, чтобы начинать запись нажатием."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktə ekranını açanda yazı başlayır. Mikrofon və nitqin tanınması üçün icazələr lazımdır. Toxunaraq başlamaq üçün bunu söndürün."
+          }
+        }
+      }
+    },
     "Being paid" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1252,6 +1269,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Далее проверьте детали и сохраните запись."
+          }
+        }
+      }
+    },
+    "Choose Muna’s language and customize voice entry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите язык Muna и настройте голосовой ввод."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muna-nın dilini seçin və səslə daxiletməni tənzimləyin."
           }
         }
       }
@@ -2176,6 +2210,23 @@
         }
       }
     },
+    "Enter manually" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ввести вручную"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Əl ilə daxil et"
+          }
+        }
+      }
+    },
     "Entertainment" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2940,6 +2991,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Просто скажите, что записать"
+          }
+        }
+      }
+    },
+    "Keep a sample sentence visible, or hide it for a simpler screen." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оставьте пример фразы или скройте его для более простого экрана."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nümunə cümləni göstərin və ya daha sadə ekran üçün gizlədin."
           }
         }
       }
@@ -3929,6 +3997,23 @@
         }
       }
     },
+    "Offline recording isn’t available for this language. Change the language in Voice settings or type below." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот язык недоступен для офлайн-диктовки. Измените язык в настройках голосового ввода или введите текст ниже."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu dildə oflayn diktə əlçatan deyil. Səslə daxiletmə ayarlarında dili dəyişin və ya aşağıda yazın."
+          }
+        }
+      }
+    },
     "Offline recording isn’t available for this language. Choose another language or type below." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3963,6 +4048,23 @@
         }
       }
     },
+    "On the voice screen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На экране диктовки"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktə ekranında"
+          }
+        }
+      }
+    },
     "Only images and PDF files can be attached." : {
       "extractionState" : "manual"
     },
@@ -3976,6 +4078,23 @@
     },
     "Open or share" : {
       "extractionState" : "manual"
+    },
+    "Open voice with +" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открывать диктовку по +"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+ ilə diktəni aç"
+          }
+        }
+      }
     },
     "Opens the attachment" : {
       "extractionState" : "manual"
@@ -5408,6 +5527,23 @@
       "comment" : "A button that shows the amounts of expenses.",
       "isCommentAutoGenerated" : true
     },
+    "Show example phrases" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать примеры фраз"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nümunə cümlələri göstər"
+          }
+        }
+      }
+    },
     "Show in pickers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5493,6 +5629,23 @@
         }
       }
     },
+    "Speech recognition stays on your iPhone. No entries are saved while recording." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Речь обрабатывается на iPhone. Во время диктовки записи не сохраняются."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nitq iPhone-da emal olunur. Diktə zamanı qeydlər yadda saxlanmır."
+          }
+        }
+      }
+    },
     "Spending by Category" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5574,6 +5727,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Начать заново"
+          }
+        }
+      }
+    },
+    "Start listening automatically" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начинать запись автоматически"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yazmağa avtomatik başla"
           }
         }
       }
@@ -5784,6 +5954,23 @@
         }
       }
     },
+    "The + button opens voice entry first. Turn this off to start with the amount. Category shortcuts still open their usual form." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кнопка + сразу открывает диктовку. Выключите, чтобы начинать с суммы. Быстрое добавление по категории открывает обычную форму."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+ düyməsi birbaşa diktəni açır. Məbləğdən başlamaq üçün bunu söndürün. Kateqoriya qısayolları adi formanı açır."
+          }
+        }
+      }
+    },
     "The entry form follows the order below." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5924,6 +6111,23 @@
     },
     "This is recorded as an expense so your Left to spend stays accurate." : {
       "extractionState" : "manual"
+    },
+    "This language is used each time you record. Automatic follows an available offline language from your iPhone preferences." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот язык используется при каждой диктовке. «Автоматически» выбирает доступный офлайн-язык из языков iPhone."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu dil hər diktədə istifadə olunur. «Avtomatik» iPhone seçimlərinizdən əlçatan oflayn dili seçir."
+          }
+        }
+      }
     },
     "This loan no longer exists" : {
       "extractionState" : "manual",
@@ -6341,6 +6545,23 @@
         }
       }
     },
+    "Voice settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Голосовой ввод"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Səslə daxiletmə"
+          }
+        }
+      }
+    },
     "Weekly" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6391,6 +6612,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Когда"
+          }
+        }
+      }
+    },
+    "When adding an entry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "При добавлении записи"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qeyd əlavə edərkən"
           }
         }
       }
@@ -6459,6 +6697,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Вчера"
+          }
+        }
+      }
+    },
+    "You always review before saving." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перед сохранением вы проверяете запись."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yadda saxlamazdan əvvəl qeydi yoxlayırsınız."
           }
         }
       }

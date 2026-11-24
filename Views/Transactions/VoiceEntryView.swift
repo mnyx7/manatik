@@ -8,12 +8,15 @@ struct VoiceEntryView: View {
     @AppStorage("voiceEntryLanguage") private var defaultLanguage = ""
     @State private var languages: [SpeechLanguage] = []
     @State private var language = ""
-    @State private var showsLanguages = false
+    @AppStorage("voiceShowsExamples") private var showsExamples = true
+    @AppStorage("voiceStartsAutomatically") private var startsAutomatically = false
+    @State private var attemptedAutomaticStart = false
     @State private var parseError: String?
     @State private var showsReplaceConfirmation = false
     @FocusState private var isEditing: Bool
     let currency: Currency
     let categories: [TransactionCategory]
+    var onManualEntry: (() -> Void)? = nil
     let onReview: (VoiceEntryParser.Result) -> Void
 
     private var busy: Bool { recorder.isRecording || recorder.isPreparing }
@@ -38,18 +41,21 @@ struct VoiceEntryView: View {
                         Text("An amount, what it was for, and a currency if you need one.")
                             .font(.subheadline).foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
-                        Text(verbatim: example)
-                            .font(.system(.body, design: .rounded, weight: .medium))
-                            .multilineTextAlignment(.center)
-                            .padding(.top, 4)
-                        Text("Say “income” for money in, or “bills” to bookmark it.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                        if showsExamples {
+                            Text(verbatim: example)
+                                .font(.system(.body, design: .rounded, weight: .medium))
+                                .multilineTextAlignment(.center)
+                                .padding(.top, 4)
+                            Text("Say “income” for money in, or “bills” to bookmark it.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
                     }
                     .padding(.top, 12)
 
                     VStack(spacing: 14) {
                         Button {
+                            attemptedAutomaticStart = true
                             isEditing = false
                             parseError = nil
                             if recorder.isRecording { recorder.stop() }
@@ -57,9 +63,9 @@ struct VoiceEntryView: View {
                             else { Task { await recorder.start(localeID: language) } }
                         } label: {
                             Image(systemName: recorder.isPreparing ? "hourglass" : recorder.isRecording ? "stop.fill" : "mic.fill")
-                                .font(.system(size: 30, weight: .medium))
+                                .font(.system(size: 24, weight: .medium))
                                 .foregroundStyle(recorder.isRecording ? AppTheme.expenseAccent : AppTheme.savingsAccent)
-                                .frame(width: 88, height: 88)
+                                .frame(width: 64, height: 64)
                                 .liquidGlass(in: .circle, tint: (recorder.isRecording ? AppTheme.expenseAccent : AppTheme.savingsAccent).opacity(0.12), interactive: true)
                         }
                         .buttonStyle(.plain)
@@ -70,26 +76,12 @@ struct VoiceEntryView: View {
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(recorder.isRecording ? AppTheme.expenseAccent : .secondary)
                             .accessibilityAddTraits(.updatesFrequently)
-                        Button { showsLanguages = true } label: {
-                            HStack(spacing: 5) {
-                                Image(systemName: "globe")
-                                Text(verbatim: SpeechLanguages.name(for: language))
-                                    .lineLimit(1).minimumScaleFactor(0.8)
-                                Image(systemName: "chevron.down").font(.caption2.weight(.semibold))
-                            }
-                            .font(.footnote)
-                            .padding(.horizontal, 12)
-                            .frame(minHeight: AppTheme.minimumTapTarget)
-                        }
-                        .buttonStyle(.plain).foregroundStyle(.secondary)
-                        .disabled(busy)
-                        .accessibilityLabel(Text("Voice language"))
-                        .accessibilityValue(SpeechLanguages.name(for: language))
+
                     }
 
                     if let error = recorder.errorMessage { message(error) }
                     if !languages.isEmpty && !canRecord {
-                        message(AppLocalization.string("Offline recording isn’t available for this language. Choose another language or type below.", comment: "Speech unavailable"))
+                        message(AppLocalization.string("Offline recording isn’t available for this language. Change the language in Voice settings or type below.", comment: "Speech unavailable"))
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
@@ -133,6 +125,13 @@ struct VoiceEntryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        VoiceSettingsView()
+                    } label: { Image(systemName: "gearshape") }
+                    .disabled(busy)
+                    .accessibilityLabel(Text("Voice settings"))
+                }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") { isEditing = false }
@@ -142,21 +141,34 @@ struct VoiceEntryView: View {
                 Button("Record again", role: .destructive) { Task { await recorder.start(localeID: language) } }
                 Button("Keep text", role: .cancel) {}
             } message: { Text("A new recording will replace the text below.") }
-            .sheet(isPresented: $showsLanguages) { SpeechLanguagePicker(selection: $language) }
             .task {
                 languages = SpeechLanguages.all()
                 language = SpeechLanguages.resolvedID(defaultLanguage, in: languages)
                 #if DEBUG
                 if let text = QALaunch.value(for: "-qa-transcript") { recorder.transcript = text }
                 #endif
+                await startAutomaticallyIfNeeded()
             }
             .onChange(of: recorder.transcript) { _, _ in parseError = nil }
-            .onChange(of: scenePhase) { _, phase in if phase == .background { recorder.stop() } }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .background { attemptedAutomaticStart = true; recorder.stop() }
+                else if phase == .active { Task { await startAutomaticallyIfNeeded() } }
+            }
             .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { _ in
                 if recorder.isRecording { recorder.stop() }
             }
-            .onDisappear { recorder.stop() }
+            .onDisappear { attemptedAutomaticStart = true; recorder.stop() }
         }
+    }
+
+    @MainActor
+    private func startAutomaticallyIfNeeded() async {
+        // One attempt per screen presentation. Permission dialogs, stopping,
+        // interruptions and returning from Settings must not restart the mic.
+        guard startsAutomatically, !attemptedAutomaticStart, scenePhase == .active,
+              !language.isEmpty, canRecord, !hasText, !busy, !Task.isCancelled else { return }
+        attemptedAutomaticStart = true
+        await recorder.start(localeID: language)
     }
 
     private var reviewBar: some View {
@@ -179,6 +191,15 @@ struct VoiceEntryView: View {
             .glassProminentButtonStyle()
             .tint(AppTheme.savingsAccent)
             .disabled(busy || !hasText)
+            if let onManualEntry {
+                Button("Enter manually") {
+                    recorder.stop()
+                    onManualEntry()
+                    dismiss()
+                }
+                .font(.footnote.weight(.medium))
+                .frame(minHeight: AppTheme.minimumTapTarget)
+            }
             Text("Check the details next. Save only when you’re ready.")
                 .font(.caption).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

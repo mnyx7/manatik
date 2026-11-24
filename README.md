@@ -121,15 +121,25 @@ Shake your iPhone in the app, or write to
 
 ## Voice entry MVP
 
-On New Entry, tap the small microphone next to Income/Expense. Choose a
+On New Entry, tap the small microphone next to Save. Choose a
 speech language if needed, then tap the round microphone to record. Tap Stop, correct the transcript if necessary, and
 choose Review entry. The existing editable form shows the result; only Save
 writes it to the ledger. Bills use the existing bookmark flag.
 
 Settings → Language & voice offers an app language (Follow iPhone, English,
-Russian or Azerbaijani) and a default dictation language. App language changes
-apply immediately, including model-generated text. A temporary language change
-in the recording sheet does not overwrite the saved default.
+Russian or Azerbaijani) and a dedicated Voice settings page. Voice settings
+controls dictation language, example visibility, whether + opens voice first,
+and whether the recorder starts automatically on opening. All switches except
+example visibility default to off. App language changes
+apply immediately, including model-generated text. Dictation language lives in Voice settings, accessible from Settings or the
+voice screen’s gear button. The Bills bookmark sits beside Income/Expense.
+
+Voice-first entry offers Enter manually to reach the usual amount form.
+Review shows the editable form without reopening voice; Cancel closes a
+voice-first add. Category shortcuts and editing keep their usual forms.
+Automatic recording attempts only once per presentation, after the screen is
+active, and still requests the required permissions. Stopping, interruptions,
+backgrounding and returning from settings do not restart the microphone.
 
 The searchable language picker lists all locales reported by Apple Speech,
 with native language names and a separate section for languages unavailable

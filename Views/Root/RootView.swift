@@ -72,6 +72,7 @@ struct RootView: View {
     @Environment(AppLinks.self) private var links
 
     @AppStorage("appLanguage") private var appLanguage = "system"
+    @AppStorage("voiceOpensOnPlus") private var voiceOpensOnPlus = false
     @State private var viewModel = HomeViewModel()
     @State private var tab: Tab = .home
     @State private var path: [RootDestination] = []
@@ -104,7 +105,8 @@ struct RootView: View {
         .sheet(isPresented: $viewModel.isShowingAddSheet) {
             TransactionFormView(
                 store: store,
-                mode: .add(preselectedCategoryID: viewModel.quickAddCategoryID)
+                mode: .add(preselectedCategoryID: viewModel.quickAddCategoryID),
+                startsWithVoice: voiceOpensOnPlus && viewModel.quickAddCategoryID == nil
             )
         }
         .sheet(item: $viewModel.editingOccurrence) { occurrence in
