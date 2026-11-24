@@ -1,5 +1,6 @@
 import AVFoundation
-import Speech
+// Speech predates Sendable annotations; its audio-buffer API is called from the audio tap.
+@preconcurrency import Speech
 import Observation
 
 @MainActor @Observable
@@ -22,8 +23,13 @@ final class VoiceEntryRecorder {
         let token = UUID()
         generation = token
         defer { if generation == token { isPreparing = false } }
+        // These Objective-C callbacks can run on background queues. Without
+        // @Sendable, Swift 6 infers this class's MainActor isolation and traps
+        // at callback entry before a continuation or Task can hop actors.
         let speech = await withCheckedContinuation { continuation in
-            SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
+            SFSpeechRecognizer.requestAuthorization { @Sendable status in
+                continuation.resume(returning: status)
+            }
         }
         guard generation == token else { return }
         guard speech == .authorized else {
@@ -31,7 +37,9 @@ final class VoiceEntryRecorder {
             return
         }
         let microphone = await withCheckedContinuation { continuation in
-            AVAudioApplication.requestRecordPermission { continuation.resume(returning: $0) }
+            AVAudioApplication.requestRecordPermission { @Sendable granted in
+                continuation.resume(returning: granted)
+            }
         }
         guard generation == token else { return }
         guard microphone else {
@@ -57,11 +65,11 @@ final class VoiceEntryRecorder {
             guard format.sampleRate > 0, format.channelCount > 0 else {
                 throw NSError(domain: "VoiceEntry", code: 1, userInfo: [NSLocalizedDescriptionKey: "No microphone is available."])
             }
-            node.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+            node.installTap(onBus: 0, bufferSize: 1024, format: format) { @Sendable buffer, _ in
                 request.append(buffer)
             }
             hasTap = true
-            task = recognizer.recognitionTask(with: request) { [weak self] result, error in
+            task = recognizer.recognitionTask(with: request) { @Sendable [weak self] result, error in
                 let text = result?.bestTranscription.formattedString
                 let final = result?.isFinal == true
                 let message = error?.localizedDescription
