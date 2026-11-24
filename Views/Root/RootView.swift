@@ -333,6 +333,7 @@ struct RootView: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(width: 52, height: 52)
+                .contentShape(.circle)
         }
         .buttonStyle(.plain)
         .liquidGlass(in: .circle, tint: Color.accentColor.opacity(0.85), interactive: true)
