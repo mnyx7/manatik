@@ -22,6 +22,7 @@ struct TransactionFormView: View {
     @State private var voiceWasInitialScreen = false
     @State private var isShowingVoiceEntry = false
     @State private var voiceReviewNotice = false
+    @State private var voiceReviewMessage: String?
     @State private var isShowingScopeChoice = false
     @State private var isShowingDeleteChoice = false
     @State private var isSearchingCategories = false
@@ -46,7 +47,7 @@ struct TransactionFormView: View {
                     }
 
                     if voiceReviewNotice {
-                        Text("Review the amount, currency, category and date, then tap Save. Nothing has been saved yet.")
+                        Text(voiceReviewMessage ?? AppLocalization.string("Review the amount, currency, category and date, then tap Save. Nothing has been saved yet.", comment: "Voice entry review"))
                             .font(.footnote).foregroundStyle(.secondary)
                     }
                     amountCard
@@ -169,6 +170,7 @@ struct TransactionFormView: View {
                     viewModel.note = result.note
                     viewModel.isFeatured = result.isBill
                     viewModel.date = Date()
+                    voiceReviewMessage = result.reviewMessage
                     voiceReviewNotice = true
                 }
             }

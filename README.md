@@ -166,8 +166,26 @@ Run parser regression checks on macOS with Xcode installed:
 
 ```sh
 python3 Scripts/test_voice_parser.py
+python3 Scripts/test_voice_recorder.py
 ```
 
 Before release, test real microphone recognition on supported iPhones,
 permission allow/deny, unavailable languages, cancellation, interruptions,
 and review/save/cancel with a test ledger.
+
+Voice recognition uses a dictation hint and up to 100 context phrases from
+financial vocabulary and visible category names. Hints bias Apple's recognizer;
+they cannot guarantee transcription of mixed-language speech. Stop ends audio
+capture and waits for a final transcription before enabling review. A five-second
+fallback preserves the partial transcript with an explicit warning if Apple does
+not finish. Leaving the screen cancels immediately and invalidates old callbacks.
+The recorder regression harness exercises production lifecycle code against
+hardware-free Speech/audio stand-ins; real recognition accuracy requires testing
+on an iPhone.
+
+Command parsing understands income/доход/входящие/gəlir and
+expense/расход/xərc, transportation/транспорт, shopping, bill markers, grouped
+amounts and thousands (e.g. «пять тысяч», «5 тысяч», «5 000»). One command must
+contain one amount and currency, including when numbers use different languages.
+Explicit income stays income even if an expense-only category is spoken; the
+review form selects Other and asks the user to choose a compatible category.

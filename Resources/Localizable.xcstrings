@@ -2406,6 +2406,23 @@
         }
       }
     },
+    "Finishing…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завершаю распознавание…"
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nitq tanıma tamamlanır…"
+          }
+        }
+      }
+    },
     "Follow iPhone" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3357,6 +3374,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muna — это больше, чем учёт расходов. Это уютный дом для ваших денег: место, где ценится каждая копейка, копить легко, а финансовое благополучие ощущается естественно."
+          }
+        }
+      }
+    },
+    "More than one category was mentioned. Other is selected; choose a category before saving." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Названо несколько категорий. Выбрано «Другое» — уточните категорию перед сохранением."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir neçə kateqoriya deyilib. «Digər» seçilib; yadda saxlamazdan əvvəl kateqoriyanı dəqiqləşdirin."
           }
         }
       }
@@ -4693,6 +4727,23 @@
         }
       }
     },
+    "Recognition did not finish in time. Check the available text before continuing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Распознавание не завершилось вовремя. Проверьте полученный текст перед продолжением."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nitq tanıma vaxtında tamamlanmadı. Davam etməzdən əvvəl alınan mətni yoxlayın."
+          }
+        }
+      }
+    },
     "Record" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6020,6 +6071,23 @@
     "The file needs at least a date column and an amount column." : {
       "comment" : "CSV import error",
       "extractionState" : "manual"
+    },
+    "The named category is not available for this entry type. Other is selected; choose a category before saving." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Названная категория недоступна для этого типа записи. Выбрано «Другое» — уточните категорию перед сохранением."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dediyiniz kateqoriya bu qeyd növü üçün əlçatan deyil. «Digər» seçilib; yadda saxlamazdan əvvəl kateqoriyanı dəqiqləşdirin."
+          }
+        }
+      }
     },
     "These are the categories you can pick when adding an expense." : {
       "comment" : "A description of the categories that can be selected when adding an expense.",

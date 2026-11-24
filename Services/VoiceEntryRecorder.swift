@@ -8,6 +8,7 @@ final class VoiceEntryRecorder {
     var transcript = ""
     var isRecording = false
     var isPreparing = false
+    var isFinalizing = false
     var errorMessage: String?
     private let engine = AVAudioEngine()
     private var request: SFSpeechAudioBufferRecognitionRequest?
@@ -15,9 +16,11 @@ final class VoiceEntryRecorder {
     private var hasTap = false
     private var generation = UUID()
     private var timeout: Task<Void, Never>?
+    private var finalizationTimeout: Task<Void, Never>?
+    private var recognizer: SFSpeechRecognizer?
 
-    func start(localeID: String) async {
-        guard !isRecording, !isPreparing else { return }
+    func start(localeID: String, contextualStrings: [String] = []) async {
+        guard !isRecording, !isPreparing, !isFinalizing else { return }
         isPreparing = true
         errorMessage = nil
         let token = UUID()
@@ -51,6 +54,7 @@ final class VoiceEntryRecorder {
             errorMessage = AppLocalization.string("Offline speech recognition is unavailable for this language on this iPhone. Try another language or type below.", comment: "Voice entry feedback")
             return
         }
+        self.recognizer = recognizer
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.record, mode: .measurement, options: .duckOthers)
@@ -58,12 +62,20 @@ final class VoiceEntryRecorder {
             let request = SFSpeechAudioBufferRecognitionRequest()
             request.requiresOnDeviceRecognition = true
             request.shouldReportPartialResults = true
+            request.taskHint = .dictation
+            request.contextualStrings = contextualStrings
             self.request = request
             transcript = ""
             let node = engine.inputNode
             let format = node.outputFormat(forBus: 0)
             guard format.sampleRate > 0, format.channelCount > 0 else {
-                throw NSError(domain: "VoiceEntry", code: 1, userInfo: [NSLocalizedDescriptionKey: "No microphone is available."])
+                throw NSError(
+                    domain: "VoiceEntry",
+                    code: 1,
+                    userInfo: [NSLocalizedDescriptionKey: AppLocalization.string(
+                        "No microphone is available.", comment: "Voice recording error"
+                    )]
+                )
             }
             node.installTap(onBus: 0, bufferSize: 1024, format: format) { @Sendable buffer, _ in
                 request.append(buffer)
@@ -88,7 +100,7 @@ final class VoiceEntryRecorder {
             timeout = Task { [weak self] in
                 try? await Task.sleep(for: .seconds(45))
                 guard !Task.isCancelled else { return }
-                self?.stop()
+                self?.finish()
             }
         } catch {
             stop()
@@ -96,18 +108,44 @@ final class VoiceEntryRecorder {
         }
     }
 
+    /// Stop capturing audio, but let Speech finish revising the transcript.
+    func finish() {
+        guard isRecording, task != nil else { return }
+        isFinalizing = true
+        stopMicrophone()
+        timeout?.cancel()
+        timeout = nil
+        request?.endAudio()
+        let token = generation
+        finalizationTimeout = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled, let self, self.generation == token, self.isFinalizing else { return }
+            self.errorMessage = AppLocalization.string("Recognition did not finish in time. Check the available text before continuing.", comment: "Speech finalization timeout")
+            self.stop()
+        }
+    }
+
+    private func stopMicrophone() {
+        engine.stop()
+        if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
+        isRecording = false
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    /// Cancel immediately when leaving the screen; stale callbacks are ignored.
     func stop() {
         generation = UUID()
         timeout?.cancel()
         timeout = nil
-        engine.stop()
-        if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
+        finalizationTimeout?.cancel()
+        finalizationTimeout = nil
+        stopMicrophone()
         request?.endAudio()
         task?.cancel()
         task = nil
         request = nil
-        isRecording = false
+        recognizer = nil
+        isFinalizing = false
         isPreparing = false
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 }

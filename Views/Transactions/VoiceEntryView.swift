@@ -19,7 +19,7 @@ struct VoiceEntryView: View {
     var onManualEntry: (() -> Void)? = nil
     let onReview: (VoiceEntryParser.Result) -> Void
 
-    private var busy: Bool { recorder.isRecording || recorder.isPreparing }
+    private var busy: Bool { recorder.isRecording || recorder.isPreparing || recorder.isFinalizing }
     private var hasText: Bool { !recorder.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     private var selectedLanguage: SpeechLanguage? { languages.first { $0.id == language } }
     private var canRecord: Bool { selectedLanguage?.supportsOffline == true }
@@ -58,21 +58,21 @@ struct VoiceEntryView: View {
                             attemptedAutomaticStart = true
                             isEditing = false
                             parseError = nil
-                            if recorder.isRecording { recorder.stop() }
+                            if recorder.isRecording { recorder.finish() }
                             else if hasText { showsReplaceConfirmation = true }
-                            else { Task { await recorder.start(localeID: language) } }
+                            else { Task { await startRecording() } }
                         } label: {
-                            Image(systemName: recorder.isPreparing ? "hourglass" : recorder.isRecording ? "stop.fill" : "mic.fill")
+                            Image(systemName: (recorder.isPreparing || recorder.isFinalizing) ? "hourglass" : recorder.isRecording ? "stop.fill" : "mic.fill")
                                 .font(.system(size: 24, weight: .medium))
                                 .foregroundStyle(recorder.isRecording ? AppTheme.expenseAccent : AppTheme.savingsAccent)
                                 .frame(width: 64, height: 64)
                                 .liquidGlass(in: .circle, tint: (recorder.isRecording ? AppTheme.expenseAccent : AppTheme.savingsAccent).opacity(0.12), interactive: true)
                         }
                         .buttonStyle(.plain)
-                        .disabled(recorder.isPreparing || (!canRecord && !recorder.isRecording))
+                        .disabled(recorder.isPreparing || recorder.isFinalizing || (!canRecord && !recorder.isRecording))
                         .accessibilityLabel(recorder.isRecording ? Text("Stop recording") : Text("Start recording"))
                         .sensoryFeedback(.selection, trigger: recorder.isRecording)
-                        Text(recorder.isPreparing ? "Getting ready…" : recorder.isRecording ? "Listening. Tap to finish." : hasText ? "Tap to record again" : "Tap to speak")
+                        Text(recorder.isFinalizing ? "Finishing…" : recorder.isPreparing ? "Getting ready…" : recorder.isRecording ? "Listening. Tap to finish." : hasText ? "Tap to record again" : "Tap to speak")
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(recorder.isRecording ? AppTheme.expenseAccent : .secondary)
                             .accessibilityAddTraits(.updatesFrequently)
@@ -138,7 +138,7 @@ struct VoiceEntryView: View {
                 }
             }
             .confirmationDialog("Replace your words?", isPresented: $showsReplaceConfirmation, titleVisibility: .visible) {
-                Button("Record again", role: .destructive) { Task { await recorder.start(localeID: language) } }
+                Button("Record again", role: .destructive) { Task { await startRecording() } }
                 Button("Keep text", role: .cancel) {}
             } message: { Text("A new recording will replace the text below.") }
             .task {
@@ -155,10 +155,16 @@ struct VoiceEntryView: View {
                 else if phase == .active { Task { await startAutomaticallyIfNeeded() } }
             }
             .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { _ in
-                if recorder.isRecording { recorder.stop() }
+                if recorder.isRecording { recorder.finish() }
             }
             .onDisappear { attemptedAutomaticStart = true; recorder.stop() }
         }
+    }
+
+    @MainActor
+    private func startRecording() async {
+        await recorder.start(localeID: language,
+                             contextualStrings: VoiceEntryParser.recognitionHints(categories: categories, localeID: language))
     }
 
     @MainActor
@@ -168,7 +174,7 @@ struct VoiceEntryView: View {
         guard startsAutomatically, !attemptedAutomaticStart, scenePhase == .active,
               !language.isEmpty, canRecord, !hasText, !busy, !Task.isCancelled else { return }
         attemptedAutomaticStart = true
-        await recorder.start(localeID: language)
+        await startRecording()
     }
 
     private var reviewBar: some View {
