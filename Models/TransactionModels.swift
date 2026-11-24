@@ -15,8 +15,8 @@ enum TransactionType: String, Codable, CaseIterable, Identifiable, Hashable {
 
     var localizedTitle: String {
         switch self {
-        case .income: return NSLocalizedString("Income", comment: "Transaction type")
-        case .expense: return NSLocalizedString("Expense", comment: "Transaction type")
+        case .income: return AppLocalization.string("Income", comment: "Transaction type")
+        case .expense: return AppLocalization.string("Expense", comment: "Transaction type")
         }
     }
 }
@@ -46,11 +46,11 @@ enum RecurrenceRule: String, Codable, CaseIterable, Identifiable, Hashable {
 
     var localizedTitle: String {
         switch self {
-        case .none: return NSLocalizedString("Never", comment: "Recurrence rule")
-        case .daily: return NSLocalizedString("Daily", comment: "Recurrence rule")
-        case .weekly: return NSLocalizedString("Weekly", comment: "Recurrence rule")
-        case .monthly: return NSLocalizedString("Monthly", comment: "Recurrence rule")
-        case .yearly: return NSLocalizedString("Yearly", comment: "Recurrence rule")
+        case .none: return AppLocalization.string("Never", comment: "Recurrence rule")
+        case .daily: return AppLocalization.string("Daily", comment: "Recurrence rule")
+        case .weekly: return AppLocalization.string("Weekly", comment: "Recurrence rule")
+        case .monthly: return AppLocalization.string("Monthly", comment: "Recurrence rule")
+        case .yearly: return AppLocalization.string("Yearly", comment: "Recurrence rule")
         }
     }
 }
@@ -79,7 +79,7 @@ struct TransactionCategory: Identifiable, Codable, Hashable {
     }
 
     var localizedName: String {
-        isCustom ? name : NSLocalizedString(name, comment: "Category name")
+        isCustom ? name : AppLocalization.string(name, comment: "Category name")
     }
 
     enum CodingKeys: String, CodingKey {
@@ -323,10 +323,10 @@ enum ActivityScope: String, CaseIterable, Identifiable, Hashable {
 
     var localizedTitle: String {
         switch self {
-        case .all: return NSLocalizedString("All", comment: "Activity scope")
-        case .income: return NSLocalizedString("Income", comment: "Activity scope")
-        case .expense: return NSLocalizedString("Expense", comment: "Activity scope")
-        case .bills: return NSLocalizedString("Bills", comment: "Activity scope")
+        case .all: return AppLocalization.string("All", comment: "Activity scope")
+        case .income: return AppLocalization.string("Income", comment: "Activity scope")
+        case .expense: return AppLocalization.string("Expense", comment: "Activity scope")
+        case .bills: return AppLocalization.string("Bills", comment: "Activity scope")
         }
     }
 

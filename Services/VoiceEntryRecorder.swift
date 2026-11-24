@@ -33,7 +33,7 @@ final class VoiceEntryRecorder {
         }
         guard generation == token else { return }
         guard speech == .authorized else {
-            errorMessage = "Allow Speech Recognition for Muna in Settings, or type your entry below."
+            errorMessage = AppLocalization.string("Allow Speech Recognition for Muna in Settings, or type your entry below.", comment: "Voice entry feedback")
             return
         }
         let microphone = await withCheckedContinuation { continuation in
@@ -43,12 +43,12 @@ final class VoiceEntryRecorder {
         }
         guard generation == token else { return }
         guard microphone else {
-            errorMessage = "Allow Microphone access for Muna in Settings, or type your entry below."
+            errorMessage = AppLocalization.string("Allow Microphone access for Muna in Settings, or type your entry below.", comment: "Voice entry feedback")
             return
         }
         guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: localeID)),
               recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else {
-            errorMessage = "Offline speech recognition is unavailable for this language on this iPhone. Try another language or type below."
+            errorMessage = AppLocalization.string("Offline speech recognition is unavailable for this language on this iPhone. Try another language or type below.", comment: "Voice entry feedback")
             return
         }
         do {

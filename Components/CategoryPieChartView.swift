@@ -47,7 +47,7 @@ struct CategoryPieChartView: View {
 
         let other = TransactionCategory(
             id: Self.aggregateID,
-            name: NSLocalizedString("Other categories", comment: "Chart slice"),
+            name: AppLocalization.string("Other categories", comment: "Chart slice"),
             icon: "ellipsis",
             kind: .both,
             isCustom: true
@@ -138,7 +138,7 @@ struct CategoryPieChartView: View {
                 .accessibilityLabel(Text(slice.category.localizedName))
                 .accessibilityValue(
                     String(
-                        format: NSLocalizedString("%1$@, %2$d percent", comment: "Accessibility"),
+                        format: AppLocalization.string("%1$@, %2$d percent", comment: "Accessibility"),
                         amount,
                         percent
                     )

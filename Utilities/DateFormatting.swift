@@ -20,7 +20,7 @@ enum DateFormatting {
         calendar: Calendar,
         configure: (DateFormatter) -> Void
     ) -> DateFormatter {
-        let cacheKey = "\(key)|\(Locale.current.identifier)|\(calendar.identifier)"
+        let cacheKey = "\(key)|\(AppLocalization.locale.identifier)|\(calendar.identifier)"
 
         lock.lock()
         defer { lock.unlock() }
@@ -30,7 +30,7 @@ enum DateFormatting {
         }
 
         let formatter = DateFormatter()
-        formatter.locale = Locale.current
+        formatter.locale = AppLocalization.locale
         formatter.calendar = calendar
         configure(formatter)
         formatters[cacheKey] = formatter
@@ -61,13 +61,13 @@ enum DateFormatting {
 
     static func daySectionTitle(_ date: Date, calendar: Calendar = .current) -> String {
         if calendar.isDateInToday(date) {
-            return NSLocalizedString("Today", comment: "Day section header")
+            return AppLocalization.string("Today", comment: "Day section header")
         }
         if calendar.isDateInYesterday(date) {
-            return NSLocalizedString("Yesterday", comment: "Day section header")
+            return AppLocalization.string("Yesterday", comment: "Day section header")
         }
         if calendar.isDateInTomorrow(date) {
-            return NSLocalizedString("Tomorrow", comment: "Day section header")
+            return AppLocalization.string("Tomorrow", comment: "Day section header")
         }
         return dayAndMonth(date, calendar: calendar)
     }

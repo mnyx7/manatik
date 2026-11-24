@@ -58,7 +58,7 @@ final class SettingsViewModel {
 
     var entryCountDescription: String {
         String(
-            format: NSLocalizedString("%1$d entries, %2$d repeating", comment: "Settings summary"),
+            format: AppLocalization.string("%1$d entries, %2$d repeating", comment: "Settings summary"),
             store.state.transactions.count,
             store.state.recurringSeries.count
         )
@@ -90,7 +90,7 @@ final class SettingsViewModel {
         let digits = monthStartDayInput.filter(\.isWholeNumber)
 
         guard let value = Int(digits) else {
-            monthStartDayError = NSLocalizedString("Enter a day number.", comment: "Validation")
+            monthStartDayError = AppLocalization.string("Enter a day number.", comment: "Validation")
             monthStartDayInput = String(store.state.settings.monthStartDay)
             return
         }
@@ -98,7 +98,7 @@ final class SettingsViewModel {
         if value < DateRangeCalculator.minimumMonthStartDay
             || value > DateRangeCalculator.maximumMonthStartDay {
             monthStartDayError = String(
-                format: NSLocalizedString(
+                format: AppLocalization.string(
                     "Pick a day between %1$d and %2$d. Later days do not exist in every month.",
                     comment: "Validation"
                 ),
@@ -223,7 +223,7 @@ final class SettingsViewModel {
             pendingCSV = try CSVImporter.preview(data: try Data(contentsOf: url))
         } catch {
             errorMessage = String(
-                format: NSLocalizedString("Import failed: %@", comment: "Error"),
+                format: AppLocalization.string("Import failed: %@", comment: "Error"),
                 error.localizedDescription
             )
         }
@@ -235,7 +235,7 @@ final class SettingsViewModel {
         var parts: [String] = []
         if let first = preview.firstDate, let last = preview.lastDate {
             parts.append(String(
-                format: NSLocalizedString("%1$d entries from %2$@ to %3$@.", comment: "CSV import summary"),
+                format: AppLocalization.string("%1$d entries from %2$@ to %3$@.", comment: "CSV import summary"),
                 preview.rows.count,
                 DateFormatting.dayMonthYear(first),
                 DateFormatting.dayMonthYear(last)
@@ -245,24 +245,24 @@ final class SettingsViewModel {
         let newTags = preview.tags.filter { !known.contains($0.lowercased()) }.sorted()
         if !newTags.isEmpty {
             parts.append(String(
-                format: NSLocalizedString("New categories: %@.", comment: "CSV import summary"),
+                format: AppLocalization.string("New categories: %@.", comment: "CSV import summary"),
                 newTags.prefix(6).joined(separator: ", ") + (newTags.count > 6 ? "…" : "")
             ))
         }
         let others = preview.currencies.subtracting([currentCurrency.rawValue])
         if !others.isEmpty {
             parts.append(String(
-                format: NSLocalizedString("Entries in %@ keep that currency and are not converted.", comment: "CSV import summary"),
+                format: AppLocalization.string("Entries in %@ keep that currency and are not converted.", comment: "CSV import summary"),
                 others.sorted().joined(separator: ", ")
             ))
         }
         if !preview.skippedLines.isEmpty {
             parts.append(String(
-                format: NSLocalizedString("%d rows could not be read and will be skipped.", comment: "CSV import summary"),
+                format: AppLocalization.string("%d rows could not be read and will be skipped.", comment: "CSV import summary"),
                 preview.skippedLines.count
             ))
         }
-        parts.append(NSLocalizedString("Your current entries stay as they are.", comment: "CSV import summary"))
+        parts.append(AppLocalization.string("Your current entries stay as they are.", comment: "CSV import summary"))
         return parts.joined(separator: "\n\n")
     }
 
@@ -271,7 +271,7 @@ final class SettingsViewModel {
         let added = store.addImported(preview.rows)
         pendingCSV = nil
         infoMessage = String(
-            format: NSLocalizedString("Added %d entries.", comment: "Confirmation"),
+            format: AppLocalization.string("Added %d entries.", comment: "Confirmation"),
             added
         )
     }
@@ -282,7 +282,7 @@ final class SettingsViewModel {
             isShowingExporter = true
         } catch {
             errorMessage = String(
-                format: NSLocalizedString("Could not prepare the export: %@", comment: "Error"),
+                format: AppLocalization.string("Could not prepare the export: %@", comment: "Error"),
                 error.localizedDescription
             )
         }
@@ -293,12 +293,12 @@ final class SettingsViewModel {
         switch result {
         case .success(let url):
             infoMessage = String(
-                format: NSLocalizedString("Backup saved to %@", comment: "Confirmation"),
+                format: AppLocalization.string("Backup saved to %@", comment: "Confirmation"),
                 url.lastPathComponent
             )
         case .failure(let error):
             errorMessage = String(
-                format: NSLocalizedString("Export failed: %@", comment: "Error"),
+                format: AppLocalization.string("Export failed: %@", comment: "Error"),
                 error.localizedDescription
             )
         }
@@ -322,14 +322,14 @@ final class SettingsViewModel {
                 pendingImport = try store.prepareImport(from: data)
             } catch {
                 errorMessage = String(
-                    format: NSLocalizedString("Import failed: %@", comment: "Error"),
+                    format: AppLocalization.string("Import failed: %@", comment: "Error"),
                     error.localizedDescription
                 )
             }
 
         case .failure(let error):
             errorMessage = String(
-                format: NSLocalizedString("Import failed: %@", comment: "Error"),
+                format: AppLocalization.string("Import failed: %@", comment: "Error"),
                 error.localizedDescription
             )
         }
@@ -338,7 +338,7 @@ final class SettingsViewModel {
     var importWarning: String {
         guard let pending = pendingImport else { return "" }
         return String(
-            format: NSLocalizedString(
+            format: AppLocalization.string(
                 "This replaces everything on this device: %1$d entries and %2$d repeating entries will be removed and replaced with %3$d entries and %4$d repeating entries.",
                 comment: "Import warning"
             ),
@@ -357,14 +357,14 @@ final class SettingsViewModel {
 
         if let snapshot {
             infoMessage = String(
-                format: NSLocalizedString(
+                format: AppLocalization.string(
                     "Backup imported. Your previous data was saved as %@ in the app's Documents folder.",
                     comment: "Confirmation"
                 ),
                 snapshot.lastPathComponent
             )
         } else {
-            infoMessage = NSLocalizedString("Backup imported.", comment: "Confirmation")
+            infoMessage = AppLocalization.string("Backup imported.", comment: "Confirmation")
         }
     }
 

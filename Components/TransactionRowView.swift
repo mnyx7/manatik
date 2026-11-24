@@ -119,27 +119,27 @@ struct TransactionRowView: View {
         parts.append(DateFormatting.shortDate(item.date))
 
         if item.isProjected {
-            parts.append(NSLocalizedString("Forecast, not yet recorded", comment: "Accessibility"))
+            parts.append(AppLocalization.string("Forecast, not yet recorded", comment: "Accessibility"))
         } else if item.isRecurring {
-            parts.append(NSLocalizedString("Part of a repeating entry", comment: "Accessibility"))
+            parts.append(AppLocalization.string("Part of a repeating entry", comment: "Accessibility"))
         }
 
         if item.isFeatured {
-            parts.append(NSLocalizedString("Saved as a bill", comment: "Accessibility"))
+            parts.append(AppLocalization.string("Saved as a bill", comment: "Accessibility"))
         }
         if item.hasAttachments {
             parts.append(
                 String(
-                    format: NSLocalizedString("%d attachments", comment: "Accessibility"),
+                    format: AppLocalization.string("%d attachments", comment: "Accessibility"),
                     item.attachmentCount
                 )
             )
         }
         if item.isSavingsContribution {
-            parts.append(NSLocalizedString("Savings contribution", comment: "Accessibility"))
+            parts.append(AppLocalization.string("Savings contribution", comment: "Accessibility"))
         }
         if item.isLoanPayment {
-            parts.append(NSLocalizedString("Loan payment", comment: "Accessibility"))
+            parts.append(AppLocalization.string("Loan payment", comment: "Accessibility"))
         }
 
         return parts.joined(separator: ", ")

@@ -89,7 +89,7 @@ struct SavingsView: View {
                 if let completedAt = progress.goal.completedAt {
                     Text(
                         String(
-                            format: NSLocalizedString("Reached %@", comment: "Completed goal"),
+                            format: AppLocalization.string("Reached %@", comment: "Completed goal"),
                             DateFormatting.dayMonthYear(completedAt)
                         )
                     )
@@ -189,7 +189,7 @@ struct SavingsGoalDetailView: View {
 
                     if goal.openingAmount > 0 {
                         logRow(
-                            title: NSLocalizedString("Already saved before tracking", comment: "Opening balance"),
+                            title: AppLocalization.string("Already saved before tracking", comment: "Opening balance"),
                             amount: goal.openingAmount,
                             date: nil
                         )

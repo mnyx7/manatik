@@ -79,7 +79,7 @@ struct SpendingChartView: View {
                     .annotation(position: .top, alignment: .leading) {
                         Text(
                             String(
-                                format: NSLocalizedString("avg %@", comment: "Chart annotation"),
+                                format: AppLocalization.string("avg %@", comment: "Chart annotation"),
                                 CurrencyFormatting.format(amount: averagePerDay, currency: currency)
                             )
                         )
@@ -122,7 +122,7 @@ struct SpendingChartView: View {
     private var summaryForAccessibility: String {
         let total = points.reduce(Decimal.zero) { $0 + $1.expense }
         return String(
-            format: NSLocalizedString("%1$@ spent over %2$d days, averaging %3$@ a day", comment: "Accessibility"),
+            format: AppLocalization.string("%1$@ spent over %2$d days, averaging %3$@ a day", comment: "Accessibility"),
             CurrencyFormatting.format(amount: total, currency: currency),
             points.count,
             CurrencyFormatting.format(amount: averagePerDay, currency: currency)

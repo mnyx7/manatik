@@ -54,13 +54,13 @@ enum HomeStyle: String, Codable, CaseIterable, Identifiable, Hashable {
 
     var localizedTitle: String {
         switch self {
-        case .classic: return NSLocalizedString("Classic", comment: "Home style")
-        case .cozyGirl: return NSLocalizedString("Cozy", comment: "Home style")
-        case .cozyBoy: return NSLocalizedString("Cozy, him", comment: "Home style")
-        case .cozyChristmas: return NSLocalizedString("Cozy Christmas", comment: "Home style")
-        case .posterGirl: return NSLocalizedString("Poster", comment: "Home style")
-        case .posterBoy: return NSLocalizedString("Poster, him", comment: "Home style")
-        case .posterChristmas: return NSLocalizedString("Poster Christmas", comment: "Home style")
+        case .classic: return AppLocalization.string("Classic", comment: "Home style")
+        case .cozyGirl: return AppLocalization.string("Cozy", comment: "Home style")
+        case .cozyBoy: return AppLocalization.string("Cozy, him", comment: "Home style")
+        case .cozyChristmas: return AppLocalization.string("Cozy Christmas", comment: "Home style")
+        case .posterGirl: return AppLocalization.string("Poster", comment: "Home style")
+        case .posterBoy: return AppLocalization.string("Poster, him", comment: "Home style")
+        case .posterChristmas: return AppLocalization.string("Poster Christmas", comment: "Home style")
         }
     }
 }

@@ -37,7 +37,7 @@ final class FeedbackMailer: NSObject, MFMailComposeViewControllerDelegate {
     func compose(screenshot: UIImage? = nil) {
         guard !isPresenting, let presenter = Self.topViewController else { return }
 
-        let subject = NSLocalizedString("muna feedback", comment: "Feedback email subject")
+        let subject = AppLocalization.string("muna feedback", comment: "Feedback email subject")
 
         guard MFMailComposeViewController.canSendMail() else {
             // No account in Apple Mail: hand over to whatever mail app is set
@@ -84,17 +84,17 @@ final class FeedbackMailer: NSObject, MFMailComposeViewControllerDelegate {
         UIApplication.shared.open(url) { opened in
             guard !opened else { return }
             let alert = UIAlertController(
-                title: NSLocalizedString("No mail app found", comment: "Feedback fallback"),
+                title: AppLocalization.string("No mail app found", comment: "Feedback fallback"),
                 message: String(
-                    format: NSLocalizedString("Write to %@ from any mail app.", comment: "Feedback fallback"),
+                    format: AppLocalization.string("Write to %@ from any mail app.", comment: "Feedback fallback"),
                     Self.address
                 ),
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: NSLocalizedString("Copy address", comment: "Feedback fallback"), style: .default) { _ in
+            alert.addAction(UIAlertAction(title: AppLocalization.string("Copy address", comment: "Feedback fallback"), style: .default) { _ in
                 UIPasteboard.general.string = Self.address
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert"), style: .cancel))
+            alert.addAction(UIAlertAction(title: AppLocalization.string("OK", comment: "Alert"), style: .cancel))
             presenter.present(alert, animated: true)
         }
     }

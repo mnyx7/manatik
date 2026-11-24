@@ -71,6 +71,7 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppLinks.self) private var links
 
+    @AppStorage("appLanguage") private var appLanguage = "system"
     @State private var viewModel = HomeViewModel()
     @State private var tab: Tab = .home
     @State private var path: [RootDestination] = []
@@ -83,6 +84,7 @@ struct RootView: View {
         ZStack(alignment: .bottom) {
             NavigationStack(path: $path) {
                 content
+                    .id(appLanguage)
                     .navigationDestination(for: RootDestination.self, destination: destination)
             }
 
@@ -430,21 +432,21 @@ struct RootView: View {
 
     private func deleteDialogMessage(for occurrence: TransactionOccurrence) -> String {
         if occurrence.isSavingsContribution {
-            return NSLocalizedString(
+            return AppLocalization.string(
                 "This also removes the money from its savings goal.",
                 comment: "Delete message"
             )
         }
         if occurrence.isLoanPayment {
-            return NSLocalizedString(
+            return AppLocalization.string(
                 "This also removes the payment from its loan.",
                 comment: "Delete message"
             )
         }
         guard occurrence.isRecurring else {
-            return NSLocalizedString("This cannot be undone.", comment: "Delete message")
+            return AppLocalization.string("This cannot be undone.", comment: "Delete message")
         }
-        return NSLocalizedString(
+        return AppLocalization.string(
             "Choose how much of the series to remove. Past entries you keep stay in your history.",
             comment: "Delete message"
         )
@@ -487,7 +489,7 @@ struct RootView: View {
     private func persistenceMessage(for issue: PersistenceIssue) -> String {
         guard let copy = issue.backupCopy else { return issue.message }
         return issue.message + "\n\n" + String(
-            format: NSLocalizedString("A copy of the unreadable file was kept as %@.", comment: "Error detail"),
+            format: AppLocalization.string("A copy of the unreadable file was kept as %@.", comment: "Error detail"),
             copy.lastPathComponent
         )
     }
@@ -512,7 +514,7 @@ struct RootView: View {
         case "year": path = [.yearOverview]
         case "goal": path = [.savingsGoal(QALaunch.goalID)]
         case "loan": path = [.loanDetail(QALaunch.loanID)]
-        case "add", "currency": viewModel.isShowingAddSheet = true
+        case "add", "currency", "voice": viewModel.isShowingAddSheet = true
         case "reminders": path = [.reminders]
         case "categories": tab = .settings; path = [.categoryManager]
         case "about": tab = .settings; path = [.about]

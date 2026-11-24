@@ -64,9 +64,9 @@ struct AttachmentButton: View {
         .accessibilityLabel(Text("Attach a bill"))
         .accessibilityValue(
             attachments.isEmpty
-                ? NSLocalizedString("none attached", comment: "Accessibility")
+                ? AppLocalization.string("none attached", comment: "Accessibility")
                 : String(
-                    format: NSLocalizedString("%d attached", comment: "Accessibility"),
+                    format: AppLocalization.string("%d attached", comment: "Accessibility"),
                     attachments.count
                 )
         )
@@ -117,7 +117,7 @@ struct AttachmentButton: View {
                 attachments.append(
                     try AttachmentStore.store(
                         image: image,
-                        displayName: NSLocalizedString("Bill photo", comment: "Attachment name")
+                        displayName: AppLocalization.string("Bill photo", comment: "Attachment name")
                     )
                 )
             } catch {

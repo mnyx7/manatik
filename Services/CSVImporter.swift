@@ -40,13 +40,13 @@ enum CSVImportError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unreadable:
-            return NSLocalizedString("That file could not be read as text.", comment: "CSV import error")
+            return AppLocalization.string("That file could not be read as text.", comment: "CSV import error")
         case .noHeader:
-            return NSLocalizedString("The file is empty.", comment: "CSV import error")
+            return AppLocalization.string("The file is empty.", comment: "CSV import error")
         case .missingColumns:
-            return NSLocalizedString("The file needs at least a date column and an amount column.", comment: "CSV import error")
+            return AppLocalization.string("The file needs at least a date column and an amount column.", comment: "CSV import error")
         case .noRows:
-            return NSLocalizedString("No entries could be read from the file.", comment: "CSV import error")
+            return AppLocalization.string("No entries could be read from the file.", comment: "CSV import error")
         }
     }
 }

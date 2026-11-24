@@ -19,12 +19,12 @@ enum AttachmentStoreError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unreadableSource:
-            return NSLocalizedString("That file could not be read.", comment: "Attachment error")
+            return AppLocalization.string("That file could not be read.", comment: "Attachment error")
         case .unsupportedType:
-            return NSLocalizedString("Only images and PDF files can be attached.", comment: "Attachment error")
+            return AppLocalization.string("Only images and PDF files can be attached.", comment: "Attachment error")
         case .tooLarge(let limit):
             return String(
-                format: NSLocalizedString("Attachments must be under %d MB.", comment: "Attachment error"),
+                format: AppLocalization.string("Attachments must be under %d MB.", comment: "Attachment error"),
                 limit
             )
         }

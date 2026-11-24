@@ -139,17 +139,17 @@ enum DecimalAmountValidator {
         let sanitized = plain(raw)
 
         if sanitized.isEmpty {
-            return NSLocalizedString("Enter an amount.", comment: "Amount validation")
+            return AppLocalization.string("Enter an amount.", comment: "Amount validation")
         }
         guard let amount = Decimal(string: sanitized, locale: posixLocale) else {
-            return NSLocalizedString("That is not a valid number.", comment: "Amount validation")
+            return AppLocalization.string("That is not a valid number.", comment: "Amount validation")
         }
         if amount <= 0 {
-            return NSLocalizedString("Amount must be greater than zero.", comment: "Amount validation")
+            return AppLocalization.string("Amount must be greater than zero.", comment: "Amount validation")
         }
         if amount > maximumAmount {
             return String(
-                format: NSLocalizedString("Amount cannot exceed %@.", comment: "Amount validation"),
+                format: AppLocalization.string("Amount cannot exceed %@.", comment: "Amount validation"),
                 CurrencyFormatting.format(amount: maximumAmount, currency: .azn)
             )
         }

@@ -39,7 +39,7 @@ struct QuickAddBarView: View {
                     .buttonStyle(.plain)
                     .accessibilityLabel(
                         String(
-                            format: NSLocalizedString("Add %@ entry", comment: "Accessibility"),
+                            format: AppLocalization.string("Add %@ entry", comment: "Accessibility"),
                             category.localizedName
                         )
                     )

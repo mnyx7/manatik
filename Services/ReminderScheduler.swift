@@ -91,7 +91,7 @@ final class ReminderScheduler {
 
     private func schedule(_ reminder: PaymentReminder, currency: Currency) async throws {
         let content = UNMutableNotificationContent()
-        content.title = NSLocalizedString("Payment due", comment: "Notification title")
+        content.title = AppLocalization.string("Payment due", comment: "Notification title")
         content.body = body(for: reminder, currency: currency)
         content.sound = .default
 

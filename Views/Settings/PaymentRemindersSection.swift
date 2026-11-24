@@ -110,7 +110,7 @@ struct PaymentRemindersSection: View {
             parts.append(money)
         }
         if reminder.hasLapsed() {
-            parts.append(NSLocalizedString("passed", comment: "Reminder state"))
+            parts.append(AppLocalization.string("passed", comment: "Reminder state"))
         }
         return parts.joined(separator: " \u{00B7} ")
     }

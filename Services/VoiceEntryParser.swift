@@ -11,7 +11,7 @@ enum VoiceEntryParser {
         var note: String
     }
 
-    static func parse(_ text: String, currency: Currency, categories: [TransactionCategory]) throws -> Result {
+    static func parse(_ text: String, currency: Currency, categories: [TransactionCategory], localeID: String? = nil) throws -> Result {
         let normalized = text.lowercased().folding(options: [.diacriticInsensitive], locale: nil)
         let tokens = normalized.components(separatedBy: CharacterSet.letters.inverted).filter { !$0.isEmpty }
         func contains(_ words: [String]) -> Bool { words.contains { tokens.contains($0) } }
@@ -22,6 +22,8 @@ enum VoiceEntryParser {
             return Decimal(string: normalized[range].replacingOccurrences(of: ",", with: "."))
         }
         if amounts.isEmpty {
+            // NumberFormatter needs accents (for example Azerbaijani “beş”).
+            let numberTokens = text.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { !$0.isEmpty }
             let formatter = NumberFormatter()
             formatter.numberStyle = .spellOut
             func words(_ value: String) -> String {
@@ -31,17 +33,19 @@ enum VoiceEntryParser {
             }
             // Require a round trip: NumberFormatter can partially parse unrelated
             // words, and can misread English spaces in “twenty five”.
-            for language in ["en", "ru", "az"] {
+            var seenLanguages = Set<String>()
+            let numberLanguages: [String] = [localeID ?? "en", "en", "ru", "az"]
+            for language in numberLanguages.filter({ seenLanguages.insert($0).inserted }) {
                 formatter.locale = Locale(identifier: language)
                 var found: [Decimal] = []
                 var start = 0
-                while start < tokens.count {
+                while start < numberTokens.count {
                     var consumed = 0
-                    for length in stride(from: min(8, tokens.count - start), through: 1, by: -1) {
-                        let phrase = tokens[start..<(start + length)].joined(separator: " ")
+                    for length in stride(from: min(8, numberTokens.count - start), through: 1, by: -1) {
+                        let phrase = numberTokens[start..<(start + length)].joined(separator: " ")
                         let alternatives = [phrase, phrase.replacingOccurrences(of: " ", with: "-")]
                         if let number = alternatives.compactMap({ formatter.number(from: $0) }).first(where: {
-                            formatter.string(from: $0).map { words($0) == phrase } ?? false
+                            formatter.string(from: $0).map { words($0) == words(phrase) } ?? false
                         }) {
                             found.append(number.decimalValue)
                             consumed = length
@@ -58,8 +62,8 @@ enum VoiceEntryParser {
               amount <= DecimalAmountValidator.maximumAmount, amount.rounded(scale: 2) == amount else {
             throw ParseError.invalidAmount
         }
-        let income = contains(["income", "salary", "доход", "зарплата", "зарплату", "gelir", "maaş", "maas"])
-        let expense = contains(["expense", "spent", "расход", "потратила", "потратил", "xerc"])
+        let income = contains(["income", "salary", "доход", "зарплата", "зарплату", "gelir", "gəlir", "maaş", "maas"])
+        let expense = contains(["expense", "spent", "расход", "потратила", "потратил", "xerc", "xərc"])
         guard !(income && expense) else { throw ParseError.ambiguousType }
         let type: TransactionType = income ? .income : .expense
         let aliases: [(Currency, [String])] = [
@@ -76,7 +80,7 @@ enum VoiceEntryParser {
         }
         guard currencies.count <= 1 else { throw ParseError.ambiguousCurrency }
         let categoryAliases: [String: [String]] = [
-            "cafe": ["кафе", "coffee", "кофе", "kafe"],
+            "cafe": ["кафе", "coffee", "кофе", "kafe", "kafede", "kafedə"],
             "restaurant": ["ресторан", "ресторане", "restoran"],
             "salary": ["зарплата", "зарплату", "maas"],
             "transport": ["taxi", "такси", "taksi"],
@@ -103,9 +107,9 @@ enum VoiceEntryParser {
         case invalidAmount, ambiguousType, ambiguousCurrency
         var errorDescription: String? {
             switch self {
-            case .invalidAmount: return "Say one positive amount with up to two decimal places, or type it below."
-            case .ambiguousType: return "Say either income or expense for one entry."
-            case .ambiguousCurrency: return "Use one currency per entry."
+            case .invalidAmount: return AppLocalization.string("Say one positive amount with up to two decimal places, or type it below.", comment: "Voice entry feedback")
+            case .ambiguousType: return AppLocalization.string("Say either income or expense for one entry.", comment: "Voice entry feedback")
+            case .ambiguousCurrency: return AppLocalization.string("Use one currency per entry.", comment: "Voice entry feedback")
             }
         }
     }

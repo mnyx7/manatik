@@ -74,7 +74,7 @@ struct ActiveFilterSummaryView: View {
 
                 Text(
                     String(
-                        format: NSLocalizedString("%d matching entries", comment: "Filter summary"),
+                        format: AppLocalization.string("%d matching entries", comment: "Filter summary"),
                         resultCount
                     )
                 )
@@ -96,7 +96,7 @@ struct ActiveFilterSummaryView: View {
                 // like an empty month rather than a deliberate range.
                 Text(
                     String(
-                        format: NSLocalizedString("Date range: %@", comment: "Filter summary"),
+                        format: AppLocalization.string("Date range: %@", comment: "Filter summary"),
                         intervalText
                     )
                 )

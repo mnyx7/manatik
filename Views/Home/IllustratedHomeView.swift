@@ -125,7 +125,7 @@ struct IllustratedHomeView: View {
             }
             .place(HomeCanvas.savings, s)
 
-            objectButton(label: NSLocalizedString("Overview", comment: "Home object"), action: onOpenOverview) {
+            objectButton(label: AppLocalization.string("Overview", comment: "Home object"), action: onOpenOverview) {
                 OverviewObject(family: family, s: s, slices: pieSlices)
             }
             .place(HomeCanvas.overview, s)
@@ -136,7 +136,7 @@ struct IllustratedHomeView: View {
             .place(HomeCanvas.reminders, s)
 
             objectButton(
-                label: NSLocalizedString("Change period", comment: "Home object"),
+                label: AppLocalization.string("Change period", comment: "Home object"),
                 action: { viewModel.isShowingPeriodPicker = true }
             ) {
                 CalendarObject(family: family, s: s, month: monthText, day: dayText)
@@ -251,18 +251,18 @@ struct IllustratedHomeView: View {
 
     private var balanceCaption: String {
         summary.netBalance < 0
-            ? NSLocalizedString("over budget", comment: "Home balance")
-            : NSLocalizedString("left to spend", comment: "Home balance")
+            ? AppLocalization.string("over budget", comment: "Home balance")
+            : AppLocalization.string("left to spend", comment: "Home balance")
     }
 
     private var greeting: String {
         if style.isChristmas {
-            return NSLocalizedString("merry & bright ✦", comment: "Home greeting")
+            return AppLocalization.string("merry & bright ✦", comment: "Home greeting")
         }
         switch Calendar.current.component(.hour, from: Date()) {
-        case 5..<12: return NSLocalizedString("good morning ✿", comment: "Home greeting")
-        case 12..<18: return NSLocalizedString("good afternoon ✿", comment: "Home greeting")
-        default: return NSLocalizedString("good evening ✿", comment: "Home greeting")
+        case 5..<12: return AppLocalization.string("good morning ✿", comment: "Home greeting")
+        case 12..<18: return AppLocalization.string("good afternoon ✿", comment: "Home greeting")
+        default: return AppLocalization.string("good evening ✿", comment: "Home greeting")
         }
     }
 
@@ -272,8 +272,8 @@ struct IllustratedHomeView: View {
 
     private var billsValue: String {
         billsCount == 0
-            ? NSLocalizedString("none yet", comment: "Home bills")
-            : String(format: NSLocalizedString("%d this month", comment: "Home bills"), billsCount)
+            ? AppLocalization.string("none yet", comment: "Home bills")
+            : String(format: AppLocalization.string("%d this month", comment: "Home bills"), billsCount)
     }
 
     private var loansFraction: Double {
@@ -286,8 +286,8 @@ struct IllustratedHomeView: View {
 
     private var loansValue: String {
         store.activeLoans.isEmpty
-            ? NSLocalizedString("add one", comment: "Home loans")
-            : String(format: NSLocalizedString("%@ paid", comment: "Home loans"), percent(loansFraction))
+            ? AppLocalization.string("add one", comment: "Home loans")
+            : String(format: AppLocalization.string("%@ paid", comment: "Home loans"), percent(loansFraction))
     }
 
     private var savingsFraction: Double {
@@ -301,7 +301,7 @@ struct IllustratedHomeView: View {
     private var savingsValue: String {
         let goals = store.activeSavingsGoals
         guard !goals.isEmpty else {
-            return NSLocalizedString("set a goal", comment: "Home savings")
+            return AppLocalization.string("set a goal", comment: "Home savings")
         }
         return whole(goals.reduce(Decimal.zero) { $0 + $1.savedAmount })
     }
@@ -360,27 +360,27 @@ struct IllustratedHomeView: View {
     }
 
     private func bookAccessibility(_ title: String, _ amount: Decimal) -> String {
-        "\(NSLocalizedString(title, comment: "Home object")), \(CurrencyFormatting.format(amount: amount, currency: currency))"
+        "\(AppLocalization.string(title, comment: "Home object")), \(CurrencyFormatting.format(amount: amount, currency: currency))"
     }
 
     private var billsAccessibility: String {
-        "\(NSLocalizedString("Bills", comment: "Home object")), \(billsValue)"
+        "\(AppLocalization.string("Bills", comment: "Home object")), \(billsValue)"
     }
 
     private var loansAccessibility: String {
-        "\(NSLocalizedString("Loans", comment: "Home object")), \(loansValue)"
+        "\(AppLocalization.string("Loans", comment: "Home object")), \(loansValue)"
     }
 
     private var savingsAccessibility: String {
         store.activeSavingsGoals.isEmpty
-            ? NSLocalizedString("Savings, set a goal", comment: "Home object")
-            : "\(NSLocalizedString("Savings", comment: "Home object")), \(percent(savingsFraction)), \(savingsValue)"
+            ? AppLocalization.string("Savings, set a goal", comment: "Home object")
+            : "\(AppLocalization.string("Savings", comment: "Home object")), \(percent(savingsFraction)), \(savingsValue)"
     }
 
     private var remindersAccessibility: String {
         upcomingReminderCount == 0
-            ? NSLocalizedString("Reminders", comment: "Home object")
-            : String(format: NSLocalizedString("Reminders, %d this week", comment: "Home object"), upcomingReminderCount)
+            ? AppLocalization.string("Reminders", comment: "Home object")
+            : String(format: AppLocalization.string("Reminders, %d this week", comment: "Home object"), upcomingReminderCount)
     }
 }
 

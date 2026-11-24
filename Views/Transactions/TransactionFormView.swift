@@ -41,16 +41,6 @@ struct TransactionFormView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
-                    if viewModel.isAdding {
-                        Button {
-                            focusedField = nil
-                            isShowingVoiceEntry = true
-                        } label: {
-                            Label("Add with voice", systemImage: "mic.fill")
-                                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
-                        }
-                        .glassButtonStyle()
-                    }
                     if voiceReviewNotice {
                         Text("Review the amount, currency, category and date, then tap Save. Nothing has been saved yet.")
                             .font(.footnote).foregroundStyle(.secondary)
@@ -95,6 +85,12 @@ struct TransactionFormView: View {
                 // A new entry starts with the amount, so open it straight away;
                 // the short wait lets the sheet finish presenting first.
                 guard viewModel.isAdding else { return }
+                #if DEBUG
+                if QALaunch.route == "voice" {
+                    isShowingVoiceEntry = true
+                    return
+                }
+                #endif
                 #if DEBUG
                 if QALaunch.route == "currency" {
                     try? await Task.sleep(for: .milliseconds(600))
@@ -205,16 +201,31 @@ struct TransactionFormView: View {
 
     private var amountCard: some View {
         VStack(spacing: 10) {
-            Picker(selection: $viewModel.type) {
-                ForEach(TransactionType.allCases) { type in
-                    Text(type.localizedTitle).tag(type)
+            HStack(spacing: 10) {
+                Picker(selection: $viewModel.type) {
+                    ForEach(TransactionType.allCases) { type in
+                        Text(type.localizedTitle).tag(type)
+                    }
+                } label: {
+                    Text("Type")
                 }
-            } label: {
-                Text("Type")
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .disabled(viewModel.isLinkedEntry)
+                if viewModel.isAdding {
+                    Button {
+                        focusedField = nil
+                        isShowingVoiceEntry = true
+                    } label: {
+                        Image(systemName: "mic.fill")
+                            .font(.body.weight(.medium))
+                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                    }
+                    .glassButtonStyle()
+                    .accessibilityLabel(Text("Add with voice"))
+                    .help("Add with voice")
+                }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .disabled(viewModel.isLinkedEntry)
 
             // A small pill rather than a full labelled row: the date matters,
             // but not as much as the amount under it.

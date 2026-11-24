@@ -103,7 +103,7 @@ struct SavingsGoalCardView: View {
 
     private var accessibilitySummary: String {
         String(
-            format: NSLocalizedString("%1$@ saved of %2$@, %3$@ to go", comment: "Accessibility"),
+            format: AppLocalization.string("%1$@ saved of %2$@, %3$@ to go", comment: "Accessibility"),
             savedText, targetText, remainingText
         )
     }
@@ -119,16 +119,16 @@ struct SavingsGoalCardView: View {
 
     private var metaText: String {
         guard let dueDate = progress.goal.dueDate, let days = progress.daysRemaining else {
-            return NSLocalizedString("No deadline", comment: "Goal meta")
+            return AppLocalization.string("No deadline", comment: "Goal meta")
         }
         if days < 0 {
-            return String(format: NSLocalizedString("%d days overdue", comment: "Due date"), abs(days))
+            return String(format: AppLocalization.string("%d days overdue", comment: "Due date"), abs(days))
         }
         if days == 0 {
-            return NSLocalizedString("Due today", comment: "Due date")
+            return AppLocalization.string("Due today", comment: "Due date")
         }
         return String(
-            format: NSLocalizedString("%1$d days left, due %2$@", comment: "Due date"),
+            format: AppLocalization.string("%1$d days left, due %2$@", comment: "Due date"),
             days,
             DateFormatting.dayAndMonth(dueDate)
         )
@@ -224,7 +224,7 @@ struct LoanCardView: View {
 
     private var accessibilitySummary: String {
         String(
-            format: NSLocalizedString("%1$@ paid of %2$@, %3$@ left", comment: "Accessibility"),
+            format: AppLocalization.string("%1$@ paid of %2$@, %3$@ left", comment: "Accessibility"),
             paidText, initialText, remainingText
         )
     }
@@ -259,7 +259,7 @@ struct LoanCardView: View {
         if let instalments = progress.estimatedPaymentsRemaining {
             parts.append(
                 String(
-                    format: NSLocalizedString("about %d payments left", comment: "Loan forecast"),
+                    format: AppLocalization.string("about %d payments left", comment: "Loan forecast"),
                     instalments
                 )
             )
@@ -268,19 +268,19 @@ struct LoanCardView: View {
         if let days = daysUntilDue {
             if days < 0 {
                 parts.append(
-                    String(format: NSLocalizedString("%d days overdue", comment: "Due date"), abs(days))
+                    String(format: AppLocalization.string("%d days overdue", comment: "Due date"), abs(days))
                 )
             } else if days == 0 {
-                parts.append(NSLocalizedString("due today", comment: "Due date"))
+                parts.append(AppLocalization.string("due today", comment: "Due date"))
             } else {
                 parts.append(
-                    String(format: NSLocalizedString("%d days left", comment: "Due date"), days)
+                    String(format: AppLocalization.string("%d days left", comment: "Due date"), days)
                 )
             }
         }
 
         guard !parts.isEmpty else {
-            return NSLocalizedString("No deadline", comment: "Loan meta")
+            return AppLocalization.string("No deadline", comment: "Loan meta")
         }
         return parts.joined(separator: " \u{00B7} ")
     }

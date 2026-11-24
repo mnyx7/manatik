@@ -95,8 +95,8 @@ struct DayStripView: View {
         .accessibilityLabel(Text(DateFormatting.dayAndMonth(day)))
         .accessibilityValue(
             hasActivity
-                ? NSLocalizedString("has entries", comment: "Accessibility")
-                : NSLocalizedString("no entries", comment: "Accessibility")
+                ? AppLocalization.string("has entries", comment: "Accessibility")
+                : AppLocalization.string("no entries", comment: "Accessibility")
         )
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }

@@ -113,9 +113,9 @@ final class AppStore {
         case .migrated(let migrated, let fromVersion):
             self.state = migrated
             self.persistenceIssue = PersistenceIssue(
-                title: NSLocalizedString("Data upgraded", comment: "Alert title"),
+                title: AppLocalization.string("Data upgraded", comment: "Alert title"),
                 message: String(
-                    format: NSLocalizedString(
+                    format: AppLocalization.string(
                         "Your data was saved in an older format (version %d) and has been upgraded. Recurring entries now keep their own history, and your savings goal moved into the new goals list.",
                         comment: "Alert message"
                     ),
@@ -129,7 +129,7 @@ final class AppStore {
             self.state = .default
             self.isPersistenceSuspended = true
             self.persistenceIssue = PersistenceIssue(
-                title: NSLocalizedString("Could not read your data", comment: "Alert title"),
+                title: AppLocalization.string("Could not read your data", comment: "Alert title"),
                 message: message,
                 backupCopy: backupCopy,
                 isBlocking: true
@@ -1294,9 +1294,9 @@ final class AppStore {
             // A failed write used to be invisible in release builds, which let
             // the user keep entering data that was never stored.
             persistenceIssue = PersistenceIssue(
-                title: NSLocalizedString("Changes may not be saved", comment: "Alert title"),
+                title: AppLocalization.string("Changes may not be saved", comment: "Alert title"),
                 message: String(
-                    format: NSLocalizedString(
+                    format: AppLocalization.string(
                         "muna could not write to storage: %@\n\nExport a backup from Settings before closing the app.",
                         comment: "Alert message"
                     ),

@@ -98,7 +98,7 @@ struct ActivitiesView: View {
                         Spacer()
                         Text(
                             String(
-                                format: NSLocalizedString("%d entries", comment: "Count"),
+                                format: AppLocalization.string("%d entries", comment: "Count"),
                                 resultCount
                             )
                         )

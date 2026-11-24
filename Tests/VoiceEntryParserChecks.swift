@@ -26,3 +26,21 @@ for text in ["minus five cafe", "five cafe ten taxi", "минус пять ка�
  do { _ = try VoiceEntryParser.parse(text, currency: .azn, categories: categories); fatalError("Should reject: \(text)") }
  catch { print("PASS rejection: \(text)") }
 }
+
+for (text, locale, amount) in [("vingt-cinq EUR cafe", "fr-FR", Decimal(25)), ("veinticinco EUR cafe", "es-ES", Decimal(25))] {
+ let result = try VoiceEntryParser.parse(text, currency: .azn, categories: categories, localeID: locale)
+ precondition(result.amount == amount && result.currency == .eur, "Selected locale number parsing failed")
+ print("PASS selected speech locale: \(locale)")
+}
+
+let azeri = try VoiceEntryParser.parse("gəlir maaş 100 USD", currency: .azn, categories: categories, localeID: "az-AZ")
+precondition(azeri.type == .income && azeri.categoryID == "salary")
+print("PASS Azerbaijani income")
+let cafe = try VoiceEntryParser.parse("Kafedə beş manat", currency: .azn, categories: categories, localeID: "az-AZ")
+precondition(cafe.amount == 5 && cafe.categoryID == "cafe")
+print("PASS Azerbaijani example")
+let catalog = [SpeechLanguage(id: "en-US", supportsOffline: true), SpeechLanguage(id: "ru-RU", supportsOffline: false)]
+precondition(SpeechLanguages.resolvedID("en_US", in: catalog) == "en-US")
+precondition(SpeechLanguages.defaultID(in: catalog) == "en-US")
+precondition(SpeechLanguages.resolvedID("missing", in: catalog) == "en-US")
+print("PASS voice language defaults and legacy identifiers")

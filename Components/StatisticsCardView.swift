@@ -31,7 +31,7 @@ struct StatisticsCardView: View {
                     title: "Avg/day so far",
                     value: averagePerDay,
                     footnote: String(
-                        format: NSLocalizedString("over %d of %d days", comment: "Average basis"),
+                        format: AppLocalization.string("over %d of %d days", comment: "Average basis"),
                         elapsedDays,
                         totalDays
                     )
@@ -42,7 +42,7 @@ struct StatisticsCardView: View {
                     title: "Forecast rows",
                     value: "\(projectedCount)",
                     footnote: projectedCount > 0
-                        ? NSLocalizedString("not yet recorded", comment: "Forecast note")
+                        ? AppLocalization.string("not yet recorded", comment: "Forecast note")
                         : nil
                 )
             }

@@ -131,18 +131,18 @@ enum CurrencyFormatting {
     /// Spelled-out value for VoiceOver, avoiding a bare "-" being read as a dash.
     static func accessibleDescription(amount: Decimal, type: TransactionType, currency: Currency) -> String {
         if AmountPrivacy.shared.isHidden {
-            return NSLocalizedString("amount hidden", comment: "Accessibility amount")
+            return AppLocalization.string("amount hidden", comment: "Accessibility amount")
         }
         let magnitude = format(amount: amount, currency: currency)
         switch type {
         case .income:
             return String(
-                format: NSLocalizedString("%@ income", comment: "Accessibility amount"),
+                format: AppLocalization.string("%@ income", comment: "Accessibility amount"),
                 magnitude
             )
         case .expense:
             return String(
-                format: NSLocalizedString("%@ expense", comment: "Accessibility amount"),
+                format: AppLocalization.string("%@ expense", comment: "Accessibility amount"),
                 magnitude
             )
         }

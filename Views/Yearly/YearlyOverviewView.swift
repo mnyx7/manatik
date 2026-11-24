@@ -94,11 +94,11 @@ struct YearlyOverviewView: View {
         .accessibilityValue(
             item.hasActivity
                 ? String(
-                    format: NSLocalizedString("income %1$@, expense %2$@", comment: "Accessibility"),
+                    format: AppLocalization.string("income %1$@, expense %2$@", comment: "Accessibility"),
                     incomeText,
                     expenseText
                 )
-                : NSLocalizedString("No entries", comment: "Accessibility")
+                : AppLocalization.string("No entries", comment: "Accessibility")
         )
         .accessibilityHint(Text("Shows this month on the main page"))
     }

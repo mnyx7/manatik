@@ -61,15 +61,15 @@ final class TransactionFormViewModel {
 
     var title: String {
         switch mode {
-        case .add: return NSLocalizedString("New Entry", comment: "Form title")
-        case .edit: return NSLocalizedString("Edit Entry", comment: "Form title")
+        case .add: return AppLocalization.string("New Entry", comment: "Form title")
+        case .edit: return AppLocalization.string("Edit Entry", comment: "Form title")
         }
     }
 
     var saveButtonTitle: String {
         switch mode {
-        case .add: return NSLocalizedString("Save", comment: "Button")
-        case .edit: return NSLocalizedString("Update", comment: "Button")
+        case .add: return AppLocalization.string("Save", comment: "Button")
+        case .edit: return AppLocalization.string("Update", comment: "Button")
         }
     }
 
@@ -110,13 +110,13 @@ final class TransactionFormViewModel {
         guard let occurrence = editingOccurrence else { return nil }
         if let goalID = occurrence.savingsGoalID, let goal = store.state.savingsGoal(id: goalID) {
             return String(
-                format: NSLocalizedString("Money put into %@.", comment: "Linked entry note"),
+                format: AppLocalization.string("Money put into %@.", comment: "Linked entry note"),
                 goal.name
             )
         }
         if let loanID = occurrence.loanID, let loan = store.state.loan(id: loanID) {
             return String(
-                format: NSLocalizedString("Payment towards %@.", comment: "Linked entry note"),
+                format: AppLocalization.string("Payment towards %@.", comment: "Linked entry note"),
                 loan.name
             )
         }
@@ -200,7 +200,7 @@ final class TransactionFormViewModel {
     func save(scope: RecurrenceEditScope = .thisOccurrenceOnly) -> Bool {
         guard let draft = draft() else {
             errorMessage = DecimalAmountValidator.validationMessage(for: amountInput)
-                ?? NSLocalizedString("Enter an amount.", comment: "Amount validation")
+                ?? AppLocalization.string("Enter an amount.", comment: "Amount validation")
             return false
         }
 
@@ -220,7 +220,7 @@ final class TransactionFormViewModel {
         guard save() else { return false }
 
         savedConfirmation = String(
-            format: NSLocalizedString("Saved %@", comment: "Confirmation"),
+            format: AppLocalization.string("Saved %@", comment: "Confirmation"),
             CurrencyFormatting.format(
                 amount: parsedAmount ?? 0,
                 currency: currency

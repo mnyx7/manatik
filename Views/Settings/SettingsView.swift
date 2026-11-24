@@ -19,6 +19,7 @@ struct SettingsView: View {
         Form {
             homeStyleSection
             generalSection
+            LanguageSettingsSection()
             PaymentRemindersSection(viewModel: viewModel)
             organiseSection
             backupSection
@@ -247,13 +248,13 @@ struct SettingsView: View {
 
     private var backupFooterText: String {
         var text = viewModel.entryCountDescription + ". "
-        text += NSLocalizedString(
+        text += AppLocalization.string(
             "Importing replaces everything on this device, so the current data is saved as a file first.",
             comment: "Backup footer"
         )
         if viewModel.attachmentCount > 0 {
             text += " " + String(
-                format: NSLocalizedString(
+                format: AppLocalization.string(
                     "Your %d bill photos and documents stay on this device: the backup file records that they existed but does not contain them.",
                     comment: "Backup footer"
                 ),
@@ -453,8 +454,8 @@ struct CategoryManagerView: View {
                 }
 
                 Text(uses == 1
-                     ? NSLocalizedString("1 entry", comment: "Count")
-                     : String(format: NSLocalizedString("%d entries", comment: "Count"), uses))
+                     ? AppLocalization.string("1 entry", comment: "Count")
+                     : String(format: AppLocalization.string("%d entries", comment: "Count"), uses))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -465,8 +466,8 @@ struct CategoryManagerView: View {
         .accessibilityElement(children: .combine)
         .accessibilityValue(
             hidden
-                ? NSLocalizedString("hidden", comment: "Accessibility")
-                : NSLocalizedString("shown", comment: "Accessibility")
+                ? AppLocalization.string("hidden", comment: "Accessibility")
+                : AppLocalization.string("shown", comment: "Accessibility")
         )
         .swipeActions(edge: .trailing) {
             if category.isCustom {
@@ -579,20 +580,20 @@ struct RecurringSeriesListView: View {
         var parts = [series.rule.localizedTitle]
         parts.append(
             String(
-                format: NSLocalizedString("from %@", comment: "Series detail"),
+                format: AppLocalization.string("from %@", comment: "Series detail"),
                 DateFormatting.dayMonthYear(series.startDate)
             )
         )
         if let end = series.endDate {
             parts.append(
                 String(
-                    format: NSLocalizedString("until %@", comment: "Series detail"),
+                    format: AppLocalization.string("until %@", comment: "Series detail"),
                     DateFormatting.dayMonthYear(end)
                 )
             )
         }
         if series.isPaused {
-            parts.append(NSLocalizedString("paused", comment: "Series detail"))
+            parts.append(AppLocalization.string("paused", comment: "Series detail"))
         }
         return parts.joined(separator: " \u{00B7} ")
     }

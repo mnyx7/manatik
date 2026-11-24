@@ -88,7 +88,7 @@ struct LoansView: View {
                 if let closedAt = progress.loan.closedAt {
                     Text(
                         String(
-                            format: NSLocalizedString("Settled %@", comment: "Closed loan"),
+                            format: AppLocalization.string("Settled %@", comment: "Closed loan"),
                             DateFormatting.dayMonthYear(closedAt)
                         )
                     )
@@ -205,7 +205,7 @@ struct LoanDetailView: View {
 
                     if loan.openingPaidAmount > 0 {
                         paymentRow(
-                            title: NSLocalizedString("Paid before tracking", comment: "Opening balance"),
+                            title: AppLocalization.string("Paid before tracking", comment: "Opening balance"),
                             amount: loan.openingPaidAmount,
                             date: nil
                         )
@@ -281,7 +281,7 @@ struct LoanDetailView: View {
                 repeatRule: .monthly
             )
         )
-        reminderConfirmation = NSLocalizedString(
+        reminderConfirmation = AppLocalization.string(
             "Monthly reminder added. Manage it in Settings.",
             comment: "Confirmation"
         )
@@ -359,7 +359,7 @@ struct LoanEditorView: View {
                     AmountFieldRow(
                         title: "Monthly payment",
                         text: $monthlyInput,
-                        placeholder: NSLocalizedString("Optional", comment: "Placeholder")
+                        placeholder: AppLocalization.string("Optional", comment: "Placeholder")
                     )
 
                     DatePicker("Started", selection: $startDate, displayedComponents: [.date])

@@ -26,10 +26,10 @@ enum AppStatePersistenceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidFile:
-            return NSLocalizedString("This is not a valid muna backup file.", comment: "Error")
+            return AppLocalization.string("This is not a valid muna backup file.", comment: "Error")
         case .unsupportedSchema(let version):
             return String(
-                format: NSLocalizedString(
+                format: AppLocalization.string(
                     "This backup was made by a newer version of muna (format %d). Update the app and try again.",
                     comment: "Error"
                 ),
@@ -94,7 +94,7 @@ final class AppStatePersistence: AppStatePersisting {
         } catch {
             return .unreadable(
                 message: String(
-                    format: NSLocalizedString("Your data file could not be opened: %@", comment: "Error"),
+                    format: AppLocalization.string("Your data file could not be opened: %@", comment: "Error"),
                     error.localizedDescription
                 ),
                 backupCopy: nil
@@ -119,7 +119,7 @@ final class AppStatePersistence: AppStatePersisting {
             let copy = try? copyAside(data: data, tag: "unreadable")
             return .unreadable(
                 message: String(
-                    format: NSLocalizedString("Your data file could not be read: %@", comment: "Error"),
+                    format: AppLocalization.string("Your data file could not be read: %@", comment: "Error"),
                     error.localizedDescription
                 ),
                 backupCopy: copy
@@ -396,10 +396,10 @@ enum LegacySchema {
         if target > 0 || saved > 0 {
             goals.append(
                 SavingsGoal(
-                    name: NSLocalizedString("Savings", comment: "Migrated goal name"),
+                    name: AppLocalization.string("Savings", comment: "Migrated goal name"),
                     targetAmount: target > 0 ? target : saved,
                     openingAmount: saved,
-                    note: NSLocalizedString(
+                    note: AppLocalization.string(
                         "Carried over from your earlier savings goal.",
                         comment: "Migrated goal note"
                     )

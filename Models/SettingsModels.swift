@@ -59,7 +59,7 @@ struct Currency: RawRepresentable, Codable, Hashable, Identifiable, Sendable {
     var symbol: String { CurrencyFormatting.symbol(for: self) }
 
     var localizedName: String {
-        Locale.current.localizedString(forCurrencyCode: rawValue) ?? rawValue
+        AppLocalization.locale.localizedString(forCurrencyCode: rawValue) ?? rawValue
     }
 
     static let nativeSymbols: [String: String] = {

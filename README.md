@@ -121,19 +121,28 @@ Shake your iPhone in the app, or write to
 
 ## Voice entry MVP
 
-On New Entry, tap **Add with voice**, select English, Russian or Azerbaijani,
-then tap Start recording. Tap Stop, correct the transcript if necessary, and
+On New Entry, tap the small microphone next to Income/Expense. Choose a
+speech language if needed, then tap the round microphone to record. Tap Stop, correct the transcript if necessary, and
 choose Review entry. The existing editable form shows the result; only Save
 writes it to the ledger. Bills use the existing bookmark flag.
 
-Speech uses Apple's on-device recognizer exclusively, with no API key or
-backend. Availability depends on the selected language and device; a language
+Settings → Language & voice offers an app language (Follow iPhone, English,
+Russian or Azerbaijani) and a default dictation language. App language changes
+apply immediately, including model-generated text. A temporary language change
+in the recording sheet does not overwrite the saved default.
+
+The searchable language picker lists all locales reported by Apple Speech,
+with native language names and a separate section for languages unavailable
+offline on the current device. Automatic matches iPhone language preferences
+to an offline locale. Speech uses Apple's on-device recognizer exclusively,
+with no API key or backend. Availability depends on the selected language and device; a language
 in the picker is not a guarantee of offline support. Permission denial or
 unavailable recognition leaves typed command entry available. Recording stops
 after 45 seconds, on interruption, on backgrounding, or when leaving the sheet.
 
 The rules accept one positive amount with up to two decimal places, numeric
-or supported spelled-out numbers, income/expense keywords, visible category
+or supported spelled-out numbers (preferring the selected speech locale),
+income/expense keywords, visible category
 names (including custom categories), and common Russian/English/Azerbaijani
 aliases. Currency codes are supported, with common manat/dollar/euro names
 and symbols. Unspecified currency uses the form's current currency. Missing

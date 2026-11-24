@@ -59,7 +59,7 @@ struct ReminderEditorView: View {
                         Text("Amount")
                         Spacer()
                         TextField(
-                            NSLocalizedString("Optional", comment: "Placeholder"),
+                            AppLocalization.string("Optional", comment: "Placeholder"),
                             text: Binding(
                                 get: { amountInput },
                                 set: { amountInput = DecimalAmountValidator.sanitize($0) }
@@ -107,8 +107,8 @@ struct ReminderEditorView: View {
                     Text("When")
                 } footer: {
                     Text(repeatRule.repeats
-                         ? NSLocalizedString("You will be reminded at this time on every matching date.", comment: "Reminder footer")
-                         : NSLocalizedString("You will be reminded once, at this date and time.", comment: "Reminder footer"))
+                         ? AppLocalization.string("You will be reminded at this time on every matching date.", comment: "Reminder footer")
+                         : AppLocalization.string("You will be reminded once, at this date and time.", comment: "Reminder footer"))
                 }
             }
             .navigationTitle(existing == nil ? "New Reminder" : "Edit Reminder")

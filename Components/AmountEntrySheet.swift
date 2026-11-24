@@ -62,7 +62,7 @@ struct AmountEntrySheet: View {
                         } label: {
                             Label(
                                 String(
-                                    format: NSLocalizedString("Use %@", comment: "Suggested amount"),
+                                    format: AppLocalization.string("Use %@", comment: "Suggested amount"),
                                     CurrencyFormatting.format(amount: suggestedAmount, currency: currency)
                                 ),
                                 systemImage: "wand.and.stars"

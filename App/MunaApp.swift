@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct MunaApp: App {
+    @AppStorage("appLanguage") private var appLanguage = "system"
     @State private var store = AppStore.makeForLaunch()
     @State private var reminderScheduler = ReminderScheduler()
     @State private var isShowingSplash = true
@@ -23,6 +24,7 @@ struct MunaApp: App {
                         .zIndex(1)
                 }
             }
+                .environment(\.locale, appLanguage == "system" ? Locale.current : AppLocalization.locale)
                 .environment(store)
                 .environment(reminderScheduler)
                 .environment(links)
