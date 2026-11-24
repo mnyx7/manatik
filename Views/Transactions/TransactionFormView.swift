@@ -17,6 +17,8 @@ struct TransactionFormView: View {
     @State private var viewModel: TransactionFormViewModel
     @FocusState private var focusedField: Field?
 
+    @State private var isShowingVoiceEntry = false
+    @State private var voiceReviewNotice = false
     @State private var isShowingScopeChoice = false
     @State private var isShowingDeleteChoice = false
     @State private var isSearchingCategories = false
@@ -39,6 +41,20 @@ struct TransactionFormView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
+                    if viewModel.isAdding {
+                        Button {
+                            focusedField = nil
+                            isShowingVoiceEntry = true
+                        } label: {
+                            Label("Add with voice", systemImage: "mic.fill")
+                                .frame(maxWidth: .infinity, minHeight: AppTheme.minimumTapTarget)
+                        }
+                        .glassButtonStyle()
+                    }
+                    if voiceReviewNotice {
+                        Text("Review the amount, currency, category and date, then tap Save. Nothing has been saved yet.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
                     amountCard
                     categoryCard
 
@@ -126,6 +142,18 @@ struct TransactionFormView: View {
             }
             .onChange(of: viewModel.type) { _, _ in
                 viewModel.handleTypeChange()
+            }
+            .sheet(isPresented: $isShowingVoiceEntry) {
+                VoiceEntryView(currency: viewModel.currency, categories: viewModel.store.categories) { result in
+                    viewModel.type = result.type
+                    viewModel.handleAmountChange(NSDecimalNumber(decimal: result.amount).stringValue)
+                    viewModel.currency = result.currency
+                    viewModel.selectedCategoryID = result.categoryID
+                    viewModel.note = result.note
+                    viewModel.isFeatured = result.isBill
+                    viewModel.date = Date()
+                    voiceReviewNotice = true
+                }
             }
             .sheet(isPresented: $viewModel.isShowingCurrencyPicker) {
                 CurrencyPickerView(

@@ -118,3 +118,37 @@ Shake your iPhone in the app, or write to
 ## License
 
 © 2026 Minaya Yagubova. All rights reserved.
+
+## Voice entry MVP
+
+On New Entry, tap **Add with voice**, select English, Russian or Azerbaijani,
+then tap Start recording. Tap Stop, correct the transcript if necessary, and
+choose Review entry. The existing editable form shows the result; only Save
+writes it to the ledger. Bills use the existing bookmark flag.
+
+Speech uses Apple's on-device recognizer exclusively, with no API key or
+backend. Availability depends on the selected language and device; a language
+in the picker is not a guarantee of offline support. Permission denial or
+unavailable recognition leaves typed command entry available. Recording stops
+after 45 seconds, on interruption, on backgrounding, or when leaving the sheet.
+
+The rules accept one positive amount with up to two decimal places, numeric
+or supported spelled-out numbers, income/expense keywords, visible category
+names (including custom categories), and common Russian/English/Azerbaijani
+aliases. Currency codes are supported, with common manat/dollar/euro names
+and symbols. Unspecified currency uses the form's current currency. Missing
+or ambiguous category uses Other. Review all fields before saving.
+
+Dates default to today; spoken dates, recurring commands, loan creation,
+savings actions, automatic language detection and multiple entries per command
+are outside this MVP. Change the date and other fields in the review form.
+
+Run parser regression checks on macOS with Xcode installed:
+
+```sh
+python3 Scripts/test_voice_parser.py
+```
+
+Before release, test real microphone recognition on supported iPhones,
+permission allow/deny, unavailable languages, cancellation, interruptions,
+and review/save/cancel with a test ledger.
