@@ -158,7 +158,9 @@ aliases. Currency codes are supported, with common manat/dollar/euro names
 and symbols. Unspecified currency uses the form's current currency. Missing
 or ambiguous category uses Other. Review all fields before saving.
 
-Dates default to today; spoken dates, recurring commands, loan creation,
+Dates default to today; today/yesterday/tomorrow and day-before-yesterday
+are recognized in English, Russian and Azerbaijani. Other dates, automatic
+recurring commands, loan creation,
 savings actions, automatic language detection and multiple entries per command
 are outside this MVP. Change the date and other fields in the review form.
 
@@ -189,3 +191,38 @@ amounts and thousands (e.g. «пять тысяч», «5 тысяч», «5 000»
 contain one amount and currency, including when numbers use different languages.
 Explicit income stays income even if an expense-only category is spoken; the
 review form selects Other and asks the user to choose a compatible category.
+
+### Vocabulary audit
+
+`Services/VoiceVocabulary.swift` is the shared vocabulary for speech hints and
+parsing. It covers all 24 built-in categories in English, Russian and Azerbaijani,
+plus visible custom category names. Specific names win over overlapping generic
+names; numbers in category names (e.g. 7 Eleven) do not become extra amounts.
+Freelance, bonus and custom income-only categories infer income unless an
+explicit expense command is given. Income/expense and Bills negations are handled.
+
+Currency handling accepts ISO codes, localized currency names from Foundation,
+common regional names and currency symbols. Dollar symbols/names follow a dollar
+main currency when appropriate; qualified names such as Canadian dollars take
+precedence. Ambiguous yen symbols require a matching currency or explicit code.
+Common words such as try, all and cup are distinguished from ISO codes.
+
+Minor units include cents, qəpik, kopecks, pence and kuruş. Major/minor combinations
+must have a clear unit and order. Grouped and mixed-separator numbers are validated;
+ambiguous or malformed precision is rejected rather than truncated or partially
+read. A three-digit suffix after one separator is interpreted as grouping only
+when the selected speech locale uses that separator for grouping.
+
+Notes introduced with note/memo/заметка/комментарий/qeyd are kept as data, so an
+invoice number or currency in the note cannot change the transaction. Relative
+dates use the calendar and are shown in the existing review form. Schedule and
+attachment requests get review reminders; the user sets those fields manually.
+Ordinary Savings/Loan category entries explicitly warn that linked balances do
+not change. Goal/loan creation, transfers, deletions, edits and balance queries
+are outside the add-only voice workflow and are not executed.
+
+`Tests/VoiceVocabularyChecks.swift` checks every built-in category in three
+languages and the currency, amount, date, note, custom-category and intent cases.
+Other recording languages can supply text, but these semantic aliases are focused
+on English, Russian and Azerbaijani. Real audio accuracy still depends on Apple's
+selected-language recognizer and must be tested on supported iPhones.

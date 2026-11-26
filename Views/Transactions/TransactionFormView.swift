@@ -169,7 +169,7 @@ struct TransactionFormView: View {
                     viewModel.selectedCategoryID = result.categoryID
                     viewModel.note = result.note
                     viewModel.isFeatured = result.isBill
-                    viewModel.date = Date()
+                    viewModel.date = result.date
                     voiceReviewMessage = result.reviewMessage
                     voiceReviewNotice = true
                 }

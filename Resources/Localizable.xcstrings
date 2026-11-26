@@ -181,6 +181,23 @@
         }
       }
     },
+    "A repeating schedule was mentioned. Set Repeat in the review form before saving." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы упомянули повторение. Перед сохранением настройте «Повтор» в форме проверки."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Təkrarlanma qeyd edilib. Yadda saxlamazdan əvvəl yoxlama formasında «Təkrar» seçimini tənzimləyin."
+          }
+        }
+      }
+    },
     "About" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -386,6 +403,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Добавить запись"
+          }
+        }
+      }
+    },
+    "Add any photos or files in the review form before saving." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перед сохранением добавьте фотографии или файлы в форме проверки."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yadda saxlamazdan əvvəl yoxlama formasında şəkil və ya faylları əlavə edin."
           }
         }
       }
@@ -3395,6 +3429,23 @@
         }
       }
     },
+    "More than one date was mentioned. Use one date per entry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Указано несколько дат. Используйте одну дату для одной записи."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir neçə tarix deyilib. Hər qeyd üçün bir tarixdən istifadə edin."
+          }
+        }
+      }
+    },
     "Muna — A Softer Way to Save. ✨" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6214,6 +6265,23 @@
         }
       }
     },
+    "This records a transaction only. Savings goals and loan balances are not updated." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это только запись операции. Суммы в целях накоплений и остатки по кредитам не изменятся."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu yalnız əməliyyat qeydidir. Yığım məqsədləri və kredit qalıqları dəyişməyəcək."
+          }
+        }
+      }
+    },
     "This replaces everything on this device: %1$d entries and %2$d repeating entries will be removed and replaced with %3$d entries and %4$d repeating entries." : {
       "extractionState" : "manual"
     },
@@ -6509,6 +6577,23 @@
         }
       }
     },
+    "Use today, yesterday or tomorrow, or set the date in the review form." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скажите «сегодня», «вчера» или «завтра» либо укажите дату в форме проверки."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Bu gün», «dünən» və ya «sabah» deyin, yaxud tarixi yoxlama formasında seçin."
+          }
+        }
+      }
+    },
     "Used for" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6573,6 +6658,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Голос"
+          }
+        }
+      }
+    },
+    "Voice currently supports adding income, expenses and Bills only." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Голосовой ввод пока поддерживает только добавление доходов, расходов и Bills."
+          }
+        },
+        "az" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Səslə daxiletmə hələlik yalnız gəlir, xərc və Bills əlavə etməyi dəstəkləyir."
           }
         }
       }

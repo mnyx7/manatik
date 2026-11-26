@@ -10,9 +10,12 @@ source += (root / "Models/SettingsModels.swift").read_text().split("struct AppSe
 source += "\nenum CurrencyFormatting { static func symbol(for currency: Currency) -> String { currency.rawValue }; static func format(amount: Decimal, currency: Currency) -> String { String(describing: amount) } }\n"
 source += (root / "Utilities/AppLocalization.swift").read_text()
 source += (root / "Utilities/DecimalAmountValidator.swift").read_text()
+source += (root / "Models/DefaultCategories.swift").read_text()
+source += (root / "Services/VoiceVocabulary.swift").read_text()
 source += (root / "Services/VoiceEntryParser.swift").read_text()
 source += (root / "Services/SpeechLanguages.swift").read_text()
 source += (root / "Tests/VoiceEntryParserChecks.swift").read_text()
+source += (root / "Tests/VoiceVocabularyChecks.swift").read_text()
 with tempfile.TemporaryDirectory(prefix="muna-voice-tests-") as directory:
     main = Path(directory) / "main.swift"
     main.write_text(source)
