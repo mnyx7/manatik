@@ -226,3 +226,9 @@ languages and the currency, amount, date, note, custom-category and intent cases
 Other recording languages can supply text, but these semantic aliases are focused
 on English, Russian and Azerbaijani. Real audio accuracy still depends on Apple's
 selected-language recognizer and must be tested on supported iPhones.
+
+Review entry is enabled as soon as listening starts, even before the first
+partial transcript. Tapping it stops capture and waits for the final result,
+then opens the review form for a valid command. An invalid command, recognition
+error or finalization timeout keeps the voice screen open for correction.
+Cancel, backgrounding and manual entry clear any pending review request.

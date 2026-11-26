@@ -1,10 +1,11 @@
 import Foundation
 
 @main struct RecorderChecks {
-    @MainActor static func eventually(_ condition: () -> Bool) async throws {
-        for _ in 0..<200 {
+    @MainActor static func eventually(timeout: Duration = .seconds(2), _ condition: () -> Bool) async throws {
+        let deadline = ContinuousClock.now.advanced(by: timeout)
+        while ContinuousClock.now < deadline {
             if condition() { return }
-            try await Task.sleep(for: .milliseconds(1))
+            try await Task.sleep(for: .milliseconds(5))
         }
         preconditionFailure("Recorder state did not settle")
     }
@@ -50,7 +51,7 @@ import Foundation
         await timedOut.emit("review this partial", final: false)
         try await eventually { recorder.transcript == "review this partial" }
         recorder.finish()
-        try await Task.sleep(for: .milliseconds(5200))
+        try await eventually(timeout: .seconds(7)) { !recorder.isFinalizing }
         precondition(!recorder.isFinalizing && timedOut.cancelled && recorder.transcript == "review this partial" && recorder.errorMessage != nil)
         print("PASS missing final result times out with editable text and a warning")
 

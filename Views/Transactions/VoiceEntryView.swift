@@ -12,6 +12,7 @@ struct VoiceEntryView: View {
     @AppStorage("voiceStartsAutomatically") private var startsAutomatically = false
     @State private var attemptedAutomaticStart = false
     @State private var parseError: String?
+    @State private var reviewRequested = false
     @State private var showsReplaceConfirmation = false
     @FocusState private var isEditing: Bool
     let currency: Currency
@@ -20,6 +21,8 @@ struct VoiceEntryView: View {
     let onReview: (VoiceEntryParser.Result) -> Void
 
     private var busy: Bool { recorder.isRecording || recorder.isPreparing || recorder.isFinalizing }
+    private var reviewReady: Bool { reviewRequested && !busy }
+    private var canRequestReview: Bool { !recorder.isPreparing && !reviewRequested && (recorder.isRecording || recorder.isFinalizing || hasText) }
     private var hasText: Bool { !recorder.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     private var selectedLanguage: SpeechLanguage? { languages.first { $0.id == language } }
     private var canRecord: Bool { selectedLanguage?.supportsOffline == true }
@@ -124,7 +127,7 @@ struct VoiceEntryView: View {
             .navigationTitle("Voice entry")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { reviewRequested = false; dismiss() } }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         VoiceSettingsView()
@@ -149,15 +152,23 @@ struct VoiceEntryView: View {
                 #endif
                 await startAutomaticallyIfNeeded()
             }
+            .task(id: reviewReady) {
+                // Key off the combined state, not a single flag transition:
+                // a fast final result may arrive before SwiftUI renders Stop.
+                guard reviewReady, !Task.isCancelled else { return }
+                reviewRequested = false
+                guard scenePhase == .active, recorder.errorMessage == nil else { return }
+                reviewTranscript()
+            }
             .onChange(of: recorder.transcript) { _, _ in parseError = nil }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .background { attemptedAutomaticStart = true; recorder.stop() }
+                if phase == .background { reviewRequested = false; attemptedAutomaticStart = true; recorder.stop() }
                 else if phase == .active { Task { await startAutomaticallyIfNeeded() } }
             }
             .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { _ in
                 if recorder.isRecording { recorder.finish() }
             }
-            .onDisappear { attemptedAutomaticStart = true; recorder.stop() }
+            .onDisappear { reviewRequested = false; attemptedAutomaticStart = true; recorder.stop() }
         }
     }
 
@@ -181,24 +192,32 @@ struct VoiceEntryView: View {
         VStack(spacing: 10) {
             Button {
                 isEditing = false
-                do {
-                    let result = try VoiceEntryParser.parse(recorder.transcript, currency: currency, categories: categories, localeID: language)
-                    onReview(result)
-                    dismiss()
-                } catch { parseError = error.localizedDescription }
+                parseError = nil
+                if recorder.isRecording || recorder.isFinalizing {
+                    reviewRequested = true
+                    recorder.finish()
+                } else {
+                    reviewTranscript()
+                }
             } label: {
                 HStack {
-                    Text("Review entry")
-                    Image(systemName: "arrow.right")
+                    if reviewRequested {
+                        ProgressView().controlSize(.small)
+                        Text("Finishing…")
+                    } else {
+                        Text("Review entry")
+                        Image(systemName: "arrow.right")
+                    }
                 }
                 .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity, minHeight: 50)
             }
             .glassProminentButtonStyle()
             .tint(AppTheme.savingsAccent)
-            .disabled(busy || !hasText)
+            .disabled(!canRequestReview)
             if let onManualEntry {
                 Button("Enter manually") {
+                    reviewRequested = false
                     recorder.stop()
                     onManualEntry()
                     dismiss()
@@ -213,6 +232,14 @@ struct VoiceEntryView: View {
         .padding(.horizontal, AppTheme.pageHorizontalPadding)
         .padding(.top, 12).padding(.bottom, 12)
         .background(.ultraThinMaterial)
+    }
+
+    private func reviewTranscript() {
+        do {
+            let result = try VoiceEntryParser.parse(recorder.transcript, currency: currency, categories: categories, localeID: language)
+            onReview(result)
+            dismiss()
+        } catch { parseError = error.localizedDescription }
     }
 
     private func message(_ text: String) -> some View {
